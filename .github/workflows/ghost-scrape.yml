@@ -23,10 +23,13 @@ jobs:
       - name: Run one poll cycle
         run: python ghost_listener.py --once -o ghost_alerts.json
 
+      - name: Generate dashboard
+        run: python generate_dashboard.py ghost_alerts.json docs
+
       - name: Commit data
         run: |
           git config user.name "ghost-bot"
           git config user.email "ghost-bot@users.noreply.github.com"
-          git add ghost_alerts.json
+          git add ghost_alerts.json docs/index.html
           git diff --staged --quiet || git commit -m "data: poll $(date -u +%Y-%m-%dT%H:%M:%SZ) — $(python -c "import json; d=json.load(open('ghost_alerts.json')); print(d['meta']['total_alerts'])" 2>/dev/null || echo '?') alerts"
           git push
