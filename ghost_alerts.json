@@ -2166,7 +2166,7 @@
       "user_down": 3,
       "image": null,
       "_source": "nearby24h(22.3000,114.1800)",
-      "_first_seen": "2026-06-14T21:42:52.871161+00:00"
+      "_first_seen": "2026-06-14T22:50:55.249605+00:00"
     },
     "5234119": {
       "alert_record_id": 5234119,
@@ -2189,7 +2189,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T21:43:03.415030+00:00"
+      "_first_seen": "2026-06-14T22:51:03.974154+00:00"
     },
     "5234120": {
       "alert_record_id": 5234120,
@@ -2212,7 +2212,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T21:43:03.415047+00:00"
+      "_first_seen": "2026-06-14T22:51:03.974169+00:00"
     },
     "5234091": {
       "alert_record_id": 5234091,
@@ -3867,7 +3867,7 @@
       "user_down": 9,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T21:43:03.415050+00:00"
+      "_first_seen": "2026-06-14T22:51:03.974172+00:00"
     },
     "5234163": {
       "alert_record_id": 5234163,
@@ -4130,7 +4130,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T21:43:03.415053+00:00"
+      "_first_seen": "2026-06-14T22:51:03.974173+00:00"
     },
     "5234173": {
       "alert_record_id": 5234173,
@@ -4657,7 +4657,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625855+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570494+00:00"
     },
     "5234196": {
       "alert_record_id": 5234196,
@@ -4896,7 +4896,7 @@
       "user_down": 1,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625871+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570507+00:00"
     },
     "5234205": {
       "alert_record_id": 5234205,
@@ -4991,7 +4991,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4500,114.1800)",
-      "_first_seen": "2026-06-14T21:43:12.165068+00:00"
+      "_first_seen": "2026-06-14T22:51:10.820285+00:00"
     },
     "5234209": {
       "alert_record_id": 5234209,
@@ -5302,7 +5302,7 @@
       "user_down": 1,
       "image": null,
       "_source": "nearby24h(22.3000,114.1800)",
-      "_first_seen": "2026-06-14T21:42:52.871193+00:00"
+      "_first_seen": "2026-06-14T22:50:55.249634+00:00"
     },
     "5234230": {
       "alert_record_id": 5234230,
@@ -5325,7 +5325,7 @@
       "user_down": 1,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T21:43:03.415055+00:00"
+      "_first_seen": "2026-06-14T22:51:03.974174+00:00"
     },
     "5234418": {
       "alert_record_id": 5234418,
@@ -5348,7 +5348,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T21:43:03.415057+00:00"
+      "_first_seen": "2026-06-14T22:51:03.974176+00:00"
     },
     "5234419": {
       "alert_record_id": 5234419,
@@ -5371,7 +5371,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T21:43:03.415059+00:00"
+      "_first_seen": "2026-06-14T22:51:03.974177+00:00"
     },
     "5234243": {
       "alert_record_id": 5234243,
@@ -5394,7 +5394,7 @@
       "user_down": 33,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625875+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570510+00:00"
     },
     "5234244": {
       "alert_record_id": 5234244,
@@ -5417,7 +5417,7 @@
       "user_down": 33,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625877+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570511+00:00"
     },
     "5234245": {
       "alert_record_id": 5234245,
@@ -5440,7 +5440,7 @@
       "user_down": 33,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625879+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570512+00:00"
     },
     "5234246": {
       "alert_record_id": 5234246,
@@ -5463,7 +5463,7 @@
       "user_down": 33,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625881+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570513+00:00"
     },
     "5234247": {
       "alert_record_id": 5234247,
@@ -5486,7 +5486,7 @@
       "user_down": 33,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625883+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570514+00:00"
     },
     "5234248": {
       "alert_record_id": 5234248,
@@ -5509,7 +5509,7 @@
       "user_down": 33,
       "image": "1781409944_0_818340_5234248_c02ed4560100d874eb08cc9e72f4af27.jpg",
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625885+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570515+00:00"
     },
     "5234254": {
       "alert_record_id": 5234254,
@@ -5532,7 +5532,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625887+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570516+00:00"
     },
     "5234255": {
       "alert_record_id": 5234255,
@@ -5555,7 +5555,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625888+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570517+00:00"
     },
     "5234256": {
       "alert_record_id": 5234256,
@@ -5578,7 +5578,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625890+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570518+00:00"
     },
     "5234258": {
       "alert_record_id": 5234258,
@@ -5601,7 +5601,7 @@
       "user_down": 33,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625892+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570519+00:00"
     },
     "5234277": {
       "alert_record_id": 5234277,
@@ -5624,7 +5624,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625893+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570520+00:00"
     },
     "5234427": {
       "alert_record_id": 5234427,
@@ -5647,7 +5647,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262539+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571568+00:00"
     },
     "5234429": {
       "alert_record_id": 5234429,
@@ -5670,7 +5670,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262557+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571580+00:00"
     },
     "5234441": {
       "alert_record_id": 5234441,
@@ -5693,7 +5693,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262560+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571582+00:00"
     },
     "5234452": {
       "alert_record_id": 5234452,
@@ -5716,7 +5716,7 @@
       "user_down": 3,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262563+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571583+00:00"
     },
     "5234455": {
       "alert_record_id": 5234455,
@@ -5739,7 +5739,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262565+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571584+00:00"
     },
     "5234456": {
       "alert_record_id": 5234456,
@@ -5762,7 +5762,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262566+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571585+00:00"
     },
     "5234457": {
       "alert_record_id": 5234457,
@@ -5785,7 +5785,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262568+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571586+00:00"
     },
     "5234458": {
       "alert_record_id": 5234458,
@@ -5808,7 +5808,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262570+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571587+00:00"
     },
     "5234459": {
       "alert_record_id": 5234459,
@@ -5831,7 +5831,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262571+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571588+00:00"
     },
     "5234460": {
       "alert_record_id": 5234460,
@@ -5854,7 +5854,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262573+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571589+00:00"
     },
     "5234462": {
       "alert_record_id": 5234462,
@@ -5877,7 +5877,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262574+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571590+00:00"
     },
     "5234463": {
       "alert_record_id": 5234463,
@@ -5900,7 +5900,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262576+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571591+00:00"
     },
     "5234464": {
       "alert_record_id": 5234464,
@@ -5923,7 +5923,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262578+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571592+00:00"
     },
     "5234465": {
       "alert_record_id": 5234465,
@@ -5946,7 +5946,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262579+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571593+00:00"
     },
     "5234468": {
       "alert_record_id": 5234468,
@@ -5969,7 +5969,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262581+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571594+00:00"
     },
     "5234469": {
       "alert_record_id": 5234469,
@@ -5992,7 +5992,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262583+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571595+00:00"
     },
     "5234491": {
       "alert_record_id": 5234491,
@@ -6015,7 +6015,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262584+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571596+00:00"
     },
     "5234496": {
       "alert_record_id": 5234496,
@@ -6038,7 +6038,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262586+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571597+00:00"
     },
     "5234366": {
       "alert_record_id": 5234366,
@@ -8773,7 +8773,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625895+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570521+00:00"
     },
     "5234602": {
       "alert_record_id": 5234602,
@@ -8796,7 +8796,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T21:43:10.625897+00:00"
+      "_first_seen": "2026-06-14T22:51:09.570522+00:00"
     },
     "5234521": {
       "alert_record_id": 5234521,
@@ -8819,7 +8819,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262588+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571598+00:00"
     },
     "5234556": {
       "alert_record_id": 5234556,
@@ -8842,7 +8842,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262590+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571599+00:00"
     },
     "5234557": {
       "alert_record_id": 5234557,
@@ -8865,7 +8865,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262591+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571600+00:00"
     },
     "5234558": {
       "alert_record_id": 5234558,
@@ -8888,7 +8888,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262593+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571601+00:00"
     },
     "5234560": {
       "alert_record_id": 5234560,
@@ -8911,7 +8911,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262595+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571602+00:00"
     },
     "5234567": {
       "alert_record_id": 5234567,
@@ -8934,7 +8934,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262596+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571603+00:00"
     },
     "5234574": {
       "alert_record_id": 5234574,
@@ -8957,7 +8957,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262598+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571605+00:00"
     },
     "5234575": {
       "alert_record_id": 5234575,
@@ -8980,7 +8980,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T21:43:18.262600+00:00"
+      "_first_seen": "2026-06-14T22:51:15.571606+00:00"
     },
     "5234534": {
       "alert_record_id": 5234534,
@@ -11475,7 +11475,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.5000,114.0800)",
-      "_first_seen": "2026-06-14T21:43:17.543615+00:00"
+      "_first_seen": "2026-06-14T22:51:14.992895+00:00"
     },
     "5234674": {
       "alert_record_id": 5234674,
@@ -11498,7 +11498,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.5000,114.0800)",
-      "_first_seen": "2026-06-14T21:43:17.543632+00:00"
+      "_first_seen": "2026-06-14T22:51:14.992909+00:00"
     },
     "5234675": {
       "alert_record_id": 5234675,
@@ -11521,7 +11521,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.5000,114.0800)",
-      "_first_seen": "2026-06-14T21:43:17.543636+00:00"
+      "_first_seen": "2026-06-14T22:51:14.992910+00:00"
     },
     "5234654": {
       "alert_record_id": 5234654,
@@ -12552,7 +12552,7 @@
       "user_down": 3,
       "image": null,
       "_source": "nearby24h(22.3000,114.1800)",
-      "_first_seen": "2026-06-14T22:50:55.249605+00:00"
+      "_first_seen": "2026-06-14T23:56:19.974822+00:00"
     },
     "5234430": {
       "alert_record_id": 5234430,
@@ -12575,7 +12575,7 @@
       "user_down": 1,
       "image": null,
       "_source": "nearby24h(22.3000,114.1800)",
-      "_first_seen": "2026-06-14T22:50:55.249634+00:00"
+      "_first_seen": "2026-06-14T23:56:19.974853+00:00"
     },
     "5234119": {
       "alert_record_id": 5234119,
@@ -12598,7 +12598,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T22:51:03.974154+00:00"
+      "_first_seen": "2026-06-14T23:56:29.873324+00:00"
     },
     "5234120": {
       "alert_record_id": 5234120,
@@ -12621,7 +12621,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T22:51:03.974169+00:00"
+      "_first_seen": "2026-06-14T23:56:29.873339+00:00"
     },
     "5234162": {
       "alert_record_id": 5234162,
@@ -12644,7 +12644,7 @@
       "user_down": 9,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T22:51:03.974172+00:00"
+      "_first_seen": "2026-06-14T23:56:29.873343+00:00"
     },
     "5234175": {
       "alert_record_id": 5234175,
@@ -12667,7 +12667,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T22:51:03.974173+00:00"
+      "_first_seen": "2026-06-14T23:56:29.873346+00:00"
     },
     "5234230": {
       "alert_record_id": 5234230,
@@ -12690,7 +12690,7 @@
       "user_down": 1,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T22:51:03.974174+00:00"
+      "_first_seen": "2026-06-14T23:56:29.873348+00:00"
     },
     "5234418": {
       "alert_record_id": 5234418,
@@ -12713,7 +12713,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T22:51:03.974176+00:00"
+      "_first_seen": "2026-06-14T23:56:29.873350+00:00"
     },
     "5234419": {
       "alert_record_id": 5234419,
@@ -12736,7 +12736,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-06-14T22:51:03.974177+00:00"
+      "_first_seen": "2026-06-14T23:56:29.873353+00:00"
     },
     "5234195": {
       "alert_record_id": 5234195,
@@ -12759,7 +12759,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570494+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377061+00:00"
     },
     "5234208": {
       "alert_record_id": 5234208,
@@ -12782,7 +12782,7 @@
       "user_down": 1,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570507+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377077+00:00"
     },
     "5234243": {
       "alert_record_id": 5234243,
@@ -12805,7 +12805,7 @@
       "user_down": 33,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570510+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377081+00:00"
     },
     "5234244": {
       "alert_record_id": 5234244,
@@ -12828,7 +12828,7 @@
       "user_down": 33,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570511+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377084+00:00"
     },
     "5234245": {
       "alert_record_id": 5234245,
@@ -12851,7 +12851,7 @@
       "user_down": 33,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570512+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377086+00:00"
     },
     "5234246": {
       "alert_record_id": 5234246,
@@ -12874,7 +12874,7 @@
       "user_down": 33,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570513+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377089+00:00"
     },
     "5234247": {
       "alert_record_id": 5234247,
@@ -12897,7 +12897,7 @@
       "user_down": 33,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570514+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377091+00:00"
     },
     "5234248": {
       "alert_record_id": 5234248,
@@ -12920,7 +12920,7 @@
       "user_down": 33,
       "image": "1781409944_0_818340_5234248_c02ed4560100d874eb08cc9e72f4af27.jpg",
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570515+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377093+00:00"
     },
     "5234254": {
       "alert_record_id": 5234254,
@@ -12943,7 +12943,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570516+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377095+00:00"
     },
     "5234255": {
       "alert_record_id": 5234255,
@@ -12966,7 +12966,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570517+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377098+00:00"
     },
     "5234256": {
       "alert_record_id": 5234256,
@@ -12989,7 +12989,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570518+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377100+00:00"
     },
     "5234258": {
       "alert_record_id": 5234258,
@@ -13012,7 +13012,7 @@
       "user_down": 33,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570519+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377102+00:00"
     },
     "5234277": {
       "alert_record_id": 5234277,
@@ -13035,7 +13035,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570520+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377104+00:00"
     },
     "5234601": {
       "alert_record_id": 5234601,
@@ -13058,7 +13058,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570521+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377107+00:00"
     },
     "5234602": {
       "alert_record_id": 5234602,
@@ -13081,7 +13081,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-06-14T22:51:09.570522+00:00"
+      "_first_seen": "2026-06-14T23:56:38.377109+00:00"
     },
     "5234210": {
       "alert_record_id": 5234210,
@@ -13104,7 +13104,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4500,114.1800)",
-      "_first_seen": "2026-06-14T22:51:10.820285+00:00"
+      "_first_seen": "2026-06-14T23:56:40.024267+00:00"
     },
     "5234673": {
       "alert_record_id": 5234673,
@@ -13127,7 +13127,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.5000,114.0800)",
-      "_first_seen": "2026-06-14T22:51:14.992895+00:00"
+      "_first_seen": "2026-06-14T23:56:45.552585+00:00"
     },
     "5234674": {
       "alert_record_id": 5234674,
@@ -13150,7 +13150,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.5000,114.0800)",
-      "_first_seen": "2026-06-14T22:51:14.992909+00:00"
+      "_first_seen": "2026-06-14T23:56:45.552601+00:00"
     },
     "5234675": {
       "alert_record_id": 5234675,
@@ -13173,7 +13173,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.5000,114.0800)",
-      "_first_seen": "2026-06-14T22:51:14.992910+00:00"
+      "_first_seen": "2026-06-14T23:56:45.552604+00:00"
     },
     "5234427": {
       "alert_record_id": 5234427,
@@ -13196,7 +13196,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571568+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436411+00:00"
     },
     "5234429": {
       "alert_record_id": 5234429,
@@ -13219,7 +13219,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571580+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436427+00:00"
     },
     "5234441": {
       "alert_record_id": 5234441,
@@ -13242,7 +13242,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571582+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436431+00:00"
     },
     "5234452": {
       "alert_record_id": 5234452,
@@ -13265,7 +13265,7 @@
       "user_down": 3,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571583+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436433+00:00"
     },
     "5234455": {
       "alert_record_id": 5234455,
@@ -13288,7 +13288,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571584+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436436+00:00"
     },
     "5234456": {
       "alert_record_id": 5234456,
@@ -13311,7 +13311,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571585+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436438+00:00"
     },
     "5234457": {
       "alert_record_id": 5234457,
@@ -13334,7 +13334,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571586+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436440+00:00"
     },
     "5234458": {
       "alert_record_id": 5234458,
@@ -13357,7 +13357,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571587+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436442+00:00"
     },
     "5234459": {
       "alert_record_id": 5234459,
@@ -13380,7 +13380,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571588+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436445+00:00"
     },
     "5234460": {
       "alert_record_id": 5234460,
@@ -13403,7 +13403,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571589+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436447+00:00"
     },
     "5234462": {
       "alert_record_id": 5234462,
@@ -13426,7 +13426,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571590+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436449+00:00"
     },
     "5234463": {
       "alert_record_id": 5234463,
@@ -13449,7 +13449,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571591+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436451+00:00"
     },
     "5234464": {
       "alert_record_id": 5234464,
@@ -13472,7 +13472,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571592+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436454+00:00"
     },
     "5234465": {
       "alert_record_id": 5234465,
@@ -13495,7 +13495,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571593+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436456+00:00"
     },
     "5234468": {
       "alert_record_id": 5234468,
@@ -13518,7 +13518,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571594+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436458+00:00"
     },
     "5234469": {
       "alert_record_id": 5234469,
@@ -13541,7 +13541,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571595+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436461+00:00"
     },
     "5234491": {
       "alert_record_id": 5234491,
@@ -13564,7 +13564,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571596+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436463+00:00"
     },
     "5234496": {
       "alert_record_id": 5234496,
@@ -13587,7 +13587,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571597+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436466+00:00"
     },
     "5234521": {
       "alert_record_id": 5234521,
@@ -13610,7 +13610,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571598+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436468+00:00"
     },
     "5234556": {
       "alert_record_id": 5234556,
@@ -13633,7 +13633,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571599+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436470+00:00"
     },
     "5234557": {
       "alert_record_id": 5234557,
@@ -13656,7 +13656,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571600+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436472+00:00"
     },
     "5234558": {
       "alert_record_id": 5234558,
@@ -13679,7 +13679,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571601+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436474+00:00"
     },
     "5234560": {
       "alert_record_id": 5234560,
@@ -13702,7 +13702,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571602+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436476+00:00"
     },
     "5234567": {
       "alert_record_id": 5234567,
@@ -13725,7 +13725,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571603+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436478+00:00"
     },
     "5234574": {
       "alert_record_id": 5234574,
@@ -13748,7 +13748,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571605+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436481+00:00"
     },
     "5234575": {
       "alert_record_id": 5234575,
@@ -13771,7 +13771,223 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-06-14T22:51:15.571606+00:00"
+      "_first_seen": "2026-06-14T23:56:46.436483+00:00"
+    },
+    "5234700": {
+      "alert_record_id": 5234700,
+      "name": "仆街抄牌搵番啲消費券",
+      "lat": 22.33879,
+      "lng": 114.187388,
+      "address": "九龍樂富聯合道196號樂富邨宏逸樓",
+      "alert_type": "alert",
+      "beef_time": null,
+      "create_dt": "2026-06-15 07:17:41",
+      "lastupdate_dt": "2026-06-15 07:17:41",
+      "is_coffee": "no",
+      "is_26": "no",
+      "distance": 4042.194088973,
+      "upvote": "0",
+      "downvote": "0",
+      "is_voted": "no",
+      "vote": "down",
+      "user_up": 20,
+      "user_down": 4,
+      "image": null,
+      "_source": "nearbyActive(22.1500,113.8300)",
+      "_first_seen": "2026-06-14T23:56:55.058076+00:00",
+      "_last_seen": "2026-06-14T23:57:46.334698+00:00"
+    },
+    "5234701": {
+      "alert_record_id": 5234701,
+      "name": "仆街抄牌搵番啲消費券",
+      "lat": 22.338726,
+      "lng": 114.187525,
+      "address": "九龍樂富聯合道196號樂富邨宏樂樓",
+      "alert_type": "alert",
+      "beef_time": null,
+      "create_dt": "2026-06-15 07:18:12",
+      "lastupdate_dt": "2026-06-15 07:18:12",
+      "is_coffee": "no",
+      "is_26": "no",
+      "distance": 4057.7934029791,
+      "upvote": "0",
+      "downvote": "0",
+      "is_voted": "no",
+      "vote": "down",
+      "user_up": 20,
+      "user_down": 4,
+      "image": null,
+      "_source": "nearbyActive(22.1500,113.8300)",
+      "_first_seen": "2026-06-14T23:56:55.058091+00:00",
+      "_last_seen": "2026-06-14T23:57:46.334752+00:00"
+    },
+    "5234702": {
+      "alert_record_id": 5234702,
+      "name": "走鬼成功 成功走鬼",
+      "lat": 22.342722,
+      "lng": 114.138099,
+      "address": "新界荔枝角荔景山路282號",
+      "alert_type": "alert",
+      "beef_time": null,
+      "create_dt": "2026-06-15 07:22:54",
+      "lastupdate_dt": "2026-06-15 07:22:54",
+      "is_coffee": "no",
+      "is_26": "no",
+      "distance": 1467.3059671792,
+      "upvote": "0",
+      "downvote": "0",
+      "is_voted": "no",
+      "vote": "down",
+      "user_up": 66,
+      "user_down": 9,
+      "image": null,
+      "_source": "nearbyActive(22.1500,113.8300)",
+      "_first_seen": "2026-06-14T23:56:55.058094+00:00",
+      "_last_seen": "2026-06-14T23:57:46.334758+00:00"
+    },
+    "5234703": {
+      "alert_record_id": 5234703,
+      "name": "走鬼成功 成功走鬼",
+      "lat": 22.34272,
+      "lng": 114.1382,
+      "address": "新界荔枝角荔景山路282號",
+      "alert_type": "alert",
+      "beef_time": null,
+      "create_dt": "2026-06-15 07:23:01",
+      "lastupdate_dt": "2026-06-15 07:23:01",
+      "is_coffee": "no",
+      "is_26": "no",
+      "distance": 1458.7760759327,
+      "upvote": "0",
+      "downvote": "0",
+      "is_voted": "no",
+      "vote": "down",
+      "user_up": 66,
+      "user_down": 9,
+      "image": null,
+      "_source": "nearbyActive(22.1500,113.8300)",
+      "_first_seen": "2026-06-14T23:56:55.058097+00:00",
+      "_last_seen": "2026-06-14T23:57:46.334762+00:00"
+    },
+    "5234704": {
+      "alert_record_id": 5234704,
+      "name": "益人好過益鬼",
+      "lat": 22.344152,
+      "lng": 114.136677,
+      "address": "新界荔枝角九華徑63S號",
+      "alert_type": "alert",
+      "beef_time": null,
+      "create_dt": "2026-06-15 07:25:41",
+      "lastupdate_dt": "2026-06-15 07:25:41",
+      "is_coffee": "no",
+      "is_26": "no",
+      "distance": 1516.6634188493,
+      "upvote": "0",
+      "downvote": "0",
+      "is_voted": "no",
+      "vote": "down",
+      "user_up": 16,
+      "user_down": 1,
+      "image": null,
+      "_source": "nearbyActive(22.1500,113.8300)",
+      "_first_seen": "2026-06-14T23:56:55.058099+00:00",
+      "_last_seen": "2026-06-14T23:57:46.334765+00:00"
+    },
+    "5234705": {
+      "alert_record_id": 5234705,
+      "name": "",
+      "lat": 22.337952332958,
+      "lng": 114.13387902081,
+      "address": "清麗苑麗康閣",
+      "alert_type": "alert",
+      "beef_time": null,
+      "create_dt": "2026-06-15 07:36:27",
+      "lastupdate_dt": "2026-06-15 07:36:27",
+      "is_coffee": "no",
+      "is_26": "no",
+      "distance": 2131.5574017928,
+      "upvote": "0",
+      "downvote": "0",
+      "is_voted": "no",
+      "vote": "down",
+      "user_up": null,
+      "user_down": null,
+      "image": null,
+      "_source": "nearbyActive(22.1500,113.8300)",
+      "_first_seen": "2026-06-14T23:56:55.058101+00:00",
+      "_last_seen": "2026-06-14T23:57:46.334768+00:00"
+    },
+    "5234706": {
+      "alert_record_id": 5234706,
+      "name": "202915",
+      "lat": 22.327827,
+      "lng": 114.227839,
+      "address": "九龍秀茂坪安秀道20號安泰邨和泰樓",
+      "alert_type": "alert",
+      "beef_time": null,
+      "create_dt": "2026-06-15 07:46:54",
+      "lastupdate_dt": "2026-06-15 07:46:54",
+      "is_coffee": "no",
+      "is_26": "no",
+      "distance": 8376.7915143876,
+      "upvote": "0",
+      "downvote": "0",
+      "is_voted": "no",
+      "vote": "down",
+      "user_up": 0,
+      "user_down": 0,
+      "image": null,
+      "_source": "nearbyActive(22.1500,113.8300)",
+      "_first_seen": "2026-06-14T23:56:55.058103+00:00",
+      "_last_seen": "2026-06-14T23:57:46.334771+00:00"
+    },
+    "5234707": {
+      "alert_record_id": 5234707,
+      "name": "202915",
+      "lat": 22.327943,
+      "lng": 114.22762,
+      "address": "九龍秀茂坪安茵街",
+      "alert_type": "alert",
+      "beef_time": null,
+      "create_dt": "2026-06-15 07:47:12",
+      "lastupdate_dt": "2026-06-15 07:47:12",
+      "is_coffee": "no",
+      "is_26": "no",
+      "distance": 8351.4674430778,
+      "upvote": "0",
+      "downvote": "0",
+      "is_voted": "no",
+      "vote": "down",
+      "user_up": 0,
+      "user_down": 0,
+      "image": null,
+      "_source": "nearbyActive(22.1500,113.8300)",
+      "_first_seen": "2026-06-14T23:56:55.058105+00:00",
+      "_last_seen": "2026-06-14T23:57:46.334774+00:00"
+    },
+    "5234708": {
+      "alert_record_id": 5234708,
+      "name": "littlemy",
+      "lat": 22.341014388585,
+      "lng": 114.20917700976,
+      "address": "新麗花園B座",
+      "alert_type": "alert",
+      "beef_time": null,
+      "create_dt": "2026-06-15 07:48:22",
+      "lastupdate_dt": "2026-06-15 07:48:22",
+      "is_coffee": "no",
+      "is_26": "no",
+      "distance": 6167.5350914597,
+      "upvote": "0",
+      "downvote": "0",
+      "is_voted": "no",
+      "vote": "down",
+      "user_up": 1,
+      "user_down": 1,
+      "image": null,
+      "_source": "nearbyActive(22.1500,113.8300)",
+      "_first_seen": "2026-06-14T23:56:55.058107+00:00",
+      "_last_seen": "2026-06-14T23:57:46.334778+00:00"
     }
   },
   "news": [
@@ -15629,6 +15845,38 @@
   ],
   "sponsors": [
     {
+      "sponsor_list_id": 47,
+      "invitation_code": null,
+      "name": "富啟泰",
+      "address": "康樂街",
+      "phone": "",
+      "description": "",
+      "lat": 22.3196801,
+      "lng": 114.1680809,
+      "up_vote": 2,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 59,
+      "invitation_code": null,
+      "name": "LLB Bistro",
+      "address": "上環荷李活道186-190A荷李活大樓地下C舖",
+      "phone": "35946790",
+      "description": "Restaurant and Bar",
+      "lat": 22.285396,
+      "lng": 114.148415,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": "/sponsor/helper1667038318_0_59_1fae1c88529f7f33a761d497fc1aa9ca.jpeg",
+      "images": [
+        "/sponsor/helper1667038318_0_59_1fae1c88529f7f33a761d497fc1aa9ca.jpeg"
+      ]
+    },
+    {
       "sponsor_list_id": 57,
       "invitation_code": null,
       "name": "山旮旯車神",
@@ -15637,36 +15885,6 @@
       "description": "",
       "lat": 0,
       "lng": 0,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 54,
-      "invitation_code": null,
-      "name": "Cafe Cabin ",
-      "address": " Cafe Cabin (筲箕灣) 筲箕灣筲箕灣東大街4-10號東寶大廈地下3A號舖",
-      "phone": "64180635",
-      "description": "Café Cabin 店舖位於筲箕灣東大街東寶大廈地下3A鋪",
-      "lat": 22.280665,
-      "lng": 114.230436,
-      "up_vote": 1,
-      "down_vote": 8,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 52,
-      "invitation_code": null,
-      "name": "登一設計廊",
-      "address": "銓通工業大廈3樓D室",
-      "phone": "",
-      "description": "",
-      "lat": 22.3730346,
-      "lng": 114.1065537,
       "up_vote": 0,
       "down_vote": 0,
       "alert_type": "sponsor",
@@ -15689,79 +15907,15 @@
       "images": []
     },
     {
-      "sponsor_list_id": 72,
+      "sponsor_list_id": 50,
       "invitation_code": null,
-      "name": "Ocean Three",
-      "address": "",
-      "phone": "34210103",
-      "description": "九龍觀塘開源道60號駱駝漆大廈3座1樓A室\r\n九龍 旺角 煙廠街 4號 東匯地下\r\n九龍 聯合道198號，樂富邨 樂富街市地下108~109及115號舖\r\n香港 九龍 深水埗 西邨路19號 南昌薈街市地下103號舖(富昌邨旁)\r\n荃灣 河背街48號，A舖\r\n新界 屯門鄉事會路131號，巴黎倫敦紐約戲院購物中心 29A 舖 地下\r\n香港 灣仔道2號 尚翹峰地下 A3舖 (灣仔街市旁)\r\n新界 沙田禾輋邨，禾輋街市地下M68號舖\r\n將軍澳尚德邨TKO Spot 街市109號舖",
-      "lat": -1,
-      "lng": -1,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": "/sponsor/347836095_978238143358346_7884408071089802342_n.png",
-      "images": [
-        "/sponsor/347836095_978238143358346_7884408071089802342_n.png"
-      ]
-    },
-    {
-      "sponsor_list_id": 75,
-      "invitation_code": null,
-      "name": "千歲食品有限公司",
-      "address": "",
-      "phone": "39130929",
-      "description": "門市地址\n大圍隆亨街市60號鋪\n屯門美樂花園87號舖\n慈雲山街市10號鋪\n恆安街市32號鋪\n寶林街市64號鋪",
-      "lat": 22.374994,
-      "lng": 113.960971,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": "/sponsor/helper1700117341_0_75_b7b98b2490a33b7616188b279279e95e.jpeg",
-      "images": [
-        "/sponsor/helper1700117341_0_75_b7b98b2490a33b7616188b279279e95e.jpeg"
-      ]
-    },
-    {
-      "sponsor_list_id": 64,
-      "invitation_code": null,
-      "name": "Clement",
-      "address": "元朗西菁街好信泰商場7號舖",
+      "name": "九鬼居酒屋",
+      "address": "銅鑼灣耀華街21 號地下7號舖",
       "phone": "",
       "description": "",
-      "lat": 0,
-      "lng": 0,
+      "lat": 22.277640892846,
+      "lng": 114.18195243851,
       "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 60,
-      "invitation_code": null,
-      "name": "come 2  me cafe craft ",
-      "address": "九龍城城南道66號地下",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 2,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 61,
-      "invitation_code": null,
-      "name": "貫納地產",
-      "address": "元朗同樂街10-16號金華樓地下A鋪",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 4,
       "down_vote": 0,
       "alert_type": "sponsor",
       "image": null,
@@ -15783,46 +15937,63 @@
       "images": []
     },
     {
-      "sponsor_list_id": 56,
+      "sponsor_list_id": 72,
       "invitation_code": null,
-      "name": "TEABUDDY 茶伴",
-      "address": "尖沙咀柯士甸道95號正記大樓地舖",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
+      "name": "Ocean Three",
+      "address": "",
+      "phone": "34210103",
+      "description": "九龍觀塘開源道60號駱駝漆大廈3座1樓A室\r\n九龍 旺角 煙廠街 4號 東匯地下\r\n九龍 聯合道198號，樂富邨 樂富街市地下108~109及115號舖\r\n香港 九龍 深水埗 西邨路19號 南昌薈街市地下103號舖(富昌邨旁)\r\n荃灣 河背街48號，A舖\r\n新界 屯門鄉事會路131號，巴黎倫敦紐約戲院購物中心 29A 舖 地下\r\n香港 灣仔道2號 尚翹峰地下 A3舖 (灣仔街市旁)\r\n新界 沙田禾輋邨，禾輋街市地下M68號舖\r\n將軍澳尚德邨TKO Spot 街市109號舖",
+      "lat": -1,
+      "lng": -1,
       "up_vote": 0,
       "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": "/sponsor/347836095_978238143358346_7884408071089802342_n.png",
+      "images": [
+        "/sponsor/347836095_978238143358346_7884408071089802342_n.png"
+      ]
+    },
+    {
+      "sponsor_list_id": 53,
+      "invitation_code": null,
+      "name": "Foda Motorsports ",
+      "address": "荃灣柴灣角街35-45號裕豐工業大廈地下3號鋪",
+      "phone": "",
+      "description": "",
+      "lat": 22.373968229784,
+      "lng": 114.10747249701,
+      "up_vote": 3,
+      "down_vote": 2,
       "alert_type": "sponsor",
       "image": null,
       "images": []
     },
     {
-      "sponsor_list_id": 51,
+      "sponsor_list_id": 70,
       "invitation_code": null,
-      "name": "AE86\n",
-      "address": "崇德街5號地舖",
+      "name": "模型天堂paradise hobby",
+      "address": "九龍旺角廣華街1號仁安大廈地下21B舖",
       "phone": "",
       "description": "",
-      "lat": 22.452474,
-      "lng": 114.165692,
+      "lat": 0,
+      "lng": 0,
       "up_vote": 0,
-      "down_vote": 0,
+      "down_vote": 2,
       "alert_type": "sponsor",
       "image": null,
       "images": []
     },
     {
-      "sponsor_list_id": 62,
+      "sponsor_list_id": 48,
       "invitation_code": null,
-      "name": "Uncle 3 優質食材專賣店",
-      "address": "大埔安富道 3 號",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 1,
-      "down_vote": 0,
+      "name": "創基一站式汽車服務有限公司",
+      "address": "葵涌葵昌路 17-19 號地下 A1B 鋪",
+      "phone": "26269563",
+      "description": "「勿忘初心」堅持用良心提供專業服務\n汽車維修保養, 政府驗車, 影音系統設計, 原廠防盜配置及防盜安裝, 泊車輔助系統, 行車記錄儀, 車身噴油, 內籠翻新, 深層清潔護理, 鍍膜, 冷氣除臭",
+      "lat": 22.364535,
+      "lng": 114.13316,
+      "up_vote": 20,
+      "down_vote": 4,
       "alert_type": "sponsor",
       "image": null,
       "images": []
@@ -15849,51 +16020,6 @@
       ]
     },
     {
-      "sponsor_list_id": 67,
-      "invitation_code": null,
-      "name": "彩虹美妝",
-      "address": "上水新勤街1號地舖",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 48,
-      "invitation_code": null,
-      "name": "創基一站式汽車服務有限公司",
-      "address": "葵涌葵昌路 17-19 號地下 A1B 鋪",
-      "phone": "26269563",
-      "description": "「勿忘初心」堅持用良心提供專業服務\n汽車維修保養, 政府驗車, 影音系統設計, 原廠防盜配置及防盜安裝, 泊車輔助系統, 行車記錄儀, 車身噴油, 內籠翻新, 深層清潔護理, 鍍膜, 冷氣除臭",
-      "lat": 22.364535,
-      "lng": 114.13316,
-      "up_vote": 20,
-      "down_vote": 4,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 47,
-      "invitation_code": null,
-      "name": "富啟泰",
-      "address": "康樂街",
-      "phone": "",
-      "description": "",
-      "lat": 22.3196801,
-      "lng": 114.1680809,
-      "up_vote": 2,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
       "sponsor_list_id": 5,
       "invitation_code": null,
       "name": "紅心麵包西餅",
@@ -15911,63 +16037,16 @@
       ]
     },
     {
-      "sponsor_list_id": 66,
+      "sponsor_list_id": 63,
       "invitation_code": null,
-      "name": "Tuen Mun Moto Center ",
-      "address": "屯門建發街",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 7,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 69,
-      "invitation_code": null,
-      "name": "The Car Spa",
-      "address": "北角渣華道196-202號嘉富大廈一號店",
+      "name": "Banh mi pate  (vietnam genuine)",
+      "address": "Shop a,65sing woo road, happy valley ",
       "phone": "",
       "description": "",
       "lat": 0,
       "lng": 0,
       "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 59,
-      "invitation_code": null,
-      "name": "LLB Bistro",
-      "address": "上環荷李活道186-190A荷李活大樓地下C舖",
-      "phone": "35946790",
-      "description": "Restaurant and Bar",
-      "lat": 22.285396,
-      "lng": 114.148415,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": "/sponsor/helper1667038318_0_59_1fae1c88529f7f33a761d497fc1aa9ca.jpeg",
-      "images": [
-        "/sponsor/helper1667038318_0_59_1fae1c88529f7f33a761d497fc1aa9ca.jpeg"
-      ]
-    },
-    {
-      "sponsor_list_id": 55,
-      "invitation_code": null,
-      "name": "香港馬會",
-      "address": "順寧道297",
-      "phone": "54090247",
-      "description": "香港賽馬會出邊電單車骨位",
-      "lat": 22.338794,
-      "lng": 114.156934,
-      "up_vote": 36,
-      "down_vote": 3,
+      "down_vote": 1,
       "alert_type": "sponsor",
       "image": null,
       "images": []
@@ -15988,14 +16067,29 @@
       "images": []
     },
     {
-      "sponsor_list_id": 50,
+      "sponsor_list_id": 61,
       "invitation_code": null,
-      "name": "九鬼居酒屋",
-      "address": "銅鑼灣耀華街21 號地下7號舖",
+      "name": "貫納地產",
+      "address": "元朗同樂街10-16號金華樓地下A鋪",
       "phone": "",
       "description": "",
-      "lat": 22.277640892846,
-      "lng": 114.18195243851,
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 4,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 71,
+      "invitation_code": null,
+      "name": "BBpro Motor",
+      "address": "茶果嶺道177號",
+      "phone": "",
+      "description": "",
+      "lat": 0,
+      "lng": 0,
       "up_vote": 0,
       "down_vote": 0,
       "alert_type": "sponsor",
@@ -16003,46 +16097,46 @@
       "images": []
     },
     {
-      "sponsor_list_id": 70,
+      "sponsor_list_id": 64,
       "invitation_code": null,
-      "name": "模型天堂paradise hobby",
-      "address": "九龍旺角廣華街1號仁安大廈地下21B舖",
+      "name": "Clement",
+      "address": "元朗西菁街好信泰商場7號舖",
       "phone": "",
       "description": "",
       "lat": 0,
       "lng": 0,
       "up_vote": 0,
-      "down_vote": 2,
+      "down_vote": 0,
       "alert_type": "sponsor",
       "image": null,
       "images": []
     },
     {
-      "sponsor_list_id": 53,
+      "sponsor_list_id": 62,
       "invitation_code": null,
-      "name": "Foda Motorsports ",
-      "address": "荃灣柴灣角街35-45號裕豐工業大廈地下3號鋪",
+      "name": "Uncle 3 優質食材專賣店",
+      "address": "大埔安富道 3 號",
       "phone": "",
       "description": "",
-      "lat": 22.373968229784,
-      "lng": 114.10747249701,
-      "up_vote": 3,
-      "down_vote": 2,
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 1,
+      "down_vote": 0,
       "alert_type": "sponsor",
       "image": null,
       "images": []
     },
     {
-      "sponsor_list_id": 46,
+      "sponsor_list_id": 52,
       "invitation_code": null,
-      "name": "瀅潔乾濕洗衣店",
-      "address": "筲箕灣工廠街八號地下",
-      "phone": "29227131",
-      "description": "洗衣店",
-      "lat": 22.277038,
-      "lng": 114.229996,
-      "up_vote": 253,
-      "down_vote": 6,
+      "name": "登一設計廊",
+      "address": "銓通工業大廈3樓D室",
+      "phone": "",
+      "description": "",
+      "lat": 22.3730346,
+      "lng": 114.1065537,
+      "up_vote": 0,
+      "down_vote": 0,
       "alert_type": "sponsor",
       "image": null,
       "images": []
@@ -16065,15 +16159,137 @@
       ]
     },
     {
-      "sponsor_list_id": 71,
+      "sponsor_list_id": 56,
       "invitation_code": null,
-      "name": "BBpro Motor",
-      "address": "茶果嶺道177號",
+      "name": "TEABUDDY 茶伴",
+      "address": "尖沙咀柯士甸道95號正記大樓地舖",
       "phone": "",
       "description": "",
       "lat": 0,
       "lng": 0,
       "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 55,
+      "invitation_code": null,
+      "name": "香港馬會",
+      "address": "順寧道297",
+      "phone": "54090247",
+      "description": "香港賽馬會出邊電單車骨位",
+      "lat": 22.338794,
+      "lng": 114.156934,
+      "up_vote": 36,
+      "down_vote": 3,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 66,
+      "invitation_code": null,
+      "name": "Tuen Mun Moto Center ",
+      "address": "屯門建發街",
+      "phone": "",
+      "description": "",
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 7,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 67,
+      "invitation_code": null,
+      "name": "彩虹美妝",
+      "address": "上水新勤街1號地舖",
+      "phone": "",
+      "description": "",
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 75,
+      "invitation_code": null,
+      "name": "千歲食品有限公司",
+      "address": "",
+      "phone": "39130929",
+      "description": "門市地址\n大圍隆亨街市60號鋪\n屯門美樂花園87號舖\n慈雲山街市10號鋪\n恆安街市32號鋪\n寶林街市64號鋪",
+      "lat": 22.374994,
+      "lng": 113.960971,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": "/sponsor/helper1700117341_0_75_b7b98b2490a33b7616188b279279e95e.jpeg",
+      "images": [
+        "/sponsor/helper1700117341_0_75_b7b98b2490a33b7616188b279279e95e.jpeg"
+      ]
+    },
+    {
+      "sponsor_list_id": 69,
+      "invitation_code": null,
+      "name": "The Car Spa",
+      "address": "北角渣華道196-202號嘉富大廈一號店",
+      "phone": "",
+      "description": "",
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 51,
+      "invitation_code": null,
+      "name": "AE86\n",
+      "address": "崇德街5號地舖",
+      "phone": "",
+      "description": "",
+      "lat": 22.452474,
+      "lng": 114.165692,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 46,
+      "invitation_code": null,
+      "name": "瀅潔乾濕洗衣店",
+      "address": "筲箕灣工廠街八號地下",
+      "phone": "29227131",
+      "description": "洗衣店",
+      "lat": 22.277038,
+      "lng": 114.229996,
+      "up_vote": 253,
+      "down_vote": 6,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 60,
+      "invitation_code": null,
+      "name": "come 2  me cafe craft ",
+      "address": "九龍城城南道66號地下",
+      "phone": "",
+      "description": "",
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 2,
       "down_vote": 0,
       "alert_type": "sponsor",
       "image": null,
@@ -16095,16 +16311,16 @@
       "images": []
     },
     {
-      "sponsor_list_id": 63,
+      "sponsor_list_id": 54,
       "invitation_code": null,
-      "name": "Banh mi pate  (vietnam genuine)",
-      "address": "Shop a,65sing woo road, happy valley ",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 0,
-      "down_vote": 1,
+      "name": "Cafe Cabin ",
+      "address": " Cafe Cabin (筲箕灣) 筲箕灣筲箕灣東大街4-10號東寶大廈地下3A號舖",
+      "phone": "64180635",
+      "description": "Café Cabin 店舖位於筲箕灣東大街東寶大廈地下3A鋪",
+      "lat": 22.280665,
+      "lng": 114.230436,
+      "up_vote": 1,
+      "down_vote": 8,
       "alert_type": "sponsor",
       "image": null,
       "images": []
@@ -16112,8 +16328,8 @@
   ],
   "meta": {
     "first_run": "2026-06-13T16:05:22.387838+00:00",
-    "last_poll": "2026-06-14T22:52:08.558866+00:00",
-    "total_alerts": 580
+    "last_poll": "2026-06-14T23:57:46.334906+00:00",
+    "total_alerts": 589
   },
   "config": {
     "gang_title": "走鬼驚gang",
