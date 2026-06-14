@@ -25,3 +25,6 @@ analysis/ghost_map.html
 # Virtual environment
 .venv/
 venv/
+
+# Secrets
+.env
