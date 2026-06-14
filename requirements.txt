@@ -1,0 +1,7 @@
+cryptography
+requests
+lightgbm
+scikit-learn
+pandas
+shapely
+pytest

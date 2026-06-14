@@ -1,0 +1,27 @@
+# Data files (regenerated, not source)
+ghost_alerts.db
+ghost_forecast.json
+models/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+*.code-workspace
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Analysis outputs (regenerated)
+analysis/ghost_map.html
+
+# Virtual environment
+.venv/
+venv/

@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.db
+*.json
+!requirements.txt
+models/
+.pytest_cache/
+docs/
+tests/
+.github/

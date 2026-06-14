@@ -1,0 +1,32 @@
+name: Ghost Sweep Data Collection
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # Every 5 minutes
+  workflow_dispatch:        # Manual trigger button
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install cryptography requests
+
+      - name: Run one poll cycle
+        run: python ghost_listener.py --once -o ghost_alerts.json
+
+      - name: Commit data
+        run: |
+          git config user.name "ghost-bot"
+          git config user.email "ghost-bot@users.noreply.github.com"
+          git add ghost_alerts.json
+          git diff --staged --quiet || git commit -m "data: poll $(date -u +%Y-%m-%dT%H:%M:%SZ) — $(python -c "import json; d=json.load(open('ghost_alerts.json')); print(d['meta']['total_alerts'])" 2>/dev/null || echo '?') alerts"
+          git push

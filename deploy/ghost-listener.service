@@ -1,0 +1,18 @@
+[Unit]
+Description=Ghost Alert Listener (走鬼 data collector)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ghost
+Group=ghost
+WorkingDirectory=/opt/ghost-sweep
+ExecStart=/opt/ghost-sweep/venv/bin/python ghost_listener.py --interval 300 -o /opt/ghost-sweep/data/ghost_alerts.json
+Restart=always
+RestartSec=30
+StandardOutput=append:/var/log/ghost-listener.log
+StandardError=append:/var/log/ghost-listener.log
+
+[Install]
+WantedBy=multi-user.target
