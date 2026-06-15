@@ -197,10 +197,19 @@ def compute_stats(alerts):
 
 
 def generate_html(alerts, stats, meta):
-    # Prepare data for JS — use count as heatmap weight
+    # Prepare data for JS — aggregate to grid cells for heatmap density
     heatmap_points = json.dumps([[a["lat"], a["lng"], a.get("count", 1)] for a in alerts])
 
-    # Fixed HK bounds — no need to compute, HK is always the same
+    # Grid-based density for circle markers (0.005° grid = ~500m)
+    grid = {}
+    for a in alerts:
+        key = (round(a["lat"] / 0.005) * 0.005, round(a["lng"] / 0.005) * 0.005)
+        grid[key] = grid.get(key, 0) + a.get("count", 1)
+    # Convert to JSON array: [lat, lng, count]
+    grid_cells = json.dumps([[lat, lng, count] for (lat, lng), count in grid.items()])
+    max_density = max(grid.values()) if grid else 1
+
+    # Fixed HK center
     hk_center = json.dumps([22.36, 114.11])
 
     district_labels = json.dumps(sorted(stats["districts"].keys(), key=lambda d: stats["districts"][d], reverse=True))
@@ -270,7 +279,6 @@ def generate_html(alerts, stats, meta):
 <title>走鬼 Ghost Sweep Dashboard</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
 * {{ margin: 0; padding: 0; box-sizing: border-box; }}
@@ -360,30 +368,34 @@ td.num {{ text-align: right; font-weight: bold; color: #f39c12; }}
 </div>
 
 <script>
-// Heatmap — fixed center on HK, zoom 11 shows full territory
+// Heatmap — using native Leaflet CircleMarkers (no canvas sync issues)
 setTimeout(function() {{
   const map = L.map('heatmap').setView({hk_center}, 11);
   L.tileLayer('https://{{s}}.basemaps.cartocdn.com/dark_all/{{z}}/{{x}}/{{y}}{{r}}.png', {{
     attribution: '&copy; OSM &copy; CARTO', subdomains: 'abcd', maxZoom: 19
   }}).addTo(map);
-  const heat = L.heatLayer({heatmap_points}, {{
-    radius: 18, blur: 22, maxZoom: 14, minOpacity: 0.3, max: 5,
-    gradient: {{0.1:'#0000ff', 0.3:'#00ffff', 0.5:'#00ff00', 0.7:'#ffff00', 0.9:'#ff8800', 1.0:'#ff0000'}}
-  }}).addTo(map);
-  // Fix leaflet-heat canvas clipping: override _reset to use padded canvas
-  const origReset = heat._reset.bind(heat);
-  heat._reset = function() {{
-    const size = heat._map.getSize();
-    const pad = 600; // extra pixels on each side — allows ~600px pan without clipping
-    const topLeft = heat._map.containerPointToLayerPoint([-pad, -pad]);
-    L.DomUtil.setPosition(heat._canvas, topLeft);
-    const w = size.x + pad * 2;
-    const h = size.y + pad * 2;
-    if (heat._heat._width !== w) heat._canvas.width = heat._heat._width = w;
-    if (heat._heat._height !== h) heat._canvas.height = heat._heat._height = h;
-    heat._redraw();
-  }};
-  heat._reset();
+
+  // Grid-based density circles — each cell is ~500m, color/size by density
+  const cells = {grid_cells};
+  const maxD = {max_density};
+  function getColor(d) {{
+    const t = Math.min(d / Math.max(maxD * 0.6, 1), 1);
+    if (t < 0.25) return '#0066ff';
+    if (t < 0.5) return '#00cccc';
+    if (t < 0.75) return '#ffcc00';
+    return '#ff3300';
+  }}
+  cells.forEach(function(c) {{
+    const intensity = Math.min(c[2] / Math.max(maxD * 0.5, 1), 1);
+    L.circleMarker([c[0], c[1]], {{
+      radius: 6 + intensity * 18,
+      fillColor: getColor(c[2]),
+      fillOpacity: 0.25 + intensity * 0.45,
+      color: getColor(c[2]),
+      weight: 0.5,
+      opacity: 0.6
+    }}).bindPopup('<b>' + c[2] + ' sightings</b><br>Grid: ' + c[0].toFixed(3) + ', ' + c[1].toFixed(3)).addTo(map);
+  }});
   map.invalidateSize();
 }}, 200);
 
