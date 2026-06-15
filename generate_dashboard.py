@@ -160,9 +160,22 @@ def compute_stats(alerts):
             heatmap[a["dow"]][a["hour"]] += 1
     stats["heatmap"] = heatmap
 
-    # Top addresses
+    # Top addresses (global, kept for backward compat)
     addr_counts = Counter(a["address"] for a in alerts if a["address"])
     stats["top_addresses"] = addr_counts.most_common(15)
+
+    # Top addresses grouped by district — top 5 per district with last 5 records each
+    by_district_addr = defaultdict(lambda: defaultdict(list))
+    for a in alerts:
+        if a["address"]:
+            by_district_addr[a["district"]][a["address"]].append(a)
+    stats["top_by_district"] = {}
+    for district in sorted(by_district_addr.keys()):
+        addr_entries = []
+        for addr, records in sorted(by_district_addr[district].items(), key=lambda x: len(x[1]), reverse=True)[:5]:
+            recent = sorted([r for r in records if r.get("dt")], key=lambda r: r["dt"], reverse=True)[:5]
+            addr_entries.append({"address": addr, "count": len(records), "recent": recent})
+        stats["top_by_district"][district] = addr_entries
 
     # Date range
     dates = [a["dt"] for a in alerts if a["dt"]]
@@ -170,9 +183,15 @@ def compute_stats(alerts):
     stats["last_dt"] = max(dates).strftime("%Y-%m-%d %H:%M") if dates else "N/A"
     stats["days_span"] = (max(dates) - min(dates)).days + 1 if len(dates) > 1 else 1
 
-    # Recent alerts
+    # Recent alerts (global)
     sorted_alerts = sorted([a for a in alerts if a["dt"]], key=lambda x: x["dt"], reverse=True)
     stats["recent"] = sorted_alerts[:20]
+
+    # Recent alerts grouped by district
+    recent_by_district = defaultdict(list)
+    for a in sorted_alerts:
+        recent_by_district[a["district"]].append(a)
+    stats["recent_by_district"] = {d: recs[:10] for d, recs in recent_by_district.items()}
 
     return stats
 
@@ -205,17 +224,38 @@ def generate_html(alerts, stats, meta):
                 heatmap_data.append({"x": h, "y": di, "v": val})
     heatmap_json = json.dumps(heatmap_data)
 
-    # Top addresses table
-    addr_rows = ""
-    for addr, count in stats["top_addresses"]:
-        safe_addr = addr.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-        addr_rows += f'<tr><td>{safe_addr}</td><td class="num">{count}</td></tr>\n'
+    # Top addresses by district — HTML
+    addr_by_district_html = ""
+    for district in sorted(stats["top_by_district"].keys()):
+        entries = stats["top_by_district"][district]
+        if not entries:
+            continue
+        region = DISTRICT_STATIONS.get(district, {}).get("region", "")
+        color = REGION_COLORS.get(region, "#999")
+        addr_by_district_html += f'<div class="district-group"><h3 style="color:{color};margin:1rem 0 0.5rem">● {district} <span style="color:#8b949e;font-size:0.8rem">({region})</span></h3>\n'
+        for entry in entries:
+            safe_addr = entry["address"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            addr_by_district_html += f'<details><summary style="cursor:pointer;padding:4px 0"><b>{safe_addr}</b> <span style="color:#f39c12">({entry["count"]} sightings)</span></summary>\n'
+            addr_by_district_html += '<table style="margin:4px 0 8px 1rem"><thead><tr><th>Time</th><th>Upvotes</th></tr></thead><tbody>\n'
+            for r in entry["recent"]:
+                addr_by_district_html += f'<tr><td>{r["create_dt"]}</td><td>{r.get("upvote", 0)}</td></tr>\n'
+            addr_by_district_html += '</tbody></table></details>\n'
+        addr_by_district_html += '</div>\n'
 
-    # Recent alerts
-    recent_rows = ""
-    for a in stats["recent"]:
-        safe_addr = a["address"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-        recent_rows += f'<tr><td>{a["create_dt"]}</td><td>{a["district"]}</td><td>{safe_addr}</td></tr>\n'
+    # Recent alerts grouped by district — HTML
+    recent_by_district_html = ""
+    for district in sorted(stats["recent_by_district"].keys()):
+        records = stats["recent_by_district"][district]
+        if not records:
+            continue
+        region = DISTRICT_STATIONS.get(district, {}).get("region", "")
+        color = REGION_COLORS.get(region, "#999")
+        recent_by_district_html += f'<h3 style="color:{color};margin:1rem 0 0.5rem">● {district} <span style="color:#8b949e;font-size:0.8rem">({region})</span></h3>\n'
+        recent_by_district_html += '<table><thead><tr><th>Time</th><th>Address</th></tr></thead><tbody>\n'
+        for a in records:
+            safe_addr = a["address"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            recent_by_district_html += f'<tr><td style="white-space:nowrap">{a["create_dt"]}</td><td>{safe_addr}</td></tr>\n'
+        recent_by_district_html += '</tbody></table>\n'
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M UTC")
 
@@ -305,19 +345,13 @@ td.num {{ text-align: right; font-weight: bold; color: #f39c12; }}
   </div>
 
   <div class="card">
-    <h2>Top Hotspot Addresses</h2>
-    <table>
-      <thead><tr><th>Address</th><th style="text-align:right">Count</th></tr></thead>
-      <tbody>{addr_rows}</tbody>
-    </table>
+    <h2>Top Hotspot Addresses by District</h2>
+    <div style="max-height:500px;overflow-y:auto">{addr_by_district_html}</div>
   </div>
 
   <div class="card">
-    <h2>Latest Alerts</h2>
-    <table>
-      <thead><tr><th>Time</th><th>District</th><th>Address</th></tr></thead>
-      <tbody>{recent_rows}</tbody>
-    </table>
+    <h2>Latest Alerts by District</h2>
+    <div style="max-height:500px;overflow-y:auto">{recent_by_district_html}</div>
   </div>
 
 </div>
