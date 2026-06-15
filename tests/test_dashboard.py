@@ -1,73 +1,69 @@
-# tests/test_dashboard.py
-"""Tests for dashboard generator compute_stats and generate_html."""
+"""Tests for generate_dashboard.py — popup content."""
+import json
+import os
+import sys
+import tempfile
 
 import pytest
-from generate_dashboard import compute_stats, deduplicate_alerts
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from generate_dashboard import load_data, compute_stats, generate_html
 
 
-def _make_alerts():
-    """Create test alerts across multiple districts."""
-    from datetime import datetime
-    base = [
-        {"id": "1", "lat": 22.30, "lng": 114.17, "address": "Addr A1", "district": "Yau Tsim", "region": "Kowloon West",
-         "create_dt": "2026-06-13 10:00:00", "dt": datetime(2026, 6, 13, 10, 0), "hour": 10, "dow": "Saturday", "upvote": 1, "downvote": 0, "count": 1},
-        {"id": "2", "lat": 22.30, "lng": 114.17, "address": "Addr A1", "district": "Yau Tsim", "region": "Kowloon West",
-         "create_dt": "2026-06-13 11:00:00", "dt": datetime(2026, 6, 13, 11, 0), "hour": 11, "dow": "Saturday", "upvote": 0, "downvote": 0, "count": 1},
-        {"id": "3", "lat": 22.30, "lng": 114.17, "address": "Addr A2", "district": "Yau Tsim", "region": "Kowloon West",
-         "create_dt": "2026-06-13 12:00:00", "dt": datetime(2026, 6, 13, 12, 0), "hour": 12, "dow": "Saturday", "upvote": 2, "downvote": 0, "count": 1},
-        {"id": "4", "lat": 22.45, "lng": 114.03, "address": "Addr B1", "district": "Yuen Long", "region": "New Territories North",
-         "create_dt": "2026-06-13 09:00:00", "dt": datetime(2026, 6, 13, 9, 0), "hour": 9, "dow": "Saturday", "upvote": 0, "downvote": 0, "count": 1},
-        {"id": "5", "lat": 22.45, "lng": 114.03, "address": "Addr B1", "district": "Yuen Long", "region": "New Territories North",
-         "create_dt": "2026-06-13 10:30:00", "dt": datetime(2026, 6, 13, 10, 30), "hour": 10, "dow": "Saturday", "upvote": 0, "downvote": 0, "count": 1},
-        {"id": "6", "lat": 22.45, "lng": 114.03, "address": "Addr B2", "district": "Yuen Long", "region": "New Territories North",
-         "create_dt": "2026-06-14 08:00:00", "dt": datetime(2026, 6, 14, 8, 0), "hour": 8, "dow": "Sunday", "upvote": 3, "downvote": 0, "count": 1},
-    ]
-    return base
+@pytest.fixture
+def sample_json(tmp_path):
+    """Create a minimal ghost_alerts.json and return its path."""
+    data = {
+        "alerts": {
+            "1001": {
+                "lat": "22.335",
+                "lng": "114.165",
+                "address": "Park In Street, Kowloon City",
+                "create_dt": "2025-06-10 14:30:00",
+                "upvote": "3",
+                "downvote": "0",
+            },
+            "1002": {
+                "lat": "22.336",
+                "lng": "114.166",
+                "address": "Lung Kong Road, Kowloon City",
+                "create_dt": "2025-06-10 15:45:00",
+                "upvote": "1",
+                "downvote": "0",
+            },
+        },
+        "meta": {},
+    }
+    path = tmp_path / "alerts.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    return str(path)
 
 
-def test_top_addresses_grouped_by_district():
-    """Top hotspot addresses should be grouped by district."""
-    alerts = _make_alerts()
+def _generate(sample_json):
+    alerts, meta = load_data(sample_json)
     stats = compute_stats(alerts)
-    assert "top_by_district" in stats
-    assert "Yau Tsim" in stats["top_by_district"]
-    assert "Yuen Long" in stats["top_by_district"]
+    return generate_html(alerts, stats, meta)
 
 
-def test_top_addresses_limited_to_5_per_district():
-    """Each district should have at most 5 top addresses."""
-    alerts = _make_alerts()
-    stats = compute_stats(alerts)
-    for district, addrs in stats["top_by_district"].items():
-        assert len(addrs) <= 5
+class TestPopupContent:
+    """Popups on the map must show event address and time."""
 
+    def test_popup_contains_address(self, sample_json):
+        html = _generate(sample_json)
+        assert "Park In Street" in html, "Popup should contain the alert address"
 
-def test_top_addresses_include_recent_records():
-    """Each top address should include up to 5 recent activity records."""
-    alerts = _make_alerts()
-    stats = compute_stats(alerts)
-    for district, addrs in stats["top_by_district"].items():
-        for entry in addrs:
-            assert "address" in entry
-            assert "count" in entry
-            assert "recent" in entry
-            assert len(entry["recent"]) <= 5
+    def test_popup_contains_time(self, sample_json):
+        html = _generate(sample_json)
+        assert "14:30" in html, "Popup should contain the alert time"
 
+    def test_popup_contains_second_address(self, sample_json):
+        html = _generate(sample_json)
+        assert "Lung Kong Road" in html, "Popup should show addresses for all alerts"
 
-def test_recent_alerts_grouped_by_district():
-    """Latest alerts should be grouped by district."""
-    alerts = _make_alerts()
-    stats = compute_stats(alerts)
-    assert "recent_by_district" in stats
-    assert isinstance(stats["recent_by_district"], dict)
-    assert "Yau Tsim" in stats["recent_by_district"]
-    assert "Yuen Long" in stats["recent_by_district"]
-
-
-def test_recent_by_district_sorted_by_time():
-    """Alerts within each district should be sorted most recent first."""
-    alerts = _make_alerts()
-    stats = compute_stats(alerts)
-    for district, records in stats["recent_by_district"].items():
-        for i in range(len(records) - 1):
-            assert records[i]["create_dt"] >= records[i + 1]["create_dt"]
+    def test_marker_data_has_address_and_time(self, sample_json):
+        """The JS marker data array should carry address and create_dt fields."""
+        html = _generate(sample_json)
+        # Find the JSON array passed to JS for markers
+        # It should contain objects with 'address' and 'create_dt' keys
+        assert '"address"' in html, "Marker data should include address field"
+        assert '"create_dt"' in html, "Marker data should include create_dt field"

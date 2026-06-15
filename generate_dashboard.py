@@ -93,50 +93,6 @@ def load_data(json_path):
     return alerts, data.get("meta", {})
 
 
-def deduplicate_alerts(alerts):
-    """Consolidate near-duplicate alerts (within 20m and 15min) into single events."""
-    if not alerts:
-        return alerts
-    sorted_alerts = sorted(alerts, key=lambda a: a["create_dt"])
-    clusters = []
-    for alert in sorted_alerts:
-        merged = False
-        for cluster in clusters:
-            # Check time distance
-            if alert["dt"] and cluster["latest_dt"]:
-                time_diff = (alert["dt"] - cluster["latest_dt"]).total_seconds() / 60.0
-                if time_diff > 15:
-                    continue
-            else:
-                continue
-            # Check spatial distance
-            dist = _haversine_m(alert["lat"], alert["lng"], cluster["lat"], cluster["lng"])
-            if dist <= 20:
-                # Merge: update centroid, keep best address
-                n = cluster["count"]
-                cluster["lat"] = (cluster["lat"] * n + alert["lat"]) / (n + 1)
-                cluster["lng"] = (cluster["lng"] * n + alert["lng"]) / (n + 1)
-                cluster["count"] += 1
-                cluster["latest_dt"] = alert["dt"]
-                if alert["upvote"] > cluster.get("upvote", 0):
-                    cluster["address"] = alert["address"]
-                    cluster["upvote"] = alert["upvote"]
-                merged = True
-                break
-        if not merged:
-            clusters.append({
-                "lat": alert["lat"], "lng": alert["lng"],
-                "address": alert["address"],
-                "district": alert["district"], "region": alert["region"],
-                "create_dt": alert["create_dt"], "dt": alert["dt"],
-                "latest_dt": alert["dt"],
-                "hour": alert["hour"], "dow": alert["dow"],
-                "upvote": alert["upvote"], "downvote": alert["downvote"],
-                "count": 1, "id": alert["id"],
-            })
-    return clusters
-
-
 def compute_stats(alerts):
     stats = {}
     stats["total"] = len(alerts)
@@ -160,22 +116,9 @@ def compute_stats(alerts):
             heatmap[a["dow"]][a["hour"]] += 1
     stats["heatmap"] = heatmap
 
-    # Top addresses (global, kept for backward compat)
+    # Top addresses
     addr_counts = Counter(a["address"] for a in alerts if a["address"])
     stats["top_addresses"] = addr_counts.most_common(15)
-
-    # Top addresses grouped by district — top 5 per district with last 5 records each
-    by_district_addr = defaultdict(lambda: defaultdict(list))
-    for a in alerts:
-        if a["address"]:
-            by_district_addr[a["district"]][a["address"]].append(a)
-    stats["top_by_district"] = {}
-    for district in sorted(by_district_addr.keys()):
-        addr_entries = []
-        for addr, records in sorted(by_district_addr[district].items(), key=lambda x: len(x[1]), reverse=True)[:5]:
-            recent = sorted([r for r in records if r.get("dt")], key=lambda r: r["dt"], reverse=True)[:5]
-            addr_entries.append({"address": addr, "count": len(records), "recent": recent})
-        stats["top_by_district"][district] = addr_entries
 
     # Date range
     dates = [a["dt"] for a in alerts if a["dt"]]
@@ -183,34 +126,21 @@ def compute_stats(alerts):
     stats["last_dt"] = max(dates).strftime("%Y-%m-%d %H:%M") if dates else "N/A"
     stats["days_span"] = (max(dates) - min(dates)).days + 1 if len(dates) > 1 else 1
 
-    # Recent alerts (global)
+    # Recent alerts
     sorted_alerts = sorted([a for a in alerts if a["dt"]], key=lambda x: x["dt"], reverse=True)
     stats["recent"] = sorted_alerts[:20]
-
-    # Recent alerts grouped by district
-    recent_by_district = defaultdict(list)
-    for a in sorted_alerts:
-        recent_by_district[a["district"]].append(a)
-    stats["recent_by_district"] = {d: recs[:10] for d, recs in recent_by_district.items()}
 
     return stats
 
 
 def generate_html(alerts, stats, meta):
-    # Prepare data for JS — aggregate to grid cells for heatmap density
-    heatmap_points = json.dumps([[a["lat"], a["lng"], a.get("count", 1)] for a in alerts])
-
-    # Grid-based density for circle markers (0.005° grid = ~500m)
-    grid = {}
-    for a in alerts:
-        key = (round(a["lat"] / 0.005) * 0.005, round(a["lng"] / 0.005) * 0.005)
-        grid[key] = grid.get(key, 0) + a.get("count", 1)
-    # Convert to JSON array: [lat, lng, count]
-    grid_cells = json.dumps([[lat, lng, count] for (lat, lng), count in grid.items()])
-    max_density = max(grid.values()) if grid else 1
-
-    # Fixed HK center
-    hk_center = json.dumps([22.36, 114.11])
+    # Prepare data for JS — each marker carries address + time for popups
+    marker_data = json.dumps([
+        {"lat": a["lat"], "lng": a["lng"],
+         "address": a["address"], "create_dt": a["create_dt"],
+         "district": a["district"], "region": a["region"]}
+        for a in alerts
+    ])
 
     district_labels = json.dumps(sorted(stats["districts"].keys(), key=lambda d: stats["districts"][d], reverse=True))
     district_values = json.dumps([stats["districts"][d] for d in sorted(stats["districts"].keys(), key=lambda d: stats["districts"][d], reverse=True)])
@@ -236,38 +166,17 @@ def generate_html(alerts, stats, meta):
                 heatmap_data.append({"x": h, "y": di, "v": val})
     heatmap_json = json.dumps(heatmap_data)
 
-    # Top addresses by district — HTML
-    addr_by_district_html = ""
-    for district in sorted(stats["top_by_district"].keys()):
-        entries = stats["top_by_district"][district]
-        if not entries:
-            continue
-        region = DISTRICT_STATIONS.get(district, {}).get("region", "")
-        color = REGION_COLORS.get(region, "#999")
-        addr_by_district_html += f'<div class="district-group"><h3 style="color:{color};margin:1rem 0 0.5rem">● {district} <span style="color:#8b949e;font-size:0.8rem">({region})</span></h3>\n'
-        for entry in entries:
-            safe_addr = entry["address"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            addr_by_district_html += f'<details><summary style="cursor:pointer;padding:4px 0"><b>{safe_addr}</b> <span style="color:#f39c12">({entry["count"]} sightings)</span></summary>\n'
-            addr_by_district_html += '<table style="margin:4px 0 8px 1rem"><thead><tr><th>Time</th><th>Upvotes</th></tr></thead><tbody>\n'
-            for r in entry["recent"]:
-                addr_by_district_html += f'<tr><td>{r["create_dt"]}</td><td>{r.get("upvote", 0)}</td></tr>\n'
-            addr_by_district_html += '</tbody></table></details>\n'
-        addr_by_district_html += '</div>\n'
+    # Top addresses table
+    addr_rows = ""
+    for addr, count in stats["top_addresses"]:
+        safe_addr = addr.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        addr_rows += f'<tr><td>{safe_addr}</td><td class="num">{count}</td></tr>\n'
 
-    # Recent alerts grouped by district — HTML
-    recent_by_district_html = ""
-    for district in sorted(stats["recent_by_district"].keys()):
-        records = stats["recent_by_district"][district]
-        if not records:
-            continue
-        region = DISTRICT_STATIONS.get(district, {}).get("region", "")
-        color = REGION_COLORS.get(region, "#999")
-        recent_by_district_html += f'<h3 style="color:{color};margin:1rem 0 0.5rem">● {district} <span style="color:#8b949e;font-size:0.8rem">({region})</span></h3>\n'
-        recent_by_district_html += '<table><thead><tr><th>Time</th><th>Address</th></tr></thead><tbody>\n'
-        for a in records:
-            safe_addr = a["address"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            recent_by_district_html += f'<tr><td style="white-space:nowrap">{a["create_dt"]}</td><td>{safe_addr}</td></tr>\n'
-        recent_by_district_html += '</tbody></table>\n'
+    # Recent alerts
+    recent_rows = ""
+    for a in stats["recent"]:
+        safe_addr = a["address"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        recent_rows += f'<tr><td>{a["create_dt"]}</td><td>{a["district"]}</td><td>{safe_addr}</td></tr>\n'
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M UTC")
 
@@ -279,6 +188,7 @@ def generate_html(alerts, stats, meta):
 <title>走鬼 Ghost Sweep Dashboard</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
 * {{ margin: 0; padding: 0; box-sizing: border-box; }}
@@ -356,48 +266,42 @@ td.num {{ text-align: right; font-weight: bold; color: #f39c12; }}
   </div>
 
   <div class="card">
-    <h2>Top Hotspot Addresses by District</h2>
-    <div style="max-height:500px;overflow-y:auto">{addr_by_district_html}</div>
+    <h2>Top Hotspot Addresses</h2>
+    <table>
+      <thead><tr><th>Address</th><th style="text-align:right">Count</th></tr></thead>
+      <tbody>{addr_rows}</tbody>
+    </table>
   </div>
 
   <div class="card">
-    <h2>Latest Alerts by District</h2>
-    <div style="max-height:500px;overflow-y:auto">{recent_by_district_html}</div>
+    <h2>Latest Alerts</h2>
+    <table>
+      <thead><tr><th>Time</th><th>District</th><th>Address</th></tr></thead>
+      <tbody>{recent_rows}</tbody>
+    </table>
   </div>
 
 </div>
 
 <script>
-// Heatmap — using native Leaflet CircleMarkers (no canvas sync issues)
-setTimeout(function() {{
-  const map = L.map('heatmap').setView({hk_center}, 11);
-  L.tileLayer('https://{{s}}.basemaps.cartocdn.com/dark_all/{{z}}/{{x}}/{{y}}{{r}}.png', {{
-    attribution: '&copy; OSM &copy; CARTO', subdomains: 'abcd', maxZoom: 19
-  }}).addTo(map);
+// Marker map with popups
+const map = L.map('heatmap').setView([22.35, 114.12], 11);
+L.tileLayer('https://{{s}}.basemaps.cartocdn.com/dark_all/{{z}}/{{x}}/{{y}}{{r}}.png', {{
+  attribution: '&copy; OSM &copy; CARTO', subdomains: 'abcd', maxZoom: 19
+}}).addTo(map);
 
-  // Grid-based density circles — each cell is ~500m, color/size by density
-  const cells = {grid_cells};
-  const maxD = {max_density};
-  function getColor(d) {{
-    const t = Math.min(d / Math.max(maxD * 0.6, 1), 1);
-    if (t < 0.25) return '#0066ff';
-    if (t < 0.5) return '#00cccc';
-    if (t < 0.75) return '#ffcc00';
-    return '#ff3300';
-  }}
-  cells.forEach(function(c) {{
-    const intensity = Math.min(c[2] / Math.max(maxD * 0.5, 1), 1);
-    L.circleMarker([c[0], c[1]], {{
-      radius: 6 + intensity * 18,
-      fillColor: getColor(c[2]),
-      fillOpacity: 0.25 + intensity * 0.45,
-      color: getColor(c[2]),
-      weight: 0.5,
-      opacity: 0.6
-    }}).bindPopup('<b>' + c[2] + ' sightings</b><br>Grid: ' + c[0].toFixed(3) + ', ' + c[1].toFixed(3)).addTo(map);
-  }});
-  map.invalidateSize();
-}}, 200);
+const regionColor = {json.dumps(REGION_COLORS)};
+const markers = {marker_data};
+markers.forEach(m => {{
+  const color = regionColor[m.region] || '#999';
+  L.circleMarker([m.lat, m.lng], {{
+    radius: 6, color: color, fillColor: color, fillOpacity: 0.7, weight: 1
+  }}).bindPopup(
+    '<b>' + (m.address || 'Unknown') + '</b><br>' +
+    '<span style=\"color:#8b949e\">' + (m.create_dt || '') + '</span><br>' +
+    '<span style=\"font-size:0.85em\">' + (m.district || '') + '</span>'
+  ).addTo(map);
+}});
 
 // District bar chart
 new Chart(document.getElementById('districtChart'), {{
@@ -449,10 +353,7 @@ def main():
 
     print(f"Loading data from {json_path}...")
     alerts, meta = load_data(json_path)
-    print(f"  {len(alerts)} valid raw alerts")
-
-    alerts = deduplicate_alerts(alerts)
-    print(f"  {len(alerts)} events after consolidation (20m/15min)")
+    print(f"  {len(alerts)} valid alerts")
 
     stats = compute_stats(alerts)
     print(f"  {len(stats['districts'])} districts, {len(stats['regions'])} regions")
