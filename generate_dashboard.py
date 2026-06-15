@@ -93,6 +93,50 @@ def load_data(json_path):
     return alerts, data.get("meta", {})
 
 
+def deduplicate_alerts(alerts):
+    """Consolidate near-duplicate alerts (within 20m and 15min) into single events."""
+    if not alerts:
+        return alerts
+    sorted_alerts = sorted(alerts, key=lambda a: a["create_dt"])
+    clusters = []
+    for alert in sorted_alerts:
+        merged = False
+        for cluster in clusters:
+            # Check time distance
+            if alert["dt"] and cluster["latest_dt"]:
+                time_diff = (alert["dt"] - cluster["latest_dt"]).total_seconds() / 60.0
+                if time_diff > 15:
+                    continue
+            else:
+                continue
+            # Check spatial distance
+            dist = _haversine_m(alert["lat"], alert["lng"], cluster["lat"], cluster["lng"])
+            if dist <= 20:
+                # Merge: update centroid, keep best address
+                n = cluster["count"]
+                cluster["lat"] = (cluster["lat"] * n + alert["lat"]) / (n + 1)
+                cluster["lng"] = (cluster["lng"] * n + alert["lng"]) / (n + 1)
+                cluster["count"] += 1
+                cluster["latest_dt"] = alert["dt"]
+                if alert["upvote"] > cluster.get("upvote", 0):
+                    cluster["address"] = alert["address"]
+                    cluster["upvote"] = alert["upvote"]
+                merged = True
+                break
+        if not merged:
+            clusters.append({
+                "lat": alert["lat"], "lng": alert["lng"],
+                "address": alert["address"],
+                "district": alert["district"], "region": alert["region"],
+                "create_dt": alert["create_dt"], "dt": alert["dt"],
+                "latest_dt": alert["dt"],
+                "hour": alert["hour"], "dow": alert["dow"],
+                "upvote": alert["upvote"], "downvote": alert["downvote"],
+                "count": 1, "id": alert["id"],
+            })
+    return clusters
+
+
 def compute_stats(alerts):
     stats = {}
     stats["total"] = len(alerts)
@@ -279,12 +323,16 @@ td.num {{ text-align: right; font-weight: bold; color: #f39c12; }}
 </div>
 
 <script>
-// Heatmap
-const map = L.map('heatmap').setView([22.35, 114.12], 11);
-L.tileLayer('https://{{s}}.basemaps.cartocdn.com/dark_all/{{z}}/{{x}}/{{y}}{{r}}.png', {{
-  attribution: '&copy; OSM &copy; CARTO', subdomains: 'abcd', maxZoom: 19
-}}).addTo(map);
-L.heatLayer({heatmap_points}, {{ radius: 18, blur: 20, maxZoom: 15, gradient: {{0.2:'blue', 0.4:'lime', 0.6:'yellow', 0.8:'orange', 1:'red'}} }}).addTo(map);
+// Heatmap — use setTimeout to ensure container is sized before init
+setTimeout(function() {{
+  const map = L.map('heatmap').setView([22.35, 114.10], 11);
+  L.tileLayer('https://{{s}}.basemaps.cartocdn.com/dark_all/{{z}}/{{x}}/{{y}}{{r}}.png', {{
+    attribution: '&copy; OSM &copy; CARTO', subdomains: 'abcd', maxZoom: 19
+  }}).addTo(map);
+  L.heatLayer({heatmap_points}, {{ radius: 20, blur: 25, maxZoom: 17, minOpacity: 0.3, gradient: {{0.2:'blue', 0.4:'cyan', 0.6:'lime', 0.8:'yellow', 1:'red'}} }}).addTo(map);
+  // Force map to recalculate size
+  map.invalidateSize();
+}}, 100);
 
 // District bar chart
 new Chart(document.getElementById('districtChart'), {{
@@ -336,7 +384,10 @@ def main():
 
     print(f"Loading data from {json_path}...")
     alerts, meta = load_data(json_path)
-    print(f"  {len(alerts)} valid alerts")
+    print(f"  {len(alerts)} valid raw alerts")
+
+    alerts = deduplicate_alerts(alerts)
+    print(f"  {len(alerts)} events after consolidation (20m/15min)")
 
     stats = compute_stats(alerts)
     print(f"  {len(stats['districts'])} districts, {len(stats['regions'])} regions")
