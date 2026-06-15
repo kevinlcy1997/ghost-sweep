@@ -370,8 +370,20 @@ setTimeout(function() {{
     radius: 18, blur: 22, maxZoom: 14, minOpacity: 0.3, max: 5,
     gradient: {{0.1:'#0000ff', 0.3:'#00ffff', 0.5:'#00ff00', 0.7:'#ffff00', 0.9:'#ff8800', 1.0:'#ff0000'}}
   }}).addTo(map);
-  // Fix: force heatmap canvas redraw on pan/zoom to stay in sync with tiles
-  map.on('moveend zoomend', function() {{ heat.redraw(); }});
+  // Fix leaflet-heat canvas clipping: override _reset to use padded canvas
+  const origReset = heat._reset.bind(heat);
+  heat._reset = function() {{
+    const size = heat._map.getSize();
+    const pad = 600; // extra pixels on each side — allows ~600px pan without clipping
+    const topLeft = heat._map.containerPointToLayerPoint([-pad, -pad]);
+    L.DomUtil.setPosition(heat._canvas, topLeft);
+    const w = size.x + pad * 2;
+    const h = size.y + pad * 2;
+    if (heat._heat._width !== w) heat._canvas.width = heat._heat._width = w;
+    if (heat._heat._height !== h) heat._canvas.height = heat._heat._height = h;
+    heat._redraw();
+  }};
+  heat._reset();
   map.invalidateSize();
 }}, 200);
 
