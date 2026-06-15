@@ -197,8 +197,11 @@ def compute_stats(alerts):
 
 
 def generate_html(alerts, stats, meta):
-    # Prepare data for JS
-    heatmap_points = json.dumps([[a["lat"], a["lng"], 1] for a in alerts])
+    # Prepare data for JS — use count as heatmap weight
+    heatmap_points = json.dumps([[a["lat"], a["lng"], a.get("count", 1)] for a in alerts])
+
+    # Fixed HK bounds — no need to compute, HK is always the same
+    hk_center = json.dumps([22.36, 114.11])
 
     district_labels = json.dumps(sorted(stats["districts"].keys(), key=lambda d: stats["districts"][d], reverse=True))
     district_values = json.dumps([stats["districts"][d] for d in sorted(stats["districts"].keys(), key=lambda d: stats["districts"][d], reverse=True)])
@@ -357,16 +360,18 @@ td.num {{ text-align: right; font-weight: bold; color: #f39c12; }}
 </div>
 
 <script>
-// Heatmap — use setTimeout to ensure container is sized before init
+// Heatmap — fixed center on HK, zoom 11 shows full territory
 setTimeout(function() {{
-  const map = L.map('heatmap').setView([22.35, 114.10], 11);
+  const map = L.map('heatmap').setView({hk_center}, 11);
   L.tileLayer('https://{{s}}.basemaps.cartocdn.com/dark_all/{{z}}/{{x}}/{{y}}{{r}}.png', {{
     attribution: '&copy; OSM &copy; CARTO', subdomains: 'abcd', maxZoom: 19
   }}).addTo(map);
-  L.heatLayer({heatmap_points}, {{ radius: 20, blur: 25, maxZoom: 17, minOpacity: 0.3, gradient: {{0.2:'blue', 0.4:'cyan', 0.6:'lime', 0.8:'yellow', 1:'red'}} }}).addTo(map);
-  // Force map to recalculate size
+  const heat = L.heatLayer({heatmap_points}, {{
+    radius: 18, blur: 22, maxZoom: 14, minOpacity: 0.3, max: 5,
+    gradient: {{0.1:'#0000ff', 0.3:'#00ffff', 0.5:'#00ff00', 0.7:'#ffff00', 0.9:'#ff8800', 1.0:'#ff0000'}}
+  }}).addTo(map);
   map.invalidateSize();
-}}, 100);
+}}, 200);
 
 // District bar chart
 new Chart(document.getElementById('districtChart'), {{
