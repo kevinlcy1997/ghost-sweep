@@ -6,6 +6,7 @@ name: Ghost Sweep Ping (Watchdog)
 on:
   schedule:
     - cron: '15,45 * * * *'  # :15 and :45 past each hour (offset from scrape's :00)
+  workflow_dispatch:          # Allow manual trigger
 
 jobs:
   ping:
