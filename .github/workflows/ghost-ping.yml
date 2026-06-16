@@ -1,0 +1,63 @@
+name: Ghost Sweep Ping (Watchdog)
+
+# Runs every 30 min — checks if scrape ran in the last 90 min.
+# If not, triggers it. Covers gaps from GitHub cron throttling.
+
+on:
+  schedule:
+    - cron: '15,45 * * * *'  # :15 and :45 past each hour (offset from scrape's :00)
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Check last scrape and trigger if stale
+        env:
+          GH_TOKEN: ${{ secrets.GHOST_PAT }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "No GHOST_PAT — cannot check or trigger"
+            exit 0
+          fi
+
+          REPO="${{ github.repository }}"
+          API="https://api.github.com/repos/$REPO"
+
+          # Get the last successful scrape run
+          LAST=$(curl -s \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "$API/actions/workflows/ghost-scrape.yml/runs?status=success&per_page=1" \
+            | python3 -c "import sys,json; r=json.load(sys.stdin); print(r['workflow_runs'][0]['created_at'] if r['workflow_runs'] else '')" 2>/dev/null)
+
+          if [ -z "$LAST" ]; then
+            echo "No successful runs found — triggering scrape"
+            curl -s -X POST \
+              -H "Authorization: token $GH_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "$API/actions/workflows/ghost-scrape.yml/dispatches" \
+              -d '{"ref":"main"}'
+            echo "Triggered"
+            exit 0
+          fi
+
+          # Check if last run is older than 90 minutes
+          LAST_EPOCH=$(date -d "$LAST" +%s)
+          NOW_EPOCH=$(date +%s)
+          AGE_MIN=$(( (NOW_EPOCH - LAST_EPOCH) / 60 ))
+
+          echo "Last successful scrape: $LAST ($AGE_MIN min ago)"
+
+          if [ "$AGE_MIN" -gt 90 ]; then
+            echo "Stale (>90min) — triggering scrape"
+            curl -s -X POST \
+              -H "Authorization: token $GH_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "$API/actions/workflows/ghost-scrape.yml/dispatches" \
+              -d '{"ref":"main"}'
+            echo "Triggered"
+          else
+            echo "Fresh — no action needed"
+          fi

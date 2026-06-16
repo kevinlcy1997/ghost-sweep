@@ -2,14 +2,12 @@ name: Ghost Sweep Data Collection
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  # Every 10 min (GitHub throttles free-tier but still fires more often than */120)
-  workflow_dispatch:        # Manual trigger + self-trigger
-  repository_dispatch:
-    types: [ghost-poll]     # Trigger via API
+    - cron: '0 * * * *'    # Every hour on the hour
+  workflow_dispatch:        # Manual trigger
 
 concurrency:
   group: ghost-scrape
-  cancel-in-progress: false  # Don't cancel running scrapes
+  cancel-in-progress: false
 
 jobs:
   scrape:
@@ -39,27 +37,3 @@ jobs:
           git add ghost_alerts.json docs/index.html
           git diff --staged --quiet || git commit -m "data: poll $(date -u +%Y-%m-%dT%H:%M:%SZ) — $(python -c "import json; d=json.load(open('ghost_alerts.json')); print(d['meta']['total_alerts'])" 2>/dev/null || echo '?') alerts"
           git push
-
-  chain:
-    needs: scrape
-    runs-on: ubuntu-latest
-    timeout-minutes: 8
-    if: success()
-
-    steps:
-      - name: Wait 5 minutes then trigger next run
-        env:
-          GH_TOKEN: ${{ secrets.GHOST_PAT }}
-        run: |
-          if [ -z "$GH_TOKEN" ]; then
-            echo "No GHOST_PAT secret set — relying on cron schedule"
-            exit 0
-          fi
-          echo "Waiting 5 minutes before triggering next run..."
-          sleep 300
-          curl -s -X POST \
-            -H "Authorization: token $GH_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/ghost-scrape.yml/dispatches" \
-            -d '{"ref":"main"}'
-          echo "Next run triggered"
