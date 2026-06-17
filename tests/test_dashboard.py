@@ -67,3 +67,25 @@ class TestPopupContent:
         # It should contain objects with 'address' and 'create_dt' keys
         assert '"address"' in html, "Marker data should include address field"
         assert '"create_dt"' in html, "Marker data should include create_dt field"
+
+
+class TestMyLocation:
+    """Dashboard must have a 'My Location' button that uses browser geolocation."""
+
+    def test_locate_button_exists(self, sample_json):
+        """There should be a locate-me button/control on the map."""
+        html = _generate(sample_json)
+        assert "locateBtn" in html or "locate-btn" in html, \
+            "Dashboard should have a locate button element"
+
+    def test_geolocation_api_used(self, sample_json):
+        """The JS must call navigator.geolocation to get user position."""
+        html = _generate(sample_json)
+        assert "navigator.geolocation" in html, \
+            "Dashboard should use the Geolocation API"
+
+    def test_user_marker_added_to_map(self, sample_json):
+        """A marker should be placed at the user's location on the map."""
+        html = _generate(sample_json)
+        assert "flyTo" in html, \
+            "Map should flyTo user location when located"

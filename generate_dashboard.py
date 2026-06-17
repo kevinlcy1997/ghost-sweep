@@ -290,6 +290,35 @@ L.tileLayer('https://{{s}}.basemaps.cartocdn.com/dark_all/{{z}}/{{x}}/{{y}}{{r}}
   attribution: '&copy; OSM &copy; CARTO', subdomains: 'abcd', maxZoom: 19
 }}).addTo(map);
 
+// My Location button
+const locateBtn = document.createElement('button');
+locateBtn.id = 'locateBtn';
+locateBtn.innerHTML = '📍 My Location';
+locateBtn.style.cssText = 'position:absolute;top:10px;right:10px;z-index:1000;padding:8px 14px;background:#f39c12;color:#000;border:none;border-radius:6px;font-weight:bold;cursor:pointer;font-size:0.85rem;';
+document.getElementById('heatmap').appendChild(locateBtn);
+
+let userMarker = null;
+locateBtn.addEventListener('click', function() {{
+  if (!navigator.geolocation) {{
+    alert('Geolocation not supported by your browser');
+    return;
+  }}
+  locateBtn.innerHTML = '⏳ Locating...';
+  navigator.geolocation.getCurrentPosition(function(pos) {{
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    if (userMarker) map.removeLayer(userMarker);
+    userMarker = L.circleMarker([lat, lng], {{
+      radius: 10, color: '#00ff88', fillColor: '#00ff88', fillOpacity: 0.9, weight: 3
+    }}).bindPopup('<b>You are here</b>').addTo(map).openPopup();
+    map.flyTo([lat, lng], 15);
+    locateBtn.innerHTML = '📍 My Location';
+  }}, function(err) {{
+    alert('Unable to get location: ' + err.message);
+    locateBtn.innerHTML = '📍 My Location';
+  }}, {{ enableHighAccuracy: true, timeout: 10000 }});
+}});
+
 const regionColor = {json.dumps(REGION_COLORS)};
 const markers = {marker_data};
 markers.forEach(m => {{
