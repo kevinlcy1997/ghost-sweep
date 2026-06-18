@@ -91,11 +91,8 @@ If the overlay proves useful, a one-off historical import can be added later wit
 Weather should be added as one small helper integrated into the existing refresh path.
 
 ```text
-ghost_listener.py refresh
-    -> existing alert collection
-    -> current weather fetch
-    -> store district weather samples in SQLite
 generate_dashboard.py
+   -> optional weather sync
     -> read consolidated alerts + stored weather samples
     -> render one-district weather overlay
 ```
@@ -111,7 +108,6 @@ The dashboard reads only local data. It never calls HKO directly.
 | `ghost_weather.py` | Fetch HKO weather/warning payloads and turn them into district weather samples |
 | `ghost_db.py` | Add weather sample table and insert/query methods |
 | `ghost_districts.py` | Extend district metadata with weather station / rainfall district mapping |
-| `ghost_listener.py` | Store one weather sample batch during each refresh cycle |
 | `generate_dashboard.py` | Add Weather Effects section and query/render stored samples |
 | `tests/test_ghost_weather.py` | Weather fetch/normalize/mapping tests |
 | `tests/test_dashboard.py` | Dashboard weather section tests |
@@ -197,15 +193,16 @@ Do not infer or fill missing weather values in v1.
 
 ## 9. Ingestion and Refresh Flow
 
-Weather collection runs inside the existing Ghost Sweep refresh.
+Weather collection runs inside the existing dashboard generation step, which already executes each refresh cycle.
 
 Per refresh:
 
 1. collect / update alert data as today
-2. fetch current HKO weather and warning payloads
-3. convert them into district-level weather sample rows
-4. upsert those rows into `weather_samples`
-5. generate dashboard output from alerts + stored weather samples
+2. run `generate_dashboard.py`
+3. fetch current HKO weather and warning payloads
+4. convert them into district-level weather sample rows
+5. upsert those rows into `weather_samples`
+6. generate dashboard output from alerts + stored weather samples
 
 This keeps operations boring and avoids new schedulers, jobs, or workflows.
 
@@ -304,7 +301,7 @@ Recommended order:
 1. Extend `ghost_db.py` with `weather_samples` storage.
 2. Add district weather mapping data to `ghost_districts.py`.
 3. Add `ghost_weather.py` to fetch and flatten HKO payloads into district rows.
-4. Call weather sync from `ghost_listener.py` during normal refresh.
+4. Call weather sync from `generate_dashboard.py` before rendering.
 5. Add Weather Effects controls and chart to `generate_dashboard.py`.
 
 This is the shortest path that delivers user-visible value, stores reusable data, and avoids building raw weather pipelines we do not yet need.
