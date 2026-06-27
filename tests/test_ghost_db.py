@@ -86,3 +86,49 @@ def test_insert_poll_cycle():
         db.close()
     finally:
         os.unlink(db_path)
+
+
+def test_count_days_collected_falls_back_to_sighting_days():
+    """Imported JSON-only sightings should count toward training coverage."""
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
+        db_path = f.name
+    db = None
+    try:
+        db = GhostDB(db_path)
+        db.insert_sightings([
+            {
+                "alert_record_id": "a1",
+                "lat": 22.30,
+                "lng": 114.17,
+                "address": "A",
+                "alert_type": "alert",
+                "create_dt": "2026-06-13 10:00:00",
+                "upvote": 0,
+                "downvote": 0,
+            },
+            {
+                "alert_record_id": "a2",
+                "lat": 22.30,
+                "lng": 114.17,
+                "address": "B",
+                "alert_type": "alert",
+                "create_dt": "2026-06-14 10:00:00",
+                "upvote": 0,
+                "downvote": 0,
+            },
+            {
+                "alert_record_id": "a3",
+                "lat": 22.30,
+                "lng": 114.17,
+                "address": "C",
+                "alert_type": "alert",
+                "create_dt": "2026-06-15 10:00:00",
+                "upvote": 0,
+                "downvote": 0,
+            },
+        ])
+        assert db.count_days_collected() == 3
+    finally:
+        if db is not None:
+            db.close()
+        os.unlink(db_path)

@@ -154,11 +154,15 @@ class GhostDB:
         return [dict(row) for row in rows]
 
     def count_days_collected(self) -> int:
-        """Count distinct days with at least one poll cycle."""
-        row = self._conn.execute(
-            "SELECT COUNT(DISTINCT date(timestamp)) FROM poll_cycles"
-        ).fetchone()
-        return row[0] if row else 0
+        """Count distinct covered days from poll cycles or imported sightings."""
+        row = self._conn.execute("""
+            SELECT MAX(day_count) FROM (
+                SELECT COUNT(DISTINCT date(timestamp)) AS day_count FROM poll_cycles
+                UNION ALL
+                SELECT COUNT(DISTINCT substr(create_dt, 1, 10)) AS day_count FROM sightings
+            )
+        """).fetchone()
+        return row[0] if row and row[0] is not None else 0
 
     def migrate_from_json(self, json_path: str) -> int:
         """Import alerts from ghost_alerts.json into sightings table."""

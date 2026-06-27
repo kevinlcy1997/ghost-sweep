@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ghost Sweep ML Run Report - 2026-06-27</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #141b34;
+      --panel-2: #1b2447;
+      --text: #eaf0ff;
+      --muted: #aab7dd;
+      --line: #2d3968;
+      --good: #34d399;
+      --warn: #fbbf24;
+      --accent: #60a5fa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 20px 56px;
+    }
+
+    h1, h2, h3 { margin: 0 0 12px; }
+
+    h1 { font-size: 32px; }
+    h2 { font-size: 22px; margin-top: 28px; }
+    h3 { font-size: 16px; color: var(--muted); }
+
+    p, li { color: var(--muted); }
+
+    .hero {
+      background: linear-gradient(135deg, #17234d 0%, #10172f 100%);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .hero .status {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--good);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      margin-top: 20px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .card .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .card .value {
+      margin-top: 8px;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .two-col {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1.2fr 0.8fr;
+      margin-top: 16px;
+    }
+
+    .section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      color: var(--text);
+      background: var(--panel-2);
+    }
+
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .good { color: var(--good); font-weight: 700; }
+    .warn { color: var(--warn); font-weight: 700; }
+    .mono {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    ul {
+      margin: 8px 0 0 18px;
+      padding: 0;
+    }
+
+    .footer {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 840px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="status">Run completed</div>
+      <h1>Ghost Sweep ML Run Report</h1>
+      <h3>Report date: 2026-06-27</h3>
+      <p>
+        This run synced the refreshed JSON snapshot into SQLite, rebuilt consolidated events,
+        fixed the stale training gate, and ran exploratory feature/model selection plus evaluation.
+      </p>
+      <div class="grid">
+        <div class="card">
+          <div class="label">JSON last poll</div>
+          <div class="value">00:48</div>
+        </div>
+        <div class="card">
+          <div class="label">Raw sightings</div>
+          <div class="value">6,829</div>
+        </div>
+        <div class="card">
+          <div class="label">Cleaned events</div>
+          <div class="value">5,492</div>
+        </div>
+        <div class="card">
+          <div class="label">Covered days</div>
+          <div class="value">15</div>
+        </div>
+        <div class="card">
+          <div class="label">Active cells</div>
+          <div class="value">465</div>
+        </div>
+        <div class="card">
+          <div class="label">Training gate</div>
+          <div class="value good">READY</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="two-col">
+      <section class="section">
+        <h2>Data sync summary</h2>
+        <table>
+          <tr><th>Item</th><th>Value</th></tr>
+          <tr><td>JSON snapshot file</td><td class="mono">ghost_alerts.json</td></tr>
+          <tr><td>JSON meta total_alerts</td><td class="num">6,847</td></tr>
+          <tr><td>Unique alert objects stored</td><td class="num">6,829</td></tr>
+          <tr><td>Poll cycles</td><td class="num">630</td></tr>
+          <tr><td>Sightings date range</td><td class="mono">2026-06-13 09:58:34 -> 2026-06-27 00:37:07</td></tr>
+          <tr><td>Events date range</td><td class="mono">2026-06-13 09:58:34 -> 2026-06-27 00:37:07</td></tr>
+          <tr><td>JSON last_poll</td><td class="mono">2026-06-27T00:48:31.413088+08:00</td></tr>
+        </table>
+        <p>
+          Note: <span class="mono">meta.total_alerts</span> is higher than the unique alert object count because the JSON is a keyed snapshot, not an append-only raw event log.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Code changes from this run</h2>
+        <ul>
+          <li><span class="mono">ghost_db.py</span>: training-day coverage now falls back to distinct sighting days, not only poll cycles.</li>
+          <li><span class="mono">tests/test_ghost_db.py</span>: added a regression test for JSON-only day coverage.</li>
+          <li><span class="mono">ghost_alerts.json</span>: refreshed from a manual poll run.</li>
+        </ul>
+        <p class="warn">Uncommitted local files remain in the working tree.</p>
+      </section>
+    </div>
+
+    <section class="section">
+      <h2>Training dataset used for experiments</h2>
+      <table>
+        <tr>
+          <th>Metric</th>
+          <th>Value</th>
+        </tr>
+        <tr><td>Hourly feature rows</td><td class="num">159,736</td></tr>
+        <tr><td>Hourly slices</td><td class="num">328</td></tr>
+        <tr><td>Positive rate</td><td class="num">0.0229</td></tr>
+        <tr><td>Train rows</td><td class="num">111,523</td></tr>
+        <tr><td>Validation rows</td><td class="num">23,863</td></tr>
+        <tr><td>Test rows</td><td class="num">24,350</td></tr>
+        <tr><td>Districts represented</td><td class="num">21</td></tr>
+        <tr><td>Regions represented</td><td class="num">5</td></tr>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>Model selection and evaluation</h2>
+      <table>
+        <tr>
+          <th>Model</th>
+          <th>Validation AUC</th>
+          <th>Test AUC</th>
+          <th>Precision</th>
+          <th>Recall</th>
+          <th>F1</th>
+          <th>Notes</th>
+        </tr>
+        <tr>
+          <td>Logistic Regression</td>
+          <td class="num">0.9004</td>
+          <td class="num">0.9034</td>
+          <td class="num">0.0932</td>
+          <td class="num">0.8625</td>
+          <td class="num">0.1682</td>
+          <td>Strong recall, weak precision</td>
+        </tr>
+        <tr>
+          <td>Random Forest</td>
+          <td class="num">0.9169</td>
+          <td class="num">0.9315</td>
+          <td class="num">0.6111</td>
+          <td class="num">0.0180</td>
+          <td class="num">0.0350</td>
+          <td>Too conservative at default threshold</td>
+        </tr>
+        <tr>
+          <td><strong>LightGBM (best full set)</strong></td>
+          <td class="num"><strong>0.9249</strong></td>
+          <td class="num"><strong>0.9361</strong></td>
+          <td class="num">0.1346</td>
+          <td class="num">0.8396</td>
+          <td class="num">0.2320</td>
+          <td class="mono">num_leaves=15, learning_rate=0.05, n_estimators=300</td>
+        </tr>
+        <tr>
+          <td>LightGBM (top 10 features)</td>
+          <td class="num">0.9243</td>
+          <td class="num">0.9355</td>
+          <td class="num"><strong>0.1400</strong></td>
+          <td class="num">0.8200</td>
+          <td class="num"><strong>0.2391</strong></td>
+          <td>Nearly same AUC, slightly better F1</td>
+        </tr>
+      </table>
+    </section>
+
+    <div class="two-col">
+      <section class="section">
+        <h2>Top features from the best LightGBM run</h2>
+        <table>
+          <tr><th>Rank</th><th>Feature</th><th>Importance</th></tr>
+          <tr><td class="num">1</td><td>cell_last_seen_hours_ago</td><td class="num">619</td></tr>
+          <tr><td class="num">2</td><td>district_active_cells</td><td class="num">601</td></tr>
+          <tr><td class="num">3</td><td>avg_report_count</td><td class="num">547</td></tr>
+          <tr><td class="num">4</td><td>district_hour_rate</td><td class="num">469</td></tr>
+          <tr><td class="num">5</td><td>district_24h_count</td><td class="num">308</td></tr>
+          <tr><td class="num">6</td><td>hour_historical_rate</td><td class="num">252</td></tr>
+          <tr><td class="num">7</td><td>dow_hour_rate</td><td class="num">245</td></tr>
+          <tr><td class="num">8</td><td>hour</td><td class="num">241</td></tr>
+          <tr><td class="num">9</td><td>cell_historical_freq</td><td class="num">187</td></tr>
+          <tr><td class="num">10</td><td>cell_7d_count</td><td class="num">149</td></tr>
+        </table>
+      </section>
+
+      <section class="section">
+        <h2>Current conclusion</h2>
+        <ul>
+          <li>The data pipeline is now synced and trainable.</li>
+          <li>The previous blocker was not lack of data; it was a stale 14-day gate based only on poll cycles.</li>
+          <li>LightGBM is the current winner on AUC, and the reduced top-10 feature set is competitive.</li>
+          <li>The built-in <span class="mono">ghost_predict.py train</span> path is still slower than the exploratory path used for these experiments.</li>
+          <li>The repo now has a working baseline for feature selection, model selection, training, eval, and light tuning.</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="section">
+      <h2>Artifacts</h2>
+      <table>
+        <tr><th>Artifact</th><th>Path</th></tr>
+        <tr><td>Experiment JSON</td><td class="mono">C:\Users\kevlam03\.copilot\session-state\6f637b17-1930-4988-b6cf-46e4580e4f28\files\model_experiments_20260627.json</td></tr>
+        <tr><td>HTML report</td><td class="mono">analysis\ml_run_report_20260627.html</td></tr>
+        <tr><td>DB backup made before sync</td><td class="mono">ghost_alerts.db.bak-20260627005729</td></tr>
+      </table>
+    </section>
+
+    <p class="footer">
+      Generated from the local run on 2026-06-27. Static HTML on purpose: one file, no JS, easy to keep.
+    </p>
+  </div>
+</body>
+</html>
