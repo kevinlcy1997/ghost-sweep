@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ghost Sweep ML Experiment Report</title>
+<style>
+body { margin: 0; font-family: Arial, sans-serif; color: #172033; background: #f7f8fb; }
+main { max-width: 1120px; margin: 0 auto; padding: 32px 24px 48px; }
+h1 { margin: 0 0 6px; font-size: 30px; }
+h2 { margin-top: 30px; font-size: 20px; }
+.muted { color: #637083; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 22px 0; }
+.card { background: white; border: 1px solid #dfe5ef; border-radius: 8px; padding: 16px; }
+.metric { font-size: 26px; font-weight: 700; margin-top: 6px; }
+table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #dfe5ef; }
+th, td { padding: 9px 10px; border-bottom: 1px solid #edf1f6; text-align: left; font-size: 14px; }
+th { background: #eef3f9; color: #26364d; }
+.note { background: #fff7df; border: 1px solid #f0d98c; border-radius: 8px; padding: 14px 16px; }
+code { background: #eef3f9; padding: 2px 4px; border-radius: 4px; }
+</style>
+</head>
+<body><main>
+<h1>Ghost Sweep ML Experiment Report</h1>
+<div class="muted">Generated 2026-06-27 21:32:22 from <code>ghost_alerts.db</code></div>
+<div class="grid">
+<div class="card"><div class="muted">Raw sightings</div><div class="metric">6387</div></div>
+<div class="card"><div class="muted">Cleaned events</div><div class="metric">5126</div></div>
+<div class="card"><div class="muted">Training rows</div><div class="metric">2584</div></div>
+<div class="card"><div class="muted">Positive rate</div><div class="metric">12.5%</div></div>
+</div>
+<div class="note">Source data covers 2026-06-13 09:58:34 to 2026-06-26 05:18:47.
+The JSON export is corrupt after the first complete alert block; sync used brace-balanced salvage of complete alert records.
+Model experiments use the most recent 500 cleaned events because full feature generation over 5126 events is too slow with the current historical feature builder.</div>
+<h2>Model Selection</h2>
+<table><thead><tr><th>model</th><th>roc_auc</th><th>average_precision</th><th>f1</th><th>precision</th><th>recall</th><th>accuracy</th><th>tp</th><th>fp</th><th>tn</th><th>fn</th></tr></thead><tbody><tr><td>Dummy prior</td><td>0.5000</td><td>0.0445</td><td>0.0000</td><td>0.0000</td><td>0.0000</td><td>0.9555</td><td>0</td><td>0</td><td>494</td><td>23</td></tr><tr><td>Logistic regression balanced</td><td>0.5333</td><td>0.0503</td><td>0.0745</td><td>0.0424</td><td>0.3043</td><td>0.6634</td><td>7</td><td>158</td><td>336</td><td>16</td></tr><tr><td>Random forest balanced</td><td>0.6780</td><td>0.0764</td><td>0.1311</td><td>0.1053</td><td>0.1739</td><td>0.8975</td><td>4</td><td>34</td><td>460</td><td>19</td></tr><tr><td>HistGradientBoosting</td><td>0.5588</td><td>0.0557</td><td>0.0702</td><td>0.0588</td><td>0.0870</td><td>0.8975</td><td>2</td><td>32</td><td>462</td><td>21</td></tr><tr><td>LightGBM balanced</td><td>0.6114</td><td>0.0577</td><td>0.0862</td><td>0.0538</td><td>0.2174</td><td>0.7950</td><td>5</td><td>88</td><td>406</td><td>18</td></tr></tbody></table>
+<p>Best holdout model by ROC-AUC then average precision: <strong>Random forest balanced</strong>.</p>
+<p>Selected trained pipeline saved to <code>analysis\best_experiment_model.joblib</code>.</p>
+<h2>Feature Selection Signals</h2>
+<table><thead><tr><th>feature</th><th>type</th><th>mutual_info</th><th>positive_rate_high</th></tr></thead><tbody><tr><td>district_24h_count</td><td>numeric</td><td>0.0302</td><td>0.1450</td></tr><tr><td>district_historical_rate</td><td>numeric</td><td>0.0302</td><td>0.1450</td></tr><tr><td>hour</td><td>numeric</td><td>0.0298</td><td>0.1345</td></tr><tr><td>cell_last_seen_hours_ago</td><td>numeric</td><td>0.0274</td><td>0.1200</td></tr><tr><td>district_active_cells</td><td>numeric</td><td>0.0204</td><td>0.1338</td></tr><tr><td>neighbor_24h_count</td><td>numeric</td><td>0.0109</td><td>0.1421</td></tr><tr><td>day_of_week</td><td>numeric</td><td>0.0088</td><td>0.1246</td></tr><tr><td>avg_report_count</td><td>numeric</td><td>0.0079</td><td>0.1101</td></tr><tr><td>cell_historical_freq</td><td>numeric</td><td>0.0033</td><td>0.1101</td></tr><tr><td>cell_7d_count</td><td>numeric</td><td>0.0033</td><td>0.1101</td></tr><tr><td>cell_24h_count</td><td>numeric</td><td>0.0033</td><td>0.1101</td></tr><tr><td>upvote_ratio</td><td>numeric</td><td>0.0010</td><td>0.1243</td></tr></tbody></table>
+<h2>Experiment Configuration</h2>
+<p>Features came from <code>ghost_features.build_training_data</code> and production <code>ghost_model.FEATURE_COLS</code>.
+Evaluation used the first 80% of generated rows for training and the final 20% for holdout testing to preserve row-order chronology as much as the current feature table allows.</p>
+<pre>{
+  &quot;numeric_features&quot;: [
+    &quot;hour&quot;,
+    &quot;day_of_week&quot;,
+    &quot;is_weekend&quot;,
+    &quot;month&quot;,
+    &quot;cell_historical_freq&quot;,
+    &quot;cell_7d_count&quot;,
+    &quot;cell_24h_count&quot;,
+    &quot;cell_last_seen_hours_ago&quot;,
+    &quot;neighbor_24h_count&quot;,
+    &quot;streak_active&quot;,
+    &quot;upvote_ratio&quot;,
+    &quot;avg_report_count&quot;,
+    &quot;district_24h_count&quot;,
+    &quot;district_historical_rate&quot;,
+    &quot;district_active_cells&quot;,
+    &quot;district_hour_rate&quot;,
+    &quot;hour_historical_rate&quot;,
+    &quot;dow_hour_rate&quot;
+  ],
+  &quot;categorical_features&quot;: [
+    &quot;district&quot;,
+    &quot;region&quot;
+  ]
+}</pre>
+</main></body></html>
