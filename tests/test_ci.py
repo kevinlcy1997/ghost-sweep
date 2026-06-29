@@ -2,6 +2,7 @@
 """Tests to verify CI/deployment readiness."""
 
 import os
+import json
 import subprocess
 import sys
 
@@ -42,3 +43,13 @@ def test_workflow_valid_yaml():
     assert "--max-grid-cells" in content
     assert "--skip-active" in content
     assert "git push" in content
+
+
+def test_committed_alert_store_is_valid_json():
+    """The dashboard workflow depends on ghost_alerts.json being parseable."""
+    data_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ghost_alerts.json")
+    with open(data_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    assert isinstance(data.get("alerts"), dict)
+    assert isinstance(data.get("meta"), dict)
