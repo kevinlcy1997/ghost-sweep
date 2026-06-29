@@ -38,4 +38,7 @@ def test_workflow_valid_yaml():
     assert "on:" in content
     assert "schedule:" in content
     assert "ghost_listener.py --once" in content
+    assert "--request-timeout" in content
+    assert "--max-grid-cells" in content
+    assert "--skip-active" in content
     assert "git push" in content

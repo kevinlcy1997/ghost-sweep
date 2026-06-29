@@ -12,7 +12,7 @@ concurrency:
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 8
 
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +25,7 @@ jobs:
         run: pip install cryptography requests
 
       - name: Run one poll cycle
-        run: python ghost_listener.py --once -o ghost_alerts.json
+        run: python ghost_listener.py --once -o ghost_alerts.json --request-timeout 3 --max-grid-cells 48 --skip-active
 
       - name: Generate dashboard
         run: python generate_dashboard.py ghost_alerts.json docs

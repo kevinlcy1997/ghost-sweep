@@ -168,6 +168,8 @@ except ImportError:
 API_URL = "http://parking.echk.com.hk/api/interface.php"
 DEFAULT_OUTPUT = "ghost_alerts.json"
 DEFAULT_POLL_SEC = 60
+DEFAULT_REQUEST_TIMEOUT = float(os.environ.get("GHOST_REQUEST_TIMEOUT", "15"))
+REQUEST_TIMEOUT = DEFAULT_REQUEST_TIMEOUT
 
 # From com.echk.api.AES — hardcoded key material (yes, really)
 PASSPHRASE = b"echk.com.hk"
@@ -328,7 +330,7 @@ def _raw_call(params: list[tuple[str, str]], action: str) -> dict | None:
     }
 
     try:
-        resp = requests.post(API_URL, data=payload, timeout=15)
+        resp = requests.post(API_URL, data=payload, timeout=REQUEST_TIMEOUT)
         resp.raise_for_status()
         decrypted = aes.decrypt(resp.text)
         return json.loads(decrypted)
@@ -471,47 +473,55 @@ def poll_notification_record(store: dict):
         log.info("  notification alerts: %d total, %d new", len(records), n)
 
 
-def poll_nearby_alerts(store: dict):
+def iter_grid_points(
+    step: float = GRID_STEP,
+    max_cells: int | None = None,
+) -> list[tuple[float, float]]:
+    """Return HK lat/lng grid points, optionally capped for bounded CI runs."""
+    points = []
+    lat = HK_LAT_MIN
+    while lat <= HK_LAT_MAX:
+        lng = HK_LNG_MIN
+        while lng <= HK_LNG_MAX:
+            points.append((round(lat, 4), round(lng, 4)))
+            if max_cells is not None and len(points) >= max_cells:
+                return points
+            lng += step
+        lat += step
+    return points
+
+
+def poll_nearby_alerts(store: dict, max_grid_cells: int | None = None):
     """Sweep a lat/lng grid across HK for getNearByAlertLocationIn24Hours.php."""
     log.info("Sweeping HK grid for 24h alerts ...")
     total_new = 0
-    lat = HK_LAT_MIN
-    while lat <= HK_LAT_MAX:
-        lng = HK_LNG_MIN
-        while lng <= HK_LNG_MAX:
-            data = call_api(
-                "getNearByAlertLocationIn24Hours.php",
-                [("lat", f"{lat:.4f}"), ("lng", f"{lng:.4f}")],
-            )
-            if data:
-                records = data.get("alert_record", [])
-                if records:
-                    n = merge_alerts(store, records, f"nearby24h({lat:.4f},{lng:.4f})")
-                    total_new += n
-            lng += GRID_STEP
-        lat += GRID_STEP
+    for lat, lng in iter_grid_points(max_cells=max_grid_cells):
+        data = call_api(
+            "getNearByAlertLocationIn24Hours.php",
+            [("lat", f"{lat:.4f}"), ("lng", f"{lng:.4f}")],
+        )
+        if data:
+            records = data.get("alert_record", [])
+            if records:
+                n = merge_alerts(store, records, f"nearby24h({lat:.4f},{lng:.4f})")
+                total_new += n
     log.info("  grid sweep done – %d new alerts", total_new)
 
 
-def poll_nearby_active(store: dict):
+def poll_nearby_active(store: dict, max_grid_cells: int | None = None):
     """Sweep grid for getNearByAlertLocation.php (currently-active alerts)."""
     log.info("Sweeping HK grid for active alerts ...")
     total_new = 0
-    lat = HK_LAT_MIN
-    while lat <= HK_LAT_MAX:
-        lng = HK_LNG_MIN
-        while lng <= HK_LNG_MAX:
-            data = call_api(
-                "getNearByAlertLocation.php",
-                [("lat", f"{lat:.4f}"), ("lng", f"{lng:.4f}")],
-            )
-            if data:
-                records = data.get("alert_record", [])
-                if records:
-                    n = merge_alerts(store, records, f"nearbyActive({lat:.4f},{lng:.4f})")
-                    total_new += n
-            lng += GRID_STEP
-        lat += GRID_STEP
+    for lat, lng in iter_grid_points(max_cells=max_grid_cells):
+        data = call_api(
+            "getNearByAlertLocation.php",
+            [("lat", f"{lat:.4f}"), ("lng", f"{lng:.4f}")],
+        )
+        if data:
+            records = data.get("alert_record", [])
+            if records:
+                n = merge_alerts(store, records, f"nearbyActive({lat:.4f},{lng:.4f})")
+                total_new += n
     log.info("  active sweep done – %d new alerts", total_new)
 
 
@@ -519,29 +529,54 @@ def poll_nearby_active(store: dict):
 # ║  LAYER 7 — Main Loop                                                    ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
-def run_once(store: dict):
+def run_once(
+    store: dict,
+    include_24h: bool = True,
+    include_active: bool = True,
+    max_grid_cells: int | None = None,
+):
     """Execute one full polling cycle."""
     poll_app_checking(store)
     poll_news(store)
     poll_notification_record(store)
-    poll_nearby_alerts(store)
-    poll_nearby_active(store)
+    if include_24h:
+        poll_nearby_alerts(store, max_grid_cells=max_grid_cells)
+    if include_active:
+        poll_nearby_active(store, max_grid_cells=max_grid_cells)
     store["meta"]["last_poll"] = _now()
     store["meta"]["total_alerts"] = len(store["alerts"])
 
 
 def main():
+    global REQUEST_TIMEOUT
+
     parser = argparse.ArgumentParser(description="走鬼 Ghost Alert Listener")
     parser.add_argument("-o", "--output", default=DEFAULT_OUTPUT, help="Output JSON file")
     parser.add_argument("--interval", type=int, default=DEFAULT_POLL_SEC, help="Poll interval in seconds")
     parser.add_argument("--once", action="store_true", help="Run once then exit")
+    parser.add_argument(
+        "--request-timeout",
+        type=float,
+        default=DEFAULT_REQUEST_TIMEOUT,
+        help="Per-request timeout in seconds",
+    )
+    parser.add_argument(
+        "--max-grid-cells",
+        type=int,
+        default=None,
+        help="Maximum HK grid cells to sweep per nearby endpoint",
+    )
+    parser.add_argument("--skip-24h", action="store_true", help="Skip 24h nearby alert sweep")
+    parser.add_argument("--skip-active", action="store_true", help="Skip active nearby alert sweep")
     args = parser.parse_args()
+    REQUEST_TIMEOUT = args.request_timeout
 
     log.info("=== 走鬼 Ghost Alert Listener ===")
     log.info("API:    %s", API_URL)
     log.info("Output: %s", os.path.abspath(args.output))
-    log.info("Grid:   %.2f° step (~%d cells)", GRID_STEP,
-             int(((HK_LAT_MAX - HK_LAT_MIN) / GRID_STEP + 1) * ((HK_LNG_MAX - HK_LNG_MIN) / GRID_STEP + 1)))
+    grid_cells = len(iter_grid_points(max_cells=args.max_grid_cells))
+    log.info("Grid:   %.2f° step (%d cells this run)", GRID_STEP, grid_cells)
+    log.info("Timeout: %.1fs per request", REQUEST_TIMEOUT)
 
     # Obtain anonymous session (no Firebase login needed)
     if not session.login():
@@ -560,7 +595,12 @@ def main():
 
     while True:
         try:
-            run_once(store)
+            run_once(
+                store,
+                include_24h=not args.skip_24h,
+                include_active=not args.skip_active,
+                max_grid_cells=args.max_grid_cells,
+            )
             save_store(store, args.output)
             log.info(
                 "Saved %d unique alerts, %d sponsors, %d news to %s",
