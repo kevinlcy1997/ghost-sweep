@@ -153,6 +153,62 @@ def add_engineered_ranking_features(df: pd.DataFrame) -> pd.DataFrame:
     return enhanced
 
 
+def sample_spatial_training_rows(
+    df: pd.DataFrame,
+    target_col: str,
+    negative_ratio: int = 5,
+    inactive_negative_fraction: float = 0.02,
+    random_state: int = 42,
+) -> pd.DataFrame:
+    """Sample Stage 2 rows around active windows while retaining positives."""
+    if df.empty:
+        return df.copy()
+    if target_col not in df:
+        raise ValueError(f"Missing required target column: {target_col}")
+
+    frame = df.copy()
+    active_by_time = frame.groupby("target_time")[target_col].transform("sum") > 0
+    positives = frame[frame[target_col].astype(int) == 1]
+    if positives.empty:
+        return frame.iloc[0:0].copy()
+
+    negative_ratio = max(0, int(negative_ratio))
+    active_negative_limit = int(len(positives) * negative_ratio)
+    active_negatives = frame[(frame[target_col].astype(int) == 0) & active_by_time].copy()
+    sort_cols = [
+        column
+        for column in [
+            "zone_event_count_24h",
+            "district_event_count_24h",
+            "zone_event_count_7d",
+        ]
+        if column in active_negatives
+    ]
+    if sort_cols:
+        active_negatives = active_negatives.sort_values(sort_cols, ascending=False)
+    if active_negative_limit > 0:
+        active_negatives = active_negatives.head(active_negative_limit)
+    else:
+        active_negatives = active_negatives.iloc[0:0]
+
+    inactive_limit = int(math.ceil(active_negative_limit * max(0.0, inactive_negative_fraction)))
+    inactive_negatives = frame[(frame[target_col].astype(int) == 0) & ~active_by_time].copy()
+    if inactive_limit > 0 and not inactive_negatives.empty:
+        inactive_negatives = inactive_negatives.sample(
+            n=min(inactive_limit, len(inactive_negatives)),
+            random_state=random_state,
+        )
+    else:
+        inactive_negatives = inactive_negatives.iloc[0:0]
+
+    sampled = (
+        pd.concat([positives, active_negatives, inactive_negatives], axis=0)
+        .loc[lambda rows: ~rows.index.duplicated(keep="first")]
+        .sort_values(["target_time", target_col, "zone_id"], ascending=[True, False, True])
+    )
+    return sampled.reset_index(drop=True)
+
+
 def build_zone_ranking_training_data(
     events: list[dict],
     zone_col: str = "h3_zone",
