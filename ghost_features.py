@@ -4,14 +4,19 @@
 from datetime import datetime, timedelta
 import pandas as pd
 
+from ghost_time import to_hk_feature_time
+
 
 def build_features(events: list[dict], target_dt: datetime,
                    window_hours: int = 1) -> pd.DataFrame:
     if not events:
         return pd.DataFrame()
 
+    target_dt = to_hk_feature_time(target_dt)
     df_events = pd.DataFrame(events)
-    df_events["create_dt_parsed"] = pd.to_datetime(df_events["create_dt"])
+    df_events["create_dt_parsed"] = pd.to_datetime(
+        [to_hk_feature_time(value) for value in df_events["create_dt"]]
+    )
     active_cells = df_events[["grid_cell", "district", "region"]].drop_duplicates("grid_cell")
     past_events = df_events[df_events["create_dt_parsed"] < target_dt].copy()
 
@@ -131,7 +136,9 @@ def build_training_data(events: list[dict], window_hours: int = 1) -> pd.DataFra
         return pd.DataFrame()
 
     df_events = pd.DataFrame(events)
-    df_events["create_dt_parsed"] = pd.to_datetime(df_events["create_dt"])
+    df_events["create_dt_parsed"] = pd.to_datetime(
+        [to_hk_feature_time(value) for value in df_events["create_dt"]]
+    )
     all_times = sorted(df_events["create_dt_parsed"].dt.floor("h").unique())
 
     all_rows = []

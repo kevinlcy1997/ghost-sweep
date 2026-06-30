@@ -13,6 +13,7 @@ from ghost_clean import consolidate_events
 from ghost_districts import assign_district_to_events
 from ghost_features import build_features, build_training_data
 from ghost_model import GhostModel
+from ghost_time import HK_TZ
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s  %(levelname)-7s  %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 log = logging.getLogger("ghost_predict")
@@ -20,6 +21,11 @@ log = logging.getLogger("ghost_predict")
 DB_PATH = "ghost_alerts.db"
 MODEL_PATH = "models/model_latest.joblib"
 FORECAST_PATH = "ghost_forecast.json"
+
+
+def get_forecast_target_time() -> datetime:
+    """Return the current Hong Kong wall-clock time for feature generation."""
+    return datetime.now(timezone.utc).astimezone(HK_TZ).replace(tzinfo=None)
 
 
 def cmd_clean(args):
@@ -67,7 +73,7 @@ def cmd_forecast(args):
     events = db.get_all_events()
     db.close()
     model = GhostModel(MODEL_PATH)
-    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    now = get_forecast_target_time()
     log.info("Generating %dh forecast...", hours)
     features_df = build_features(events, now, hours)
     if features_df.empty:

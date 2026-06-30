@@ -6,3 +6,4 @@ pandas
 shapely
 pytest
 mlflow
+h3

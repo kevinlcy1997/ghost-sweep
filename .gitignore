@@ -21,6 +21,30 @@ Thumbs.db
 
 # Analysis outputs (regenerated)
 analysis/ghost_map.html
+analysis/*.db
+analysis/*.joblib
+analysis/*.log
+analysis/*.out.*
+analysis/*.err.*
+analysis/sync_verify.txt
+analysis/best_iterated_model_metadata*.json
+analysis/ci_repro_ghost_alerts.json
+analysis/mlruns/
+analysis/geo/
+analysis/data_discovery/
+analysis/*_latest.csv
+analysis/*_latest.json
+analysis/*_report*.html
+analysis/zone_ranking_report*.html
+analysis/zone_forecast_map.html
+analysis/zone_model_visual_explainer.html
+analysis/zone_model_visual_explainer.png
+analysis/spotfire_dashboard.html
+analysis/visual_debug.txt
+ghost_zone_forecast*.geojson
+.headroom/
+.mplconfig/
+.pytest_tmp/
 
 # Virtual environment
 .venv/

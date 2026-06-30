@@ -5,13 +5,13 @@ from ghost_districts import get_district
 
 def test_mong_kok_district():
     district, region = get_district(22.3182, 114.1685)
-    assert district == "Mong Kok"
+    assert district == "Yau Tsim Mong"
     assert region == "Kowloon West"
 
 
 def test_central_district():
     district, region = get_district(22.2855, 114.1580)
-    assert district == "Central"
+    assert district == "Central & Western"
     assert region == "Hong Kong Island"
 
 
