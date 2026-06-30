@@ -131,7 +131,7 @@ if ($InstallRequirements) {
 
 $shouldBuildManifest = $false
 if ($RetrainModels) {
-    Run-Step "Running multi-horizon experiment..." @("analysis/run_multi_horizon_experiment.py")
+    Run-Step "Running two-stage multi-horizon experiment..." @("analysis/run_two_stage_experiment.py")
     $shouldBuildManifest = $true
 }
 

@@ -11,6 +11,9 @@ def test_manifest_groups_traceable_artifacts(tmp_path):
     assert "road_coverage_grid" in manifest["artifact_groups"]
     assert "feature_mart" in manifest["artifact_groups"]
     assert "multi_horizon_models" in manifest["artifact_groups"]
+    assert "two_stage_models" in manifest["artifact_groups"]
+    assert "two_stage_metadata" in manifest["artifact_groups"]
+    assert "two_stage_predictions" in manifest["artifact_groups"]
     assert all(
         "path" in artifact
         for artifacts in manifest["artifact_groups"].values()

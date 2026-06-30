@@ -30,7 +30,14 @@ PATHS = {
     "hour": ANALYSIS_DIR / "data_discovery" / f"zone_hour_profile_road_res{RESOLUTION}.csv",
     "day": ANALYSIS_DIR / "data_discovery" / f"zone_daily_profile_road_res{RESOLUTION}.csv",
     "manifest": ANALYSIS_DIR / "dashboard_manifest_latest.json",
+    "two_stage_summary": ANALYSIS_DIR / "two_stage_summary_latest.csv",
     "multi_horizon_summary": ANALYSIS_DIR / "multi_horizon_summary_latest.csv",
+    "activity_predictions_30m": ANALYSIS_DIR / "activity_predictions_30m_latest.csv",
+    "activity_predictions_1h": ANALYSIS_DIR / "activity_predictions_1h_latest.csv",
+    "activity_predictions_2h": ANALYSIS_DIR / "activity_predictions_2h_latest.csv",
+    "spatial_predictions_30m": ANALYSIS_DIR / "spatial_zone_predictions_30m_latest.csv",
+    "spatial_predictions_1h": ANALYSIS_DIR / "spatial_zone_predictions_1h_latest.csv",
+    "spatial_predictions_2h": ANALYSIS_DIR / "spatial_zone_predictions_2h_latest.csv",
     "predictions_30m": ANALYSIS_DIR / "iterated_zone_predictions_30m_latest.csv",
     "predictions_1h": ANALYSIS_DIR / "iterated_zone_predictions_1h_latest.csv",
     "predictions_2h": ANALYSIS_DIR / "iterated_zone_predictions_2h_latest.csv",
@@ -99,13 +106,20 @@ def horizon_label(minutes: int) -> str:
 
 def read_prediction_rows(horizon: str) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
-    for row in read_csv_rows(PATHS[f"predictions_{normalize_horizon(horizon)}"]):
+    normalized_horizon = normalize_horizon(horizon)
+    preferred = read_csv_rows(PATHS[f"spatial_predictions_{normalized_horizon}"])
+    source_rows = preferred or read_csv_rows(PATHS[f"predictions_{normalized_horizon}"])
+    for row in source_rows:
         normalized = dict(row)
         normalized["score"] = number(normalized.get("score"))
         if "probability" in normalized and str(normalized.get("probability", "")) != "":
             normalized["probability"] = number(normalized.get("probability"))
         else:
             normalized["probability"] = normalized["score"]
+        if "activity_probability" in normalized:
+            normalized["activity_probability"] = number(normalized.get("activity_probability"))
+        if "spatial_probability" in normalized:
+            normalized["spatial_probability"] = number(normalized.get("spatial_probability"))
         if "rank" in normalized and str(normalized.get("rank", "")) != "":
             normalized["rank"] = integer(normalized.get("rank"))
         rows.append(normalized)
@@ -248,6 +262,49 @@ def api_predictions(query: dict[str, list[str]]) -> dict[str, object]:
 
 
 def api_model_metrics() -> dict[str, object]:
+    two_stage_rows = read_csv_rows(PATHS["two_stage_summary"])
+    if two_stage_rows:
+        rows = []
+        for row in two_stage_rows:
+            activity_metadata_path = resolve_path(str(row.get("activity_metadata_path", "")))
+            spatial_metadata_path = resolve_path(str(row.get("spatial_metadata_path", "")))
+            rows.append(
+                {
+                    "horizon": row.get("horizon") or horizon_label(integer(row.get("horizon_minutes"))),
+                    "horizon_minutes": integer(row.get("horizon_minutes")),
+                    "model_family": "two_stage",
+                    "activity_model": row.get("activity_model", ""),
+                    "spatial_model": row.get("spatial_model", ""),
+                    "activity_average_precision": number(row.get("activity_average_precision")),
+                    "activity_roc_auc": number(row.get("activity_roc_auc")),
+                    "activity_brier_score": number(row.get("activity_brier_score")),
+                    "activity_holdout_rows": integer(row.get("activity_holdout_rows")),
+                    "activity_holdout_positives": integer(row.get("activity_holdout_positives")),
+                    "activity_holdout_start": row.get("activity_holdout_start", ""),
+                    "activity_holdout_end": row.get("activity_holdout_end", ""),
+                    "spatial_precision_at_20": number(row.get("spatial_precision_at_20")),
+                    "spatial_precision_at_50": number(row.get("spatial_precision_at_50")),
+                    "spatial_average_precision": number(row.get("spatial_average_precision")),
+                    "spatial_top_decile_lift": number(row.get("spatial_top_decile_lift")),
+                    "spatial_holdout_rows": integer(row.get("spatial_holdout_rows")),
+                    "spatial_holdout_positives": integer(row.get("spatial_holdout_positives")),
+                    "spatial_holdout_start": row.get("spatial_holdout_start", ""),
+                    "spatial_holdout_end": row.get("spatial_holdout_end", ""),
+                    "activity_metadata_path": str(row.get("activity_metadata_path", "")),
+                    "spatial_metadata_path": str(row.get("spatial_metadata_path", "")),
+                    "activity_predictions_path": str(row.get("activity_predictions_path", "")),
+                    "predictions_path": str(row.get("predictions_path", "")),
+                    "activity_metadata": read_json_obj(activity_metadata_path)
+                    if activity_metadata_path.exists()
+                    else {},
+                    "spatial_metadata": read_json_obj(spatial_metadata_path)
+                    if spatial_metadata_path.exists()
+                    else {},
+                }
+            )
+        rows.sort(key=lambda item: integer(item.get("horizon_minutes")))
+        return {"total": len(rows), "rows": rows}
+
     rows = []
     for row in read_csv_rows(PATHS["multi_horizon_summary"]):
         minutes = integer(row.get("horizon_minutes"))

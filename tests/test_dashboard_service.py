@@ -84,6 +84,52 @@ def test_model_metrics_endpoint_returns_horizon_rows_and_metadata():
     assert row["metadata_path"].endswith("best_iterated_model_metadata_30m.json")
 
 
+def test_model_metrics_endpoint_prefers_two_stage_summary(tmp_path):
+    activity_metadata = tmp_path / "activity_model_metadata_30m.json"
+    spatial_metadata = tmp_path / "spatial_model_metadata_30m.json"
+    activity_metadata.write_text(
+        json.dumps({"stage": "activity", "horizon_slug": "30m", "holdout_split": {"holdout_positives": 4}}),
+        encoding="utf-8",
+    )
+    spatial_metadata.write_text(
+        json.dumps({"stage": "spatial", "horizon_slug": "30m", "holdout_split": {"holdout_positives": 7}}),
+        encoding="utf-8",
+    )
+    summary = tmp_path / "two_stage_summary_latest.csv"
+    summary.write_text(
+        "\n".join(
+            [
+                "horizon_minutes,horizon,model_family,activity_model,spatial_model,activity_average_precision,activity_roc_auc,activity_brier_score,activity_holdout_rows,activity_holdout_positives,activity_holdout_start,activity_holdout_end,spatial_precision_at_20,spatial_precision_at_50,spatial_average_precision,spatial_top_decile_lift,spatial_holdout_rows,spatial_holdout_positives,spatial_holdout_start,spatial_holdout_end,activity_metadata_path,spatial_metadata_path,activity_predictions_path,predictions_path",
+                f"30,30m,two_stage,logistic_balanced,lightgbm_conservative,0.44,0.71,0.12,12,4,2026-06-01,2026-06-02,0.2,0.18,0.11,3.5,30,7,2026-06-01,2026-06-02,{activity_metadata},{spatial_metadata},analysis/activity_predictions_30m_latest.csv,analysis/spatial_zone_predictions_30m_latest.csv",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    original = dict(service.PATHS)
+    service.PATHS["two_stage_summary"] = summary
+    service._read_csv_cached.cache_clear()
+    service._read_json_cached.cache_clear()
+    try:
+        status, _, body = service.dispatch("GET", "/api/model-metrics")
+    finally:
+        service.PATHS.clear()
+        service.PATHS.update(original)
+        service._read_csv_cached.cache_clear()
+        service._read_json_cached.cache_clear()
+
+    assert status == 200
+    payload = json.loads(body)
+    assert payload["total"] == 1
+    row = payload["rows"][0]
+    assert row["model_family"] == "two_stage"
+    assert row["activity_model"] == "logistic_balanced"
+    assert row["spatial_model"] == "lightgbm_conservative"
+    assert row["activity_metadata"]["stage"] == "activity"
+    assert row["spatial_metadata"]["stage"] == "spatial"
+    assert row["activity_holdout_positives"] == 4
+    assert row["spatial_holdout_positives"] == 7
+
+
 def test_grid_geojson_endpoint_returns_real_overlay_features():
     status, headers, body = service.dispatch("GET", "/api/grid.geojson?min_events=1")
 
@@ -99,6 +145,36 @@ def test_grid_geojson_endpoint_returns_real_overlay_features():
     assert first["properties"]["event_count"] >= 1
     assert "has_drivable_road" in first["properties"]
     assert "road_source_mismatch" in first["properties"]
+
+
+def test_predictions_endpoint_prefers_two_stage_spatial_predictions(tmp_path):
+    predictions = tmp_path / "spatial_zone_predictions_30m_latest.csv"
+    predictions.write_text(
+        "\n".join(
+            [
+                "target_time,zone_id,district,region,zone_lat,zone_lng,spatial_probability,activity_probability,probability,score,risk_band,rank,actual",
+                "2026-06-30 01:00:00,abc,Central,Hong Kong Island,22.28,114.16,0.80,0.50,0.40,0.40,elevated,1,1",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    original = dict(service.PATHS)
+    service.PATHS["spatial_predictions_30m"] = predictions
+    service._read_csv_cached.cache_clear()
+    try:
+        status, _, body = service.dispatch("GET", "/api/predictions?horizon=30m&limit=5")
+    finally:
+        service.PATHS.clear()
+        service.PATHS.update(original)
+        service._read_csv_cached.cache_clear()
+
+    assert status == 200
+    row = json.loads(body)["rows"][0]
+    assert row["zone_id"] == "abc"
+    assert row["activity_probability"] == 0.5
+    assert row["spatial_probability"] == 0.8
+    assert row["probability"] == 0.4
+    assert row["risk_band"] == "elevated"
 
 
 def test_grid_geojson_merges_horizon_probability_properties():
