@@ -47,6 +47,29 @@ Candidate features include hour, day of week, weekend flag, recent city-wide eve
 
 The output is a city-level activity probability per horizon.
 
+### Weather Features
+
+Weather should be added as an optional feature block because enforcement activity and user reporting behavior may change during rain, heat, poor visibility, typhoon conditions, and other unusual weather periods. Weather features must be joined by Hong Kong local time and must not use observations or forecasts published after the `target_time`.
+
+Stage 1 should use city-wide weather context first:
+
+- Recent rainfall amount, for example past 1 hour, 3 hours, and 24 hours.
+- Current and recent temperature.
+- Current and recent relative humidity.
+- Wind speed and wind direction if available.
+- Weather warning flags such as thunderstorm, heavy rain, typhoon, very hot weather, or cold weather.
+- Forecast rain probability or nowcast rainfall for the forecast horizon when the value would have been available at `target_time`.
+
+Stage 2 can use spatial weather context when station-level or gridded data is available:
+
+- Nearest weather station rainfall to each zone.
+- District or region rainfall aggregates.
+- Difference between zone-nearest rainfall and city-wide rainfall.
+- Rainfall intensity bands, for example no rain, light rain, moderate rain, heavy rain.
+- Missing-weather indicators so model behavior is explicit when station data is unavailable.
+
+Weather should be tested first as an ablation: train the same two-stage pipeline with and without weather features, then compare Stage 1 calibration and Stage 2 active-window ranking metrics. If weather improves Stage 1 but not Stage 2, keep it only in the activity model. If spatial station rainfall improves zone ranking during active windows, keep the nearest-station and district rainfall features in Stage 2.
+
 ## Stage 2: Spatial Ranking
 
 Stage 2 scores road-access H3 zones. It should focus on active windows and hard negatives instead of letting no-event hours dominate.
@@ -57,6 +80,16 @@ Training rows remain `(target_time, zone_id)`, but sampling changes:
 - Include hard negative zones from the same active windows.
 - Prefer negatives from nearby zones, same district, high-history zones, and recent hotspot zones that did not fire.
 - Optionally include a small sample of inactive-window negatives so the ranking model still sees low-activity context, but do not let these dominate.
+
+Additional spatial context features should be added to help the model distinguish one road-access block from nearby alternatives:
+
+- Road-access intensity such as road segment count, road density, nearest-road distance, and road-source mismatch flag.
+- Multi-ring H3 context, with ring-1 and ring-2 event counts tracked separately.
+- Distance to recent hotspots, including nearest event in the last 1 hour, 3 hours, and 24 hours.
+- Distance to recent district event centroid.
+- Zone share of district activity and zone percentile within district.
+- Neighbor-versus-zone activity ratios.
+- Optional softened neighbor target or auxiliary label when an adjacent H3 cell fires.
 
 The target remains multi-label:
 
