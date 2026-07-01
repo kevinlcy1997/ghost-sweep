@@ -74,6 +74,20 @@ NUMERIC_FEATURES = [
     "neighbor_event_count_24h",
     "neighbor_event_count_7d",
     "neighbor_active_zones_24h",
+    "ring2_event_count_24h",
+    "ring2_event_count_7d",
+    "ring2_active_zones_24h",
+    "ring2_to_ring1_24h_ratio",
+    "distance_to_nearest_event_3h_m",
+    "distance_to_nearest_event_24h_m",
+    "distance_to_district_recent_centroid_24h_m",
+    "zone_24h_share_of_district",
+    "zone_7d_rank_in_district",
+    "zone_same_hour_percentile_in_district",
+    "nearest_road_m",
+    "road_segment_count",
+    "road_source_mismatch",
+    "has_drivable_road",
 ]
 CATEGORICAL_FEATURES = ["district", "region", "hour_bucket"]
 TARGET = "alert_next_2h"

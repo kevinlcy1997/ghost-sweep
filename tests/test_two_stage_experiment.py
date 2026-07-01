@@ -1,5 +1,6 @@
 import pandas as pd
 
+from analysis.run_zone_ranking_experiment import NUMERIC_FEATURES
 from analysis.run_two_stage_experiment import (
     activity_target_for_horizon,
     combine_activity_and_spatial_scores,
@@ -56,3 +57,14 @@ def test_write_two_stage_summary_writes_stage_paths(tmp_path):
     assert rows[0]["activity_model"] == "logistic"
     assert rows[0]["spatial_model"] == "lightgbm"
     assert path.exists()
+
+
+def test_spatial_feature_list_includes_context_feature_pack():
+    expected = {
+        "ring2_event_count_24h",
+        "distance_to_nearest_event_24h_m",
+        "zone_24h_share_of_district",
+        "nearest_road_m",
+    }
+
+    assert expected <= set(NUMERIC_FEATURES)
