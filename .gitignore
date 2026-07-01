@@ -33,6 +33,7 @@ analysis/spatial_model_metadata*.json
 analysis/best_iterated_model_metadata*.json
 analysis/ci_repro_ghost_alerts.json
 analysis/mlruns/
+analysis/feature_correlation/
 analysis/geo/
 analysis/data_discovery/
 analysis/*_latest.csv
