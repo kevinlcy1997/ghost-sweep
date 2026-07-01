@@ -69,7 +69,16 @@ def test_artifacts_endpoint_flattens_manifest_groups():
 
 
 def test_model_metrics_endpoint_returns_horizon_rows_and_metadata():
-    status, headers, body = service.dispatch("GET", "/api/model-metrics")
+    original = service.PATHS["two_stage_summary"]
+    service.PATHS["two_stage_summary"] = Path("__missing_two_stage_summary__.csv")
+    service._read_csv_cached.cache_clear()
+    service._read_json_cached.cache_clear()
+    try:
+        status, headers, body = service.dispatch("GET", "/api/model-metrics")
+    finally:
+        service.PATHS["two_stage_summary"] = original
+        service._read_csv_cached.cache_clear()
+        service._read_json_cached.cache_clear()
 
     assert status == 200
     assert headers["Content-Type"] == "application/json; charset=utf-8"
@@ -191,11 +200,16 @@ def test_grid_geojson_merges_horizon_probability_properties():
             encoding="utf-8",
         )
         original = service.PATHS["predictions_30m"]
+        original_spatial = service.PATHS["spatial_predictions_30m"]
         service.PATHS["predictions_30m"] = pred_path
+        service.PATHS["spatial_predictions_30m"] = Path(tmpdir) / "missing_spatial.csv"
+        service._read_csv_cached.cache_clear()
         try:
             status, _, body = service.dispatch("GET", "/api/grid.geojson?horizon=30m&min_events=0")
         finally:
             service.PATHS["predictions_30m"] = original
+            service.PATHS["spatial_predictions_30m"] = original_spatial
+            service._read_csv_cached.cache_clear()
 
     assert status == 200
     payload = json.loads(body)

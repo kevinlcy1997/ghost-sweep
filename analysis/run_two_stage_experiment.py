@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import sqlite3
 import sys
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
@@ -36,6 +37,12 @@ from ghost_ranking_features import build_zone_ranking_training_data, sample_spat
 from ghost_ranking_metrics import brier_score, expected_calibration_error, risk_band
 from ghost_zones import DEFAULT_H3_RESOLUTION
 
+
+warnings.filterwarnings(
+    "ignore",
+    message="X does not have valid feature names.*",
+    category=UserWarning,
+)
 
 OUTPUT_DIR = ROOT / "analysis"
 HORIZONS = [30, 60, 120]
@@ -98,7 +105,7 @@ def _candidate_models() -> list[Candidate]:
                 min_samples_leaf=2,
                 class_weight="balanced",
                 random_state=42,
-                n_jobs=-1,
+                n_jobs=1,
             ),
         ),
         Candidate(

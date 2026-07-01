@@ -28,6 +28,8 @@ analysis/*.log
 analysis/*.out.*
 analysis/*.err.*
 analysis/sync_verify.txt
+analysis/activity_model_metadata*.json
+analysis/spatial_model_metadata*.json
 analysis/best_iterated_model_metadata*.json
 analysis/ci_repro_ghost_alerts.json
 analysis/mlruns/
