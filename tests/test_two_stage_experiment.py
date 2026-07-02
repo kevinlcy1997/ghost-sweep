@@ -1,9 +1,14 @@
 import pandas as pd
 
 from analysis.run_zone_ranking_experiment import NUMERIC_FEATURES
+from ghost_zones import compute_h3_zone
+import h3
 from analysis.run_two_stage_experiment import (
     activity_target_for_horizon,
     combine_activity_and_spatial_scores,
+    _effective_lookback_hours,
+    _neighbor_hit_metrics,
+    _select_model,
     write_two_stage_summary,
 )
 
@@ -12,6 +17,15 @@ def test_activity_target_for_horizon_names_columns():
     assert activity_target_for_horizon(30) == "activity_next_30m"
     assert activity_target_for_horizon(60) == "activity_next_1h"
     assert activity_target_for_horizon(120) == "activity_next_2h"
+
+
+def test_effective_lookback_hours_fits_short_event_history():
+    events = [
+        {"create_dt": "2026-06-13 09:00:00"},
+        {"create_dt": "2026-06-14 15:00:00"},
+    ]
+
+    assert _effective_lookback_hours(events) == 29
 
 
 def test_combine_activity_and_spatial_scores_adds_final_probability_and_rank():
@@ -30,6 +44,45 @@ def test_combine_activity_and_spatial_scores_adds_final_probability_and_rank():
     assert list(combined["probability"]) == [0.4, 0.1]
     assert list(combined["rank"]) == [1, 2]
     assert combined["activity_probability"].unique().tolist() == [0.5]
+
+
+def test_neighbor_hit_metrics_counts_adjacent_top_ranked_zone():
+    zone = compute_h3_zone(22.3154, 114.1698, resolution=8)
+    neighbor = next(iter(h3.grid_ring(zone, 1)))
+    frame = pd.DataFrame(
+        {
+            "target_time": ["2026-06-01 10:00"] * 2,
+            "zone_id": [zone, neighbor],
+            "actual": [0, 1],
+        }
+    )
+    metrics = _neighbor_hit_metrics(frame, "actual", pd.Series([0.9, 0.1]).to_numpy())
+
+    assert metrics["neighbor_hit_rate_at_20"] == 1.0
+    assert metrics["neighbor_hit_rate_at_50"] == 1.0
+
+
+def test_select_spatial_model_prefers_top_k_before_decile_lift():
+    summary = pd.DataFrame(
+        [
+            {
+                "model": "lift_only",
+                "median_precision_at_50": 0.0,
+                "median_precision_at_100": 0.0,
+                "median_top_decile_lift": 5.0,
+                "median_average_precision": 0.01,
+            },
+            {
+                "model": "top_k",
+                "median_precision_at_50": 0.02,
+                "median_precision_at_100": 0.02,
+                "median_top_decile_lift": 2.0,
+                "median_average_precision": 0.01,
+            },
+        ]
+    )
+
+    assert _select_model(summary, "spatial")["model"] == "top_k"
 
 
 def test_write_two_stage_summary_writes_stage_paths(tmp_path):

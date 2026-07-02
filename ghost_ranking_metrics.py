@@ -110,6 +110,37 @@ def group_hit_rate_at_k(y_true, y_score, groups, k: int) -> float:
     return float(len(positive_groups & top_groups) / len(positive_groups))
 
 
+def near_miss_hit_rate_at_k(
+    predictions,
+    k: int,
+    neighbor_lookup: dict[str, set[str]],
+    score_col: str = "score",
+    label_col: str = "actual",
+    group_col: str = "target_time",
+    zone_col: str = "zone_id",
+) -> float:
+    """Return share of positive groups with an exact or neighbor top-k hit."""
+    if k <= 0:
+        raise ValueError("k must be positive")
+    if predictions.empty:
+        return 0.0
+
+    hits: list[int] = []
+    for _, group in predictions.groupby(group_col, sort=False):
+        positives = set(group.loc[group[label_col].astype(int) == 1, zone_col].astype(str))
+        if not positives:
+            hits.append(0)
+            continue
+        top = group.sort_values(score_col, ascending=False).head(k)
+        group_hit = any(
+            str(row[zone_col]) in positives
+            or bool(neighbor_lookup.get(str(row[zone_col]), set()) & positives)
+            for _, row in top.iterrows()
+        )
+        hits.append(int(group_hit))
+    return float(sum(hits) / len(hits)) if hits else 0.0
+
+
 def risk_band(probability: float) -> str:
     """Map a probability-like score to a stable dashboard risk band."""
     value = float(np.clip(probability, 0.0, 1.0))

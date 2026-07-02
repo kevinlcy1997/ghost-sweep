@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 import joblib
+import h3
 import numpy as np
 import pandas as pd
 from lightgbm import LGBMClassifier
@@ -34,7 +35,12 @@ from analysis.run_zone_ranking_experiment import CATEGORICAL_FEATURES, DB_PATH, 
 from analysis.two_stage_splits import make_positive_count_holdout, make_purged_rolling_splits
 from ghost_activity_features import build_activity_training_data
 from ghost_ranking_features import build_zone_ranking_training_data, sample_spatial_training_rows
-from ghost_ranking_metrics import brier_score, expected_calibration_error, risk_band
+from ghost_ranking_metrics import (
+    brier_score,
+    expected_calibration_error,
+    near_miss_hit_rate_at_k,
+    risk_band,
+)
 from ghost_zones import DEFAULT_H3_RESOLUTION
 
 
@@ -180,6 +186,46 @@ def _binary_metrics(y_true: pd.Series, y_score: np.ndarray) -> dict[str, float]:
     }
 
 
+def _neighbor_hit_metrics(frame: pd.DataFrame, target_col: str, scores: np.ndarray) -> dict[str, float]:
+    if frame.empty or "zone_id" not in frame:
+        return {
+            "neighbor_hit_rate_at_20": 0.0,
+            "neighbor_hit_rate_at_50": 0.0,
+            "neighbor_hit_rate_at_100": 0.0,
+        }
+    scored = frame[["target_time", "zone_id", target_col]].copy()
+    scored["score"] = np.asarray(scores, dtype=float)
+    scored["actual"] = scored[target_col].astype(int)
+    zones = set(scored["zone_id"].astype(str))
+    neighbor_lookup = {
+        zone_id: set(h3.grid_disk(zone_id, 1)) - {zone_id}
+        for zone_id in zones
+    }
+    return {
+        "neighbor_hit_rate_at_20": near_miss_hit_rate_at_k(
+            scored,
+            20,
+            neighbor_lookup,
+            score_col="score",
+            label_col="actual",
+        ),
+        "neighbor_hit_rate_at_50": near_miss_hit_rate_at_k(
+            scored,
+            50,
+            neighbor_lookup,
+            score_col="score",
+            label_col="actual",
+        ),
+        "neighbor_hit_rate_at_100": near_miss_hit_rate_at_k(
+            scored,
+            100,
+            neighbor_lookup,
+            score_col="score",
+            label_col="actual",
+        ),
+    }
+
+
 def _select_model(summary: pd.DataFrame, stage: str) -> dict[str, Any]:
     if stage == "activity":
         ranked = summary.sort_values(
@@ -187,9 +233,17 @@ def _select_model(summary: pd.DataFrame, stage: str) -> dict[str, Any]:
             ascending=[False, False, True],
         )
     else:
+        preferred_columns = [
+            "median_neighbor_hit_rate_at_50",
+            "median_precision_at_50",
+            "median_precision_at_100",
+            "median_average_precision",
+            "median_top_decile_lift",
+        ]
+        sort_columns = [column for column in preferred_columns if column in summary.columns]
         ranked = summary.sort_values(
-            by=["median_top_decile_lift", "median_average_precision", "median_precision_at_50"],
-            ascending=[False, False, False],
+            by=sort_columns,
+            ascending=[False] * len(sort_columns),
         )
     return ranked.iloc[0].to_dict()
 
@@ -267,6 +321,13 @@ def _evaluate_spatial_candidates(
                     "region": df.loc[split.validation_mask, "region"],
                 },
             )
+            metrics.update(
+                _neighbor_hit_metrics(
+                    df.loc[split.validation_mask],
+                    target_col,
+                    scores,
+                )
+            )
             rows.append(
                 {
                     "model": candidate.name,
@@ -291,8 +352,11 @@ def _evaluate_spatial_candidates(
             median_recall_at_50=("recall_at_50", "median"),
             median_recall_at_100=("recall_at_100", "median"),
             median_average_precision=("average_precision", "median"),
-            median_top_decile_lift=("top_decile_lift", "median"),
-            median_district_hit_rate_at_50=("district_hit_rate_at_50", "median"),
+        median_top_decile_lift=("top_decile_lift", "median"),
+        median_neighbor_hit_rate_at_20=("neighbor_hit_rate_at_20", "median"),
+        median_neighbor_hit_rate_at_50=("neighbor_hit_rate_at_50", "median"),
+        median_neighbor_hit_rate_at_100=("neighbor_hit_rate_at_100", "median"),
+        median_district_hit_rate_at_50=("district_hit_rate_at_50", "median"),
             median_region_hit_rate_at_50=("region_hit_rate_at_50", "median"),
             median_brier_score=("brier_score", "median"),
             median_expected_calibration_error=("expected_calibration_error", "median"),
@@ -343,6 +407,27 @@ def combine_activity_and_spatial_scores(
     combined["rank"] = np.arange(1, len(combined) + 1)
     combined["risk_band"] = combined["probability"].map(risk_band)
     return combined
+
+
+def _available_history_hours(events: list[dict[str, Any]]) -> float:
+    timestamps = pd.to_datetime(
+        [event.get("create_dt") for event in events if event.get("create_dt")],
+        errors="coerce",
+    ).dropna()
+    if len(timestamps) < 2:
+        return 0.0
+    return float((timestamps.max() - timestamps.min()).total_seconds() / 3600.0)
+
+
+def _effective_lookback_hours(
+    events: list[dict[str, Any]],
+    requested_hours: int = 24 * 7,
+    min_hours: int = 3,
+) -> int:
+    available_hours = _available_history_hours(events)
+    if available_hours <= requested_hours:
+        return max(min_hours, int(max(1, available_hours)) - 1)
+    return requested_hours
 
 
 def _load_events() -> pd.DataFrame:
@@ -419,17 +504,25 @@ def _fit_spatial_holdout(
     predictions = combine_activity_and_spatial_scores(base, activity_scores)
     predictions.to_csv(paths["spatial_predictions"], index=False)
     joblib.dump(pipeline, paths["spatial_model"])
+    holdout_metrics = _score_spatial_predictions(
+        df.loc[split.holdout_mask, target_col],
+        predictions["spatial_probability"].to_numpy(),
+        groups={
+            "district": df.loc[split.holdout_mask, "district"],
+            "region": df.loc[split.holdout_mask, "region"],
+        },
+    )
+    holdout_metrics.update(
+        _neighbor_hit_metrics(
+            df.loc[split.holdout_mask],
+            target_col,
+            predictions["spatial_probability"].to_numpy(),
+        )
+    )
     return {
         "model_path": _relative(paths["spatial_model"]),
         "predictions_path": _relative(paths["spatial_predictions"]),
-        "holdout_metrics": _score_spatial_predictions(
-            df.loc[split.holdout_mask, target_col],
-            predictions["spatial_probability"].to_numpy(),
-            groups={
-                "district": df.loc[split.holdout_mask, "district"],
-                "region": df.loc[split.holdout_mask, "region"],
-            },
-        ),
+        "holdout_metrics": holdout_metrics,
         "holdout_split": split.metadata,
         "training_rows_sampled": int(len(train_sample)),
     }
@@ -444,11 +537,13 @@ def run_two_stage_horizon(
     paths = _artifact_paths(slug)
     target_col = target_for_horizon(horizon_minutes)
     activity_target = activity_target_for_horizon(horizon_minutes)
+    lookback_hours = _effective_lookback_hours(events)
+    lookback_days = max(1, int(lookback_hours // 24))
 
     activity_df = build_activity_training_data(
         events,
         horizon_minutes=horizon_minutes,
-        lookback_hours=24 * 7,
+        lookback_hours=lookback_hours,
         resolution=resolution,
     )
     spatial_df = build_zone_ranking_training_data(
@@ -456,7 +551,7 @@ def run_two_stage_horizon(
         forecast_hours=max(1, horizon_minutes // 60),
         horizon_minutes=horizon_minutes,
         target_col=target_col,
-        lookback_days=7,
+        lookback_days=lookback_days,
         resolution=resolution,
     )
     if activity_df.empty or spatial_df.empty:
@@ -559,6 +654,15 @@ def write_two_stage_summary(metadata: list[dict[str, Any]], path: Path = SUMMARY
                 "activity_holdout_end": activity_split.get("holdout_end", ""),
                 "spatial_precision_at_20": spatial_metrics.get("precision_at_20", 0.0),
                 "spatial_precision_at_50": spatial_metrics.get("precision_at_50", 0.0),
+                "spatial_neighbor_hit_rate_at_20": spatial_metrics.get(
+                    "neighbor_hit_rate_at_20", 0.0
+                ),
+                "spatial_neighbor_hit_rate_at_50": spatial_metrics.get(
+                    "neighbor_hit_rate_at_50", 0.0
+                ),
+                "spatial_neighbor_hit_rate_at_100": spatial_metrics.get(
+                    "neighbor_hit_rate_at_100", 0.0
+                ),
                 "spatial_average_precision": spatial_metrics.get("average_precision", 0.0),
                 "spatial_top_decile_lift": spatial_metrics.get("top_decile_lift", 0.0),
                 "spatial_holdout_rows": spatial_split.get("holdout_rows", 0),

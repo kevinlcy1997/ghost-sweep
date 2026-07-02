@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import h3
+import numpy as np
 import pandas as pd
 
 from ghost_time import to_hk_feature_time
@@ -97,12 +98,16 @@ def _ensure_zone_coordinates(frame: pd.DataFrame) -> pd.DataFrame:
     return frame
 
 
-def _add_ring2_features(enhanced: pd.DataFrame) -> pd.DataFrame:
-    enhanced["ring2_event_count_24h"] = 0.0
-    enhanced["ring2_event_count_7d"] = 0.0
-    enhanced["ring2_active_zones_24h"] = 0
-    enhanced["ring2_to_ring1_24h_ratio"] = 0.0
+def _add_ring2_features_legacy(enhanced: pd.DataFrame) -> pd.DataFrame:
+    ring2_24h_values: list[float] = []
+    ring2_7d_values: list[float] = []
+    ring2_active_values: list[int] = []
+    ring2_ratio_values: list[float] = []
     if "zone_id" not in enhanced or "target_time" not in enhanced:
+        enhanced["ring2_event_count_24h"] = 0.0
+        enhanced["ring2_event_count_7d"] = 0.0
+        enhanced["ring2_active_zones_24h"] = 0
+        enhanced["ring2_to_ring1_24h_ratio"] = 0.0
         return enhanced
 
     row_lookup = {
@@ -141,6 +146,57 @@ def _add_ring2_features(enhanced: pd.DataFrame) -> pd.DataFrame:
     return enhanced
 
 
+def _add_ring2_features(enhanced: pd.DataFrame) -> pd.DataFrame:
+    if "zone_id" not in enhanced or "target_time" not in enhanced:
+        enhanced["ring2_event_count_24h"] = 0.0
+        enhanced["ring2_event_count_7d"] = 0.0
+        enhanced["ring2_active_zones_24h"] = 0
+        enhanced["ring2_to_ring1_24h_ratio"] = 0.0
+        return enhanced
+
+    count_24h_by_time: dict[object, dict[str, float]] = {}
+    count_7d_by_time: dict[object, dict[str, float]] = {}
+    for row in enhanced[
+        ["target_time", "zone_id", "zone_event_count_24h", "zone_event_count_7d"]
+    ].itertuples(index=False):
+        count_24h_by_time.setdefault(row.target_time, {})[row.zone_id] = float(
+            row.zone_event_count_24h
+        )
+        count_7d_by_time.setdefault(row.target_time, {})[row.zone_id] = float(
+            row.zone_event_count_7d
+        )
+
+    ring2_cache: dict[str, set[str]] = {}
+    ring2_24h_values: list[float] = []
+    ring2_7d_values: list[float] = []
+    ring2_active_values: list[int] = []
+    ring2_ratio_values: list[float] = []
+
+    for row in enhanced[["target_time", "zone_id", "neighbor_event_count_24h"]].itertuples(
+        index=False
+    ):
+        zone_id = row.zone_id
+        if zone_id not in ring2_cache:
+            ring2_cache[zone_id] = set(h3.grid_disk(zone_id, 2)) - set(h3.grid_disk(zone_id, 1))
+        counts_24h = count_24h_by_time.get(row.target_time, {})
+        counts_7d = count_7d_by_time.get(row.target_time, {})
+        ring2_24h = sum(counts_24h.get(ring2_zone, 0.0) for ring2_zone in ring2_cache[zone_id])
+        ring2_24h_values.append(ring2_24h)
+        ring2_7d_values.append(
+            sum(counts_7d.get(ring2_zone, 0.0) for ring2_zone in ring2_cache[zone_id])
+        )
+        ring2_active_values.append(
+            sum(1 for ring2_zone in ring2_cache[zone_id] if counts_24h.get(ring2_zone, 0.0) > 0)
+        )
+        ring2_ratio_values.append(_safe_divide(ring2_24h, row.neighbor_event_count_24h))
+
+    enhanced["ring2_event_count_24h"] = ring2_24h_values
+    enhanced["ring2_event_count_7d"] = ring2_7d_values
+    enhanced["ring2_active_zones_24h"] = ring2_active_values
+    enhanced["ring2_to_ring1_24h_ratio"] = ring2_ratio_values
+    return enhanced
+
+
 def _add_district_relative_features(enhanced: pd.DataFrame) -> pd.DataFrame:
     enhanced["zone_24h_share_of_district"] = 0.0
     enhanced["zone_7d_rank_in_district"] = 0.0
@@ -169,11 +225,15 @@ def _add_district_relative_features(enhanced: pd.DataFrame) -> pd.DataFrame:
 def _nearest_distance_to_rows(row: pd.Series, candidates: pd.DataFrame) -> float:
     if candidates.empty:
         return MISSING_DISTANCE_M
-    distances = [
-        _distance_m(row["zone_lat"], row["zone_lng"], candidate.zone_lat, candidate.zone_lng)
-        for candidate in candidates[["zone_lat", "zone_lng"]].itertuples(index=False)
-    ]
-    return round(min(distances), 3) if distances else MISSING_DISTANCE_M
+    lat1 = math.radians(float(row["zone_lat"]))
+    lng1 = math.radians(float(row["zone_lng"]))
+    lat2 = np.radians(candidates["zone_lat"].astype(float).to_numpy())
+    lng2 = np.radians(candidates["zone_lng"].astype(float).to_numpy())
+    dlat = lat2 - lat1
+    dlng = lng2 - lng1
+    hav = np.sin(dlat / 2) ** 2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlng / 2) ** 2
+    distances = 2 * 6_371_000.0 * np.arctan2(np.sqrt(hav), np.sqrt(1 - hav))
+    return round(float(np.min(distances)), 3) if len(distances) else MISSING_DISTANCE_M
 
 
 def _distance_to_weighted_centroid(row: pd.Series, candidates: pd.DataFrame) -> float:
@@ -197,6 +257,14 @@ def _add_hotspot_distance_features(enhanced: pd.DataFrame) -> pd.DataFrame:
     for _, group in enhanced.groupby("target_time", sort=False):
         active_3h = group[group["zone_event_count_3h"].astype(float) > 0]
         active_24h = group[group["zone_event_count_24h"].astype(float) > 0]
+        active_24h_by_district = (
+            {
+                district: district_rows
+                for district, district_rows in active_24h.groupby("district", sort=False)
+            }
+            if "district" in group.columns
+            else {}
+        )
         for idx, row in group.iterrows():
             enhanced.at[idx, "distance_to_nearest_event_3h_m"] = _nearest_distance_to_rows(
                 row,
@@ -206,13 +274,109 @@ def _add_hotspot_distance_features(enhanced: pd.DataFrame) -> pd.DataFrame:
                 row,
                 active_24h,
             )
-            if "district" in group:
-                district_active = active_24h[active_24h["district"] == row.get("district")]
-            else:
-                district_active = active_24h
+            district_active = active_24h_by_district.get(row.get("district"), active_24h)
             enhanced.at[idx, "distance_to_district_recent_centroid_24h_m"] = (
                 _distance_to_weighted_centroid(row, district_active)
             )
+    return enhanced
+
+
+def _add_hotspot_distance_features(enhanced: pd.DataFrame) -> pd.DataFrame:
+    enhanced["distance_to_nearest_event_3h_m"] = MISSING_DISTANCE_M
+    enhanced["distance_to_nearest_event_24h_m"] = MISSING_DISTANCE_M
+    enhanced["distance_to_district_recent_centroid_24h_m"] = MISSING_DISTANCE_M
+    if not {"target_time", "zone_lat", "zone_lng"}.issubset(enhanced.columns):
+        return enhanced
+
+    def nearest_distances(
+        source_lats: np.ndarray,
+        source_lngs: np.ndarray,
+        candidate_lats: np.ndarray,
+        candidate_lngs: np.ndarray,
+        chunk_size: int = 512,
+    ) -> np.ndarray:
+        if len(candidate_lats) == 0:
+            return np.full(len(source_lats), MISSING_DISTANCE_M, dtype=float)
+        result = np.empty(len(source_lats), dtype=float)
+        cand_lats_rad = np.radians(candidate_lats.astype(float))
+        cand_lngs_rad = np.radians(candidate_lngs.astype(float))
+        for start in range(0, len(source_lats), chunk_size):
+            end = min(start + chunk_size, len(source_lats))
+            lat_rad = np.radians(source_lats[start:end].astype(float))[:, None]
+            lng_rad = np.radians(source_lngs[start:end].astype(float))[:, None]
+            dlat = cand_lats_rad[None, :] - lat_rad
+            dlng = cand_lngs_rad[None, :] - lng_rad
+            hav = np.sin(dlat / 2) ** 2 + np.cos(lat_rad) * np.cos(cand_lats_rad)[
+                None, :
+            ] * np.sin(dlng / 2) ** 2
+            distances = 2 * 6_371_000.0 * np.arctan2(np.sqrt(hav), np.sqrt(1 - hav))
+            result[start:end] = np.min(distances, axis=1)
+        return np.round(result, 3)
+
+    for _, group in enhanced.groupby("target_time", sort=False):
+        indexes = group.index
+        source_lats = group["zone_lat"].astype(float).to_numpy()
+        source_lngs = group["zone_lng"].astype(float).to_numpy()
+        active_3h = group[group["zone_event_count_3h"].astype(float) > 0]
+        active_24h = group[group["zone_event_count_24h"].astype(float) > 0]
+
+        enhanced.loc[indexes, "distance_to_nearest_event_3h_m"] = nearest_distances(
+            source_lats,
+            source_lngs,
+            active_3h["zone_lat"].astype(float).to_numpy(),
+            active_3h["zone_lng"].astype(float).to_numpy(),
+        )
+        enhanced.loc[indexes, "distance_to_nearest_event_24h_m"] = nearest_distances(
+            source_lats,
+            source_lngs,
+            active_24h["zone_lat"].astype(float).to_numpy(),
+            active_24h["zone_lng"].astype(float).to_numpy(),
+        )
+
+        if active_24h.empty:
+            continue
+
+        weights = active_24h["zone_event_count_24h"].astype(float).clip(lower=0.0)
+        if float(weights.sum()) <= 0:
+            weights = pd.Series(np.ones(len(active_24h)), index=active_24h.index)
+        fallback_lat = float((active_24h["zone_lat"].astype(float) * weights).sum() / weights.sum())
+        fallback_lng = float((active_24h["zone_lng"].astype(float) * weights).sum() / weights.sum())
+        centroid_by_district: dict[str, tuple[float, float]] = {}
+        if "district" in group.columns:
+            for district, district_rows in active_24h.groupby("district", sort=False):
+                district_weights = district_rows["zone_event_count_24h"].astype(float).clip(lower=0.0)
+                if float(district_weights.sum()) <= 0:
+                    district_weights = pd.Series(np.ones(len(district_rows)), index=district_rows.index)
+                centroid_by_district[district] = (
+                    float(
+                        (district_rows["zone_lat"].astype(float) * district_weights).sum()
+                        / district_weights.sum()
+                    ),
+                    float(
+                        (district_rows["zone_lng"].astype(float) * district_weights).sum()
+                        / district_weights.sum()
+                    ),
+                )
+
+        centroid_lats = []
+        centroid_lngs = []
+        for district in group.get("district", pd.Series(index=indexes, dtype=object)):
+            lat, lng = centroid_by_district.get(district, (fallback_lat, fallback_lng))
+            centroid_lats.append(lat)
+            centroid_lngs.append(lng)
+        enhanced.loc[indexes, "distance_to_district_recent_centroid_24h_m"] = np.round(
+            [
+                _distance_m(lat, lng, centroid_lat, centroid_lng)
+                for lat, lng, centroid_lat, centroid_lng in zip(
+                    source_lats,
+                    source_lngs,
+                    centroid_lats,
+                    centroid_lngs,
+                    strict=True,
+                )
+            ],
+            3,
+        )
     return enhanced
 
 
@@ -450,6 +614,12 @@ def build_zone_ranking_training_data(
             if event["dt"] >= target_dt - timedelta(hours=24):
                 active_district_zones.setdefault(event["district"], set()).add(event[zone_col])
 
+        history_by_zone: dict[str, list[dict]] = {}
+        history_by_district: dict[str, list[dict]] = {}
+        for event in history:
+            history_by_zone.setdefault(event[zone_col], []).append(event)
+            history_by_district.setdefault(event.get("district", "Unknown"), []).append(event)
+
         for zone_id in zones:
             exemplar = exemplar_by_zone.get(zone_id)
             if exemplar is None:
@@ -466,8 +636,8 @@ def build_zone_ranking_training_data(
             hours_since_last = (
                 (target_dt - last_seen).total_seconds() / 3600.0 if last_seen else 9999.0
             )
-            zone_history = [event for event in history if event[zone_col] == zone_id]
-            district_history = [event for event in history if event.get("district") == district]
+            zone_history = history_by_zone.get(zone_id, [])
+            district_history = history_by_district.get(district, [])
             row = {
                 "target_time": target_dt,
                 "zone_id": zone_id,
@@ -510,5 +680,3 @@ def _hour_bucket(hour: int) -> str:
     if 20 <= hour or hour < 2:
         return "late"
     return "overnight"
-
-
