@@ -4,10 +4,12 @@ from analysis.run_zone_ranking_experiment import NUMERIC_FEATURES
 from ghost_zones import compute_h3_zone
 import h3
 from analysis.run_two_stage_experiment import (
+    _candidate_models,
     activity_target_for_horizon,
     combine_activity_and_spatial_scores,
     _effective_lookback_hours,
     _neighbor_hit_metrics,
+    _prepare_ranker_training_frame,
     _select_model,
     write_two_stage_summary,
 )
@@ -121,3 +123,28 @@ def test_spatial_feature_list_includes_context_feature_pack():
     }
 
     assert expected <= set(NUMERIC_FEATURES)
+
+
+def test_ranker_group_sizes_sort_by_target_time_and_drop_empty_positive_groups():
+    frame = pd.DataFrame(
+        [
+            {"target_time": "2026-06-01 11:00", "actual": 0, "score_feature": 0.1},
+            {"target_time": "2026-06-01 10:00", "actual": 1, "score_feature": 0.9},
+            {"target_time": "2026-06-01 10:00", "actual": 0, "score_feature": 0.8},
+            {"target_time": "2026-06-01 12:00", "actual": 0, "score_feature": 0.7},
+        ]
+    )
+
+    sorted_frame, group_sizes = _prepare_ranker_training_frame(frame, "actual")
+
+    assert list(sorted_frame["target_time"]) == [
+        pd.Timestamp("2026-06-01 10:00"),
+        pd.Timestamp("2026-06-01 10:00"),
+    ]
+    assert group_sizes == [2]
+
+
+def test_candidate_models_include_lightgbm_ranker_neighbor():
+    candidates = {candidate.name: candidate for candidate in _candidate_models()}
+
+    assert candidates["lightgbm_ranker_neighbor"].kind == "ranker"

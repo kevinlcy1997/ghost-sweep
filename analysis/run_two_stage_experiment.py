@@ -12,7 +12,7 @@ import joblib
 import h3
 import numpy as np
 import pandas as pd
-from lightgbm import LGBMClassifier
+from lightgbm import LGBMClassifier, LGBMRanker
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 from sklearn.impute import SimpleImputer
@@ -79,6 +79,7 @@ ACTIVITY_CATEGORICAL_FEATURES = ["hour_bucket"]
 class Candidate:
     name: str
     factory: Callable[[], Any]
+    kind: str = "classifier"
 
 
 def activity_target_for_horizon(horizon_minutes: int) -> str:
@@ -127,6 +128,22 @@ def _candidate_models() -> list[Candidate]:
                 random_state=42,
                 verbosity=-1,
             ),
+        ),
+        Candidate(
+            "lightgbm_ranker_neighbor",
+            lambda: LGBMRanker(
+                objective="lambdarank",
+                metric="ndcg",
+                n_estimators=180,
+                learning_rate=0.04,
+                num_leaves=15,
+                min_child_samples=20,
+                subsample=0.9,
+                colsample_bytree=0.9,
+                random_state=42,
+                verbosity=-1,
+            ),
+            kind="ranker",
         ),
     ]
 
@@ -292,6 +309,68 @@ def _evaluate_activity_candidates(
     return fold_results, summary
 
 
+def _prepare_ranker_training_frame(
+    train_sample: pd.DataFrame,
+    target_col: str,
+) -> tuple[pd.DataFrame, list[int]]:
+    """Sort ranker data by target_time and keep only query groups with positives."""
+    if train_sample.empty:
+        return train_sample.copy(), []
+
+    frame = train_sample.copy()
+    frame["target_time"] = pd.to_datetime(frame["target_time"])
+    positive_groups = (
+        frame.groupby("target_time")[target_col]
+        .sum()
+        .loc[lambda values: values > 0]
+        .index
+    )
+    frame = frame[frame["target_time"].isin(set(positive_groups))]
+    sort_columns = ["target_time", target_col]
+    ascending = [True, False]
+    if "zone_id" in frame:
+        sort_columns.append("zone_id")
+        ascending.append(True)
+    frame = frame.sort_values(sort_columns, ascending=ascending, kind="mergesort")
+    group_sizes = frame.groupby("target_time", sort=False).size().astype(int).tolist()
+    return frame, group_sizes
+
+
+def _fit_spatial_candidate(
+    candidate: Candidate,
+    train_sample: pd.DataFrame,
+    feature_cols: list[str],
+    target_col: str,
+) -> Pipeline | None:
+    pipeline = _make_spatial_pipeline(candidate)
+    if candidate.kind == "ranker":
+        ranker_sample, group_sizes = _prepare_ranker_training_frame(train_sample, target_col)
+        if ranker_sample.empty or not group_sizes:
+            return None
+        pipeline.fit(
+            ranker_sample[feature_cols],
+            ranker_sample[target_col],
+            model__group=group_sizes,
+        )
+        return pipeline
+
+    pipeline.fit(train_sample[feature_cols], train_sample[target_col])
+    return pipeline
+
+
+def _predict_spatial_candidate_scores(
+    pipeline: Pipeline,
+    candidate: Candidate,
+    frame: pd.DataFrame,
+    feature_cols: list[str],
+) -> np.ndarray:
+    if candidate.kind == "ranker":
+        scores = pipeline.predict(frame[feature_cols])
+    else:
+        scores = pipeline.predict_proba(frame[feature_cols])[:, 1]
+    return np.asarray(scores, dtype=float)
+
+
 def _evaluate_spatial_candidates(
     df: pd.DataFrame,
     target_col: str,
@@ -310,9 +389,15 @@ def _evaluate_spatial_candidates(
             )
             if train_sample.empty or train_sample[target_col].nunique() < 2:
                 continue
-            pipeline = _make_spatial_pipeline(candidate)
-            pipeline.fit(train_sample[feature_cols], train_sample[target_col])
-            scores = pipeline.predict_proba(df.loc[split.validation_mask, feature_cols])[:, 1]
+            pipeline = _fit_spatial_candidate(candidate, train_sample, feature_cols, target_col)
+            if pipeline is None:
+                continue
+            scores = _predict_spatial_candidate_scores(
+                pipeline,
+                candidate,
+                df.loc[split.validation_mask],
+                feature_cols,
+            )
             metrics = _score_spatial_predictions(
                 df.loc[split.validation_mask, target_col],
                 scores,
@@ -482,9 +567,15 @@ def _fit_spatial_holdout(
         inactive_negative_fraction=0.02,
     )
     candidate = next(item for item in _candidate_models() if item.name == chosen["model"])
-    pipeline = _make_spatial_pipeline(candidate)
-    pipeline.fit(train_sample[feature_cols], train_sample[target_col])
-    spatial_scores = pipeline.predict_proba(df.loc[split.holdout_mask, feature_cols])[:, 1]
+    pipeline = _fit_spatial_candidate(candidate, train_sample, feature_cols, target_col)
+    if pipeline is None:
+        raise ValueError(f"Could not fit spatial candidate: {candidate.name}")
+    spatial_scores = _predict_spatial_candidate_scores(
+        pipeline,
+        candidate,
+        df.loc[split.holdout_mask],
+        feature_cols,
+    )
     default_activity = (
         float(activity_holdout_predictions["activity_probability"].mean())
         if not activity_holdout_predictions.empty
