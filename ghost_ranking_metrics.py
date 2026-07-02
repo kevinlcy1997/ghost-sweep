@@ -110,6 +110,54 @@ def group_hit_rate_at_k(y_true, y_score, groups, k: int) -> float:
     return float(len(positive_groups & top_groups) / len(positive_groups))
 
 
+def group_precision_at_k(
+    predictions,
+    k: int,
+    score_col: str = "score",
+    label_col: str = "actual",
+    group_col: str = "target_time",
+) -> float:
+    """Return mean per-group precision@k across all groups."""
+    if k <= 0:
+        raise ValueError("k must be positive")
+    if predictions.empty:
+        return 0.0
+
+    values: list[float] = []
+    for _, group in predictions.groupby(group_col, sort=False):
+        top = group.sort_values(score_col, ascending=False).head(k)
+        if top.empty:
+            values.append(0.0)
+            continue
+        values.append(float(top[label_col].astype(int).mean()))
+    return float(sum(values) / len(values)) if values else 0.0
+
+
+def group_recall_at_k(
+    predictions,
+    k: int,
+    score_col: str = "score",
+    label_col: str = "actual",
+    group_col: str = "target_time",
+) -> float:
+    """Return mean per-positive-group recall@k; groups without positives are excluded."""
+    if k <= 0:
+        raise ValueError("k must be positive")
+    if predictions.empty:
+        return 0.0
+
+    values: list[float] = []
+    for _, group in predictions.groupby(group_col, sort=False):
+        positives = int(group[label_col].astype(int).sum())
+        if positives == 0:
+            continue
+        top_hits = int(
+            group.sort_values(score_col, ascending=False).head(k)[label_col].astype(int).sum()
+        )
+        values.append(float(top_hits / positives))
+    return float(sum(values) / len(values)) if values else 0.0
+
+
 def near_miss_hit_rate_at_k(
     predictions,
     k: int,
