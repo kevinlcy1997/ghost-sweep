@@ -308,6 +308,8 @@ def _evaluate_activity_candidates(
     splits = make_purged_rolling_splits(df, horizon_minutes=horizon_minutes)
     rows: list[dict[str, Any]] = []
     for candidate in _candidate_models():
+        if candidate.kind != "classifier":
+            continue
         for split in splits:
             if df.loc[split.train_mask, target_col].nunique() < 2:
                 continue

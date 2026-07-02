@@ -5,6 +5,7 @@ from ghost_zones import compute_h3_zone
 import h3
 from analysis.run_two_stage_experiment import (
     _candidate_models,
+    _evaluate_activity_candidates,
     activity_target_for_horizon,
     combine_activity_and_spatial_scores,
     _effective_lookback_hours,
@@ -149,6 +150,35 @@ def test_candidate_models_include_lightgbm_ranker_neighbor():
     candidates = {candidate.name: candidate for candidate in _candidate_models()}
 
     assert candidates["lightgbm_ranker_neighbor"].kind == "ranker"
+
+
+def test_evaluate_activity_candidates_skips_ranker_candidates():
+    frame = pd.DataFrame(
+        {
+            "target_time": pd.date_range("2026-06-01 00:00:00", periods=12, freq="h"),
+            "activity_next_30m": [0, 1] * 6,
+            "city_event_count_1h": range(12),
+            "city_event_count_3h": range(1, 13),
+            "city_event_count_24h": range(2, 14),
+            "city_event_count_7d": range(3, 15),
+            "active_districts_24h": [1] * 12,
+            "active_regions_24h": [1] * 12,
+            "city_3h_to_24h_ratio": [0.5] * 12,
+            "city_24h_to_7d_ratio": [0.25] * 12,
+            "hour": list(range(12)),
+            "day_of_week": [0] * 12,
+            "is_weekend": [0] * 12,
+            "hour_sin": [0.0] * 12,
+            "hour_cos": [1.0] * 12,
+            "dow_sin": [0.0] * 12,
+            "dow_cos": [1.0] * 12,
+            "hour_bucket": ["morning"] * 12,
+        }
+    )
+
+    folds, _ = _evaluate_activity_candidates(frame, "activity_next_30m", 30)
+
+    assert "lightgbm_ranker_neighbor" not in set(folds["model"])
 
 
 def test_operational_hit_metrics_include_group_precision_and_recall():
