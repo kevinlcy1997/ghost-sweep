@@ -9,6 +9,7 @@ from analysis.run_two_stage_experiment import (
     combine_activity_and_spatial_scores,
     _effective_lookback_hours,
     _neighbor_hit_metrics,
+    _operational_spatial_metrics,
     _prepare_ranker_training_frame,
     _select_model,
     write_two_stage_summary,
@@ -148,3 +149,19 @@ def test_candidate_models_include_lightgbm_ranker_neighbor():
     candidates = {candidate.name: candidate for candidate in _candidate_models()}
 
     assert candidates["lightgbm_ranker_neighbor"].kind == "ranker"
+
+
+def test_operational_hit_metrics_include_group_precision_and_recall():
+    frame = pd.DataFrame(
+        {
+            "target_time": ["t1", "t1", "t2", "t2"],
+            "zone_id": ["a", "b", "c", "d"],
+            "actual": [1, 0, 0, 1],
+        }
+    )
+    scores = pd.Series([0.9, 0.8, 0.7, 0.6]).to_numpy()
+
+    metrics = _operational_spatial_metrics(frame, "actual", scores)
+
+    assert metrics["group_precision_at_50"] == 0.5
+    assert metrics["group_recall_at_50"] == 1.0

@@ -38,6 +38,8 @@ from ghost_ranking_features import build_zone_ranking_training_data, sample_spat
 from ghost_ranking_metrics import (
     brier_score,
     expected_calibration_error,
+    group_precision_at_k,
+    group_recall_at_k,
     near_miss_hit_rate_at_k,
     risk_band,
 )
@@ -243,6 +245,37 @@ def _neighbor_hit_metrics(frame: pd.DataFrame, target_col: str, scores: np.ndarr
     }
 
 
+def _operational_spatial_metrics(
+    frame: pd.DataFrame,
+    target_col: str,
+    scores: np.ndarray,
+) -> dict[str, float]:
+    if frame.empty or "target_time" not in frame:
+        return {
+            "group_precision_at_50": 0.0,
+            "group_recall_at_50": 0.0,
+        }
+    scored = frame[["target_time", target_col]].copy()
+    scored["score"] = np.asarray(scores, dtype=float)
+    scored["actual"] = scored[target_col].astype(int)
+    return {
+        "group_precision_at_50": group_precision_at_k(
+            scored,
+            50,
+            score_col="score",
+            label_col="actual",
+            group_col="target_time",
+        ),
+        "group_recall_at_50": group_recall_at_k(
+            scored,
+            50,
+            score_col="score",
+            label_col="actual",
+            group_col="target_time",
+        ),
+    }
+
+
 def _select_model(summary: pd.DataFrame, stage: str) -> dict[str, Any]:
     if stage == "activity":
         ranked = summary.sort_values(
@@ -252,6 +285,7 @@ def _select_model(summary: pd.DataFrame, stage: str) -> dict[str, Any]:
     else:
         preferred_columns = [
             "median_neighbor_hit_rate_at_50",
+            "median_group_precision_at_50",
             "median_precision_at_50",
             "median_precision_at_100",
             "median_average_precision",
@@ -413,6 +447,13 @@ def _evaluate_spatial_candidates(
                     scores,
                 )
             )
+            metrics.update(
+                _operational_spatial_metrics(
+                    df.loc[split.validation_mask],
+                    target_col,
+                    scores,
+                )
+            )
             rows.append(
                 {
                     "model": candidate.name,
@@ -438,10 +479,12 @@ def _evaluate_spatial_candidates(
             median_recall_at_100=("recall_at_100", "median"),
             median_average_precision=("average_precision", "median"),
         median_top_decile_lift=("top_decile_lift", "median"),
-        median_neighbor_hit_rate_at_20=("neighbor_hit_rate_at_20", "median"),
-        median_neighbor_hit_rate_at_50=("neighbor_hit_rate_at_50", "median"),
-        median_neighbor_hit_rate_at_100=("neighbor_hit_rate_at_100", "median"),
-        median_district_hit_rate_at_50=("district_hit_rate_at_50", "median"),
+            median_neighbor_hit_rate_at_20=("neighbor_hit_rate_at_20", "median"),
+            median_neighbor_hit_rate_at_50=("neighbor_hit_rate_at_50", "median"),
+            median_neighbor_hit_rate_at_100=("neighbor_hit_rate_at_100", "median"),
+            median_group_precision_at_50=("group_precision_at_50", "median"),
+            median_group_recall_at_50=("group_recall_at_50", "median"),
+            median_district_hit_rate_at_50=("district_hit_rate_at_50", "median"),
             median_region_hit_rate_at_50=("region_hit_rate_at_50", "median"),
             median_brier_score=("brier_score", "median"),
             median_expected_calibration_error=("expected_calibration_error", "median"),
@@ -610,6 +653,13 @@ def _fit_spatial_holdout(
             predictions["spatial_probability"].to_numpy(),
         )
     )
+    holdout_metrics.update(
+        _operational_spatial_metrics(
+            df.loc[split.holdout_mask],
+            target_col,
+            predictions["spatial_probability"].to_numpy(),
+        )
+    )
     return {
         "model_path": _relative(paths["spatial_model"]),
         "predictions_path": _relative(paths["spatial_predictions"]),
@@ -753,6 +803,12 @@ def write_two_stage_summary(metadata: list[dict[str, Any]], path: Path = SUMMARY
                 ),
                 "spatial_neighbor_hit_rate_at_100": spatial_metrics.get(
                     "neighbor_hit_rate_at_100", 0.0
+                ),
+                "spatial_group_precision_at_50": spatial_metrics.get(
+                    "group_precision_at_50", 0.0
+                ),
+                "spatial_group_recall_at_50": spatial_metrics.get(
+                    "group_recall_at_50", 0.0
                 ),
                 "spatial_average_precision": spatial_metrics.get("average_precision", 0.0),
                 "spatial_top_decile_lift": spatial_metrics.get("top_decile_lift", 0.0),
