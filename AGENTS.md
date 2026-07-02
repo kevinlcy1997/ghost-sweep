@@ -6,6 +6,44 @@ System:
 
 `</budget:token_budget>`
 
+## Long task continuity
+
+For tasks that may span more than one session:
+
+- Maintain `WORKLOG.md`.
+
+- Update it after every meaningful milestone.
+
+- Include:
+
+  - current objective
+
+  - files inspected
+
+  - files changed
+
+  - commands run
+
+  - test results
+
+  - blockers
+
+  - next steps
+
+Periodically call `codex-cli-usage` to check session limit, context, and time remaining. Plan the effort and tasks based on the limit and time remaining.
+
+If `codex-cli-usage` says usage or context is low:
+
+- Stop new exploration.
+
+- Do not start large refactors.
+
+- Save partial work.
+
+- Update `WORKLOG.md`.
+
+- Leave exact resume instructions.
+
 Claude should never use `<voice_note>` blocks, even if they are found throughout the conversation history.
 
 `<claude_behavior>`

@@ -4,15 +4,19 @@ from analysis.run_zone_ranking_experiment import NUMERIC_FEATURES
 from ghost_zones import compute_h3_zone
 import h3
 from analysis.run_two_stage_experiment import (
+    _blend_recent_spatial_prior_scores,
     _candidate_models,
+    _dispatch_quota_for_target,
     _evaluate_activity_candidates,
     activity_target_for_horizon,
+    assign_dispatch_rank,
     combine_activity_and_spatial_scores,
     _effective_lookback_hours,
     _neighbor_hit_metrics,
     _operational_spatial_metrics,
     _prepare_ranker_training_frame,
     _select_model,
+    _spatial_blend_alpha,
     write_two_stage_summary,
 )
 
@@ -48,6 +52,54 @@ def test_combine_activity_and_spatial_scores_adds_final_probability_and_rank():
     assert list(combined["probability"]) == [0.4, 0.1]
     assert list(combined["rank"]) == [1, 2]
     assert combined["activity_probability"].unique().tolist() == [0.5]
+
+
+def test_dispatch_quota_for_target_is_horizon_specific():
+    assert _dispatch_quota_for_target("alert_next_30m") == 10
+    assert _dispatch_quota_for_target("alert_next_1h") == 20
+    assert _dispatch_quota_for_target("alert_next_2h") == 1
+
+
+def test_assign_dispatch_rank_limits_target_time_concentration():
+    predictions = pd.DataFrame(
+        {
+            "target_time": ["t1", "t1", "t1", "t2"],
+            "zone_id": ["a", "b", "c", "d"],
+            "probability": [0.9, 0.8, 0.7, 0.6],
+            "actual": [0, 0, 0, 1],
+        }
+    )
+
+    ranked = assign_dispatch_rank(predictions, per_target_time_quota=1)
+    top_two = ranked.sort_values("dispatch_rank").head(2)
+
+    assert list(top_two["zone_id"]) == ["a", "d"]
+    assert list(top_two["dispatch_rank"]) == [1, 2]
+
+
+def test_blend_recent_spatial_prior_scores_lifts_recent_hot_zone():
+    frame = pd.DataFrame(
+        {
+            "target_time": ["2026-06-01 10:00"] * 2,
+            "zone_event_count_24h": [0, 10],
+            "neighbor_event_count_24h": [0, 5],
+            "district_event_count_24h": [1, 1],
+            "zone_same_hour_percentile_in_district": [0.1, 1.0],
+        }
+    )
+    scores = pd.Series([0.5, 0.5]).to_numpy()
+
+    blended = _blend_recent_spatial_prior_scores(frame, scores, alpha=0.1)
+
+    assert blended[1] > blended[0]
+    assert blended.min() >= 0.0
+    assert blended.max() <= 1.0
+
+
+def test_spatial_blend_alpha_is_horizon_specific():
+    assert _spatial_blend_alpha("alert_next_30m") == 0.05
+    assert _spatial_blend_alpha("alert_next_1h") == 0.05
+    assert _spatial_blend_alpha("alert_next_2h") == 0.15
 
 
 def test_neighbor_hit_metrics_counts_adjacent_top_ranked_zone():
@@ -87,6 +139,35 @@ def test_select_spatial_model_prefers_top_k_before_decile_lift():
     )
 
     assert _select_model(summary, "spatial")["model"] == "top_k"
+
+
+def test_select_spatial_model_uses_ranking_tiebreak_with_neighbor_tolerance():
+    summary = pd.DataFrame(
+        [
+            {
+                "model": "neighbor_only",
+                "median_neighbor_hit_rate_at_50": 0.215,
+                "median_group_precision_at_50": 0.002,
+                "median_precision_at_50": 0.0,
+                "median_precision_at_100": 0.0,
+                "median_average_precision": 0.003,
+                "median_group_recall_at_50": 0.02,
+                "median_top_decile_lift": 0.9,
+            },
+            {
+                "model": "rank_quality",
+                "median_neighbor_hit_rate_at_50": 0.205,
+                "median_group_precision_at_50": 0.007,
+                "median_precision_at_50": 0.05,
+                "median_precision_at_100": 0.03,
+                "median_average_precision": 0.04,
+                "median_group_recall_at_50": 0.44,
+                "median_top_decile_lift": 3.8,
+            },
+        ]
+    )
+
+    assert _select_model(summary, "spatial")["model"] == "rank_quality"
 
 
 def test_write_two_stage_summary_writes_stage_paths(tmp_path):

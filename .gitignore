@@ -47,8 +47,10 @@ analysis/spotfire_dashboard.html
 analysis/visual_debug.txt
 ghost_zone_forecast*.geojson
 .headroom/
+.tokensave/
 .mplconfig/
 .pytest_tmp/
+.pytest_tmp*/
 
 # Virtual environment
 .venv/

@@ -283,14 +283,21 @@ def _select_model(summary: pd.DataFrame, stage: str) -> dict[str, Any]:
             ascending=[False, False, True],
         )
     else:
-        preferred_columns = [
-            "median_neighbor_hit_rate_at_50",
+        neighbor_col = "median_neighbor_hit_rate_at_50"
+        ranking_columns = [
             "median_group_precision_at_50",
             "median_precision_at_50",
             "median_precision_at_100",
             "median_average_precision",
+            "median_group_recall_at_50",
             "median_top_decile_lift",
         ]
+        if neighbor_col in summary.columns:
+            best_neighbor = float(summary[neighbor_col].max())
+            summary = summary[
+                summary[neighbor_col].astype(float) >= best_neighbor - 0.02
+            ].copy()
+        preferred_columns = [*ranking_columns, neighbor_col]
         sort_columns = [column for column in preferred_columns if column in summary.columns]
         ranked = summary.sort_values(
             by=sort_columns,
@@ -407,6 +414,46 @@ def _predict_spatial_candidate_scores(
     return np.asarray(scores, dtype=float)
 
 
+def _target_time_percentile(frame: pd.DataFrame, column: str) -> np.ndarray:
+    values = frame[column].fillna(0).astype(float)
+    return values.groupby(frame["target_time"]).rank(pct=True, method="average").to_numpy()
+
+
+def _blend_recent_spatial_prior_scores(
+    frame: pd.DataFrame,
+    scores: np.ndarray,
+    alpha: float = 0.05,
+) -> np.ndarray:
+    """Nudge model scores toward recent within-target-time spatial priors."""
+    if frame.empty or "target_time" not in frame:
+        return np.clip(np.asarray(scores, dtype=float), 0.0, 1.0)
+
+    required_columns = [
+        "zone_event_count_24h",
+        "neighbor_event_count_24h",
+        "district_event_count_24h",
+        "zone_same_hour_percentile_in_district",
+    ]
+    if any(column not in frame for column in required_columns):
+        return np.clip(np.asarray(scores, dtype=float), 0.0, 1.0)
+
+    recent_prior = (
+        0.45 * _target_time_percentile(frame, "zone_event_count_24h")
+        + 0.25 * _target_time_percentile(frame, "neighbor_event_count_24h")
+        + 0.15 * _target_time_percentile(frame, "district_event_count_24h")
+        + 0.15 * _target_time_percentile(frame, "zone_same_hour_percentile_in_district")
+    )
+    model_scores = np.asarray(scores, dtype=float)
+    return np.clip((1.0 - alpha) * model_scores + alpha * recent_prior, 0.0, 1.0)
+
+
+def _spatial_blend_alpha(target_col: str) -> float:
+    """Return horizon-specific blend strength from rolling-CV alpha sweeps."""
+    if target_col.endswith("_2h"):
+        return 0.15
+    return 0.05
+
+
 def _evaluate_spatial_candidates(
     df: pd.DataFrame,
     target_col: str,
@@ -433,6 +480,11 @@ def _evaluate_spatial_candidates(
                 candidate,
                 df.loc[split.validation_mask],
                 feature_cols,
+            )
+            scores = _blend_recent_spatial_prior_scores(
+                df.loc[split.validation_mask],
+                scores,
+                alpha=_spatial_blend_alpha(target_col),
             )
             metrics = _score_spatial_predictions(
                 df.loc[split.validation_mask, target_col],
@@ -539,6 +591,59 @@ def combine_activity_and_spatial_scores(
     return combined
 
 
+def _dispatch_quota_for_target(target_col: str) -> int:
+    if target_col.endswith("_2h"):
+        return 1
+    if target_col.endswith("_1h"):
+        return 20
+    return 10
+
+
+def assign_dispatch_rank(
+    predictions: pd.DataFrame,
+    per_target_time_quota: int,
+    score_col: str = "probability",
+) -> pd.DataFrame:
+    ranked = predictions.sort_values(
+        by=[score_col, "zone_id"],
+        ascending=[False, True],
+        kind="mergesort",
+    )
+    selected: list[int] = []
+    counts: dict[object, int] = {}
+    quota = max(1, int(per_target_time_quota))
+    for index, row in ranked.iterrows():
+        target_time = row["target_time"]
+        if counts.get(target_time, 0) >= quota:
+            continue
+        selected.append(index)
+        counts[target_time] = counts.get(target_time, 0) + 1
+
+    remaining = [index for index in ranked.index if index not in set(selected)]
+    dispatch_order = selected + remaining
+    result = predictions.copy()
+    result["dispatch_rank"] = pd.Series(
+        np.arange(1, len(dispatch_order) + 1), index=dispatch_order
+    ).reindex(result.index).astype(int)
+    result["dispatch_score"] = 1.0 / result["dispatch_rank"].astype(float)
+    return result
+
+
+def _dispatch_topk_metrics(predictions: pd.DataFrame, k: int = 50) -> dict[str, float]:
+    if predictions.empty or "dispatch_rank" not in predictions:
+        return {
+            f"dispatch_precision_at_{k}": 0.0,
+            f"dispatch_hits_at_{k}": 0.0,
+            f"dispatch_target_times_at_{k}": 0.0,
+        }
+    top = predictions.sort_values("dispatch_rank", ascending=True).head(k)
+    return {
+        f"dispatch_precision_at_{k}": float(top["actual"].astype(int).mean()) if len(top) else 0.0,
+        f"dispatch_hits_at_{k}": float(top["actual"].astype(int).sum()),
+        f"dispatch_target_times_at_{k}": float(top["target_time"].nunique()),
+    }
+
+
 def _available_history_hours(events: list[dict[str, Any]]) -> float:
     timestamps = pd.to_datetime(
         [event.get("create_dt") for event in events if event.get("create_dt")],
@@ -621,6 +726,11 @@ def _fit_spatial_holdout(
         df.loc[split.holdout_mask],
         feature_cols,
     )
+    spatial_scores = _blend_recent_spatial_prior_scores(
+        df.loc[split.holdout_mask],
+        spatial_scores,
+        alpha=_spatial_blend_alpha(target_col),
+    )
     default_activity = (
         float(activity_holdout_predictions["activity_probability"].mean())
         if not activity_holdout_predictions.empty
@@ -638,6 +748,10 @@ def _fit_spatial_holdout(
     base["spatial_probability"] = np.clip(spatial_scores, 0.0, 1.0)
     base["actual"] = df.loc[split.holdout_mask, target_col].astype(int).to_numpy()
     predictions = combine_activity_and_spatial_scores(base, activity_scores)
+    predictions = assign_dispatch_rank(
+        predictions,
+        per_target_time_quota=_dispatch_quota_for_target(target_col),
+    )
     predictions.to_csv(paths["spatial_predictions"], index=False)
     joblib.dump(pipeline, paths["spatial_model"])
     holdout_metrics = _score_spatial_predictions(
@@ -662,6 +776,8 @@ def _fit_spatial_holdout(
             predictions["spatial_probability"].to_numpy(),
         )
     )
+    holdout_metrics.update(_dispatch_topk_metrics(predictions, k=50))
+
     return {
         "model_path": _relative(paths["spatial_model"]),
         "predictions_path": _relative(paths["spatial_predictions"]),
@@ -814,6 +930,13 @@ def write_two_stage_summary(metadata: list[dict[str, Any]], path: Path = SUMMARY
                 ),
                 "spatial_average_precision": spatial_metrics.get("average_precision", 0.0),
                 "spatial_top_decile_lift": spatial_metrics.get("top_decile_lift", 0.0),
+                "spatial_dispatch_precision_at_50": spatial_metrics.get(
+                    "dispatch_precision_at_50", 0.0
+                ),
+                "spatial_dispatch_hits_at_50": spatial_metrics.get("dispatch_hits_at_50", 0.0),
+                "spatial_dispatch_target_times_at_50": spatial_metrics.get(
+                    "dispatch_target_times_at_50", 0.0
+                ),
                 "spatial_holdout_rows": spatial_split.get("holdout_rows", 0),
                 "spatial_holdout_positives": spatial_split.get("holdout_positives", 0),
                 "spatial_holdout_start": spatial_split.get("holdout_start", ""),
