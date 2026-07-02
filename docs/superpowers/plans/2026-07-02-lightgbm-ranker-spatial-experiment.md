@@ -274,7 +274,7 @@ Run:
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit grouped metrics**
+- [x] **Step 5: Commit grouped metrics**
 
 Run:
 
@@ -515,7 +515,7 @@ Run:
 
 Expected: PASS.
 
-- [ ] **Step 8: Commit ranker plumbing**
+- [x] **Step 8: Commit ranker plumbing**
 
 Run:
 
@@ -704,7 +704,7 @@ Run:
 
 Expected: PASS.
 
-- [ ] **Step 8: Commit operational metrics**
+- [x] **Step 8: Commit operational metrics**
 
 Run:
 
