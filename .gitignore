@@ -55,6 +55,7 @@ ghost_zone_forecast*.geojson
 # Virtual environment
 .venv/
 venv/
+.headroom-venv/
 .worktrees/
 
 # Secrets
