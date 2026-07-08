@@ -382,3 +382,38 @@ Test results:
 
 Next steps:
 - Controller to do the final browser-side visual verification at `/worklog`.
+
+## 2026-07-08 Hierarchical spatial cascade design
+
+Current objective:
+- Design a larger-step spatial prediction experiment that compares coarse-to-fine hierarchy variants against the current accepted baseline.
+
+Files inspected:
+- `WORKLOG.md`
+- `analysis/spatial_model_error_analysis_latest.md`
+- `analysis/dashboard_manifest_latest.json`
+- `analysis/run_two_stage_experiment.py`
+- `analysis/run_zone_ranking_experiment.py`
+- `ghost_ranking_features.py`
+- `docs/superpowers/specs/2026-07-08-district-dispatch-policy-design.md`
+
+Files changed:
+- `docs/superpowers/specs/2026-07-08-hierarchical-spatial-cascade-design.md`
+- `WORKLOG.md`
+
+Commands run:
+- `rg -n "Dispatch quota ranking:|Near-miss ranker experiment:|Cold-zone district backfill experiment:|Current accepted model is still" WORKLOG.md`
+- `rg -n "dispatch_rank|dispatch_score|_dispatch_quota_for_target|assign_dispatch_rank|district|Unknown" analysis/run_two_stage_experiment.py`
+- `rg -n "district_event_count|region_event_count|neighbor_context|Unknown|district" ghost_ranking_features.py`
+- `rg -n "resolution 8|label sparsity|exact-zone precision" analysis/spatial_model_error_analysis_latest.md WORKLOG.md`
+
+Test results:
+- No code-path tests run in this design milestone.
+- Design outcome approved in chat: compare hierarchy variants against baseline, use ranking-first acceptance, require whole-stack improvement, and compare `res8` vs `res7` parent layers before the architecture bake-off.
+
+Blockers:
+- `dashboard_manifest_latest.json` currently shows many `two_stage_*` artifacts missing on `main`, so the next implementation pass should regenerate the experiment outputs before relying on file-based comparisons alone.
+
+Next steps:
+- Review the written design spec.
+- If approved, write the implementation plan for the two-phase hierarchy experiment.
