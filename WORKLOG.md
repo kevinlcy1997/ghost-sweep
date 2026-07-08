@@ -526,3 +526,48 @@ Next steps:
 - Self-review the written spec for placeholders, contradictions, and ambiguity.
 - Commit the design doc and updated worklog files.
 - Ask the user to review the spec before writing the implementation plan.
+
+## 2026-07-08 Coarse-layer feature screening implementation plan
+
+Current objective:
+- Translate the approved coarse-context screening design into an executable TDD plan that stays close to the accepted two-stage baseline and only adds real incremental ablations.
+
+Files inspected:
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+- `docs/superpowers/specs/2026-07-08-coarse-layer-feature-screening-design.md`
+- `docs/superpowers/plans/2026-07-08-hierarchical-spatial-cascade-experiment.md`
+- `ghost_ranking_features.py`
+- `ghost_zones.py`
+- `ghost_districts.py`
+- `analysis/run_zone_ranking_experiment.py`
+- `analysis/run_model_iteration.py`
+- `analysis/run_two_stage_experiment.py`
+- `tests/test_ghost_ranking_features.py`
+- `tests/test_two_stage_experiment.py`
+
+Files changed:
+- `docs/superpowers/plans/2026-07-08-coarse-layer-feature-screening-experiment.md`
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+
+Commands run:
+- `rg -n "police_zone" .`
+- `rg -n "def assign_zone|district|region" ghost_zones.py`
+- `rg -n "NUMERIC_FEATURES|CATEGORICAL_FEATURES" analysis\run_zone_ranking_experiment.py`
+- `rg -n "NUMERIC_FEATURES|CATEGORICAL_FEATURES|feature_cols =" analysis\run_two_stage_experiment.py`
+- `rg -n "def _make_pipeline|NUMERIC_FEATURES|CATEGORICAL_FEATURES" analysis\run_model_iteration.py`
+- `Get-ChildItem "analysis\geo" | Select-Object Name,Length`
+
+Test results:
+- No code-path tests were run in this planning milestone.
+- Key planning finding: the accepted baseline already includes `district` and `region`, so the plan treats `district` as an analysis control and `police_zone` as an incremental numeric pack over the existing regional boundary proxy instead of promising a no-op `baseline + district` rerun.
+
+Blockers:
+- No separate police-boundary dataset exists in `analysis\geo`, so the plan uses the existing broad `region` field as the `police_zone` proxy for this experiment.
+- `analysis/run_model_iteration.py::_make_pipeline()` is hard-wired to the global spatial feature lists, so the plan adds a local spatial preprocessor inside `analysis/run_two_stage_experiment.py` for ablation-specific feature sets.
+
+Next steps:
+- Self-review the plan against the approved design and the current baseline feature contract.
+- Commit the plan and worklog updates on `main`.
+- Hand off execution via subagent-driven or inline plan execution after the plan is saved.

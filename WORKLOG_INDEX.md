@@ -9,5 +9,6 @@ Use this file as the first search target before opening the full `WORKLOG.md`.
 - `2026-07-08 Hierarchical spatial cascade implementation plan` — Logged the implementation-plan handoff for the hierarchical spatial cascade. `WORKLOG.md` lines 421-453
 - `2026-07-08 Hierarchical spatial cascade experiment` — Recorded the rejected hierarchy experiment and final parent-sweep evidence. `WORKLOG.md` lines 455-493
 - `2026-07-08 Coarse-layer feature screening design` — Captured the analysis-first coarse-context feature-screening design. `WORKLOG.md` lines 495-528
+- `2026-07-08 Coarse-layer feature screening implementation plan` — Captured the executable TDD plan and the baseline-vs-coarse-context scope decisions. `WORKLOG.md` lines 530-573
 
 Note: refresh the listed line ranges if earlier entries are inserted into `WORKLOG.md`.
