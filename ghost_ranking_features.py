@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 
 from ghost_time import to_hk_feature_time
-from ghost_zones import DEFAULT_H3_RESOLUTION, assign_zone, h3_zone_centroid
+from ghost_zones import DEFAULT_H3_RESOLUTION, assign_zone, h3_zone_centroid, compute_h3_zone
 
 
 ROOT = Path(__file__).resolve().parent
@@ -75,6 +75,98 @@ def _safe_divide(numerator: float, denominator: float) -> float:
     if denominator <= 0:
         return 0.0
     return float(numerator) / float(denominator)
+
+
+def _coarse_parent_zone_id(zone_id: str, parent_resolution: int) -> str:
+    """Return a parent H3 cell id at parent_resolution for a given zone_id.
+
+    If the zone is already at the parent resolution, return it unchanged.
+    """
+    try:
+        res = h3.get_resolution(zone_id)
+    except Exception:
+        # If invalid zone id, return as-is
+        return zone_id
+    if res == parent_resolution:
+        return zone_id
+    # derive parent by geographic centroid to avoid H3 parent inconsistencies
+    try:
+        lat, lng = h3.h3_to_geo(zone_id)
+        parent = h3.geo_to_h3(lat, lng, parent_resolution)
+        return str(parent)
+    except Exception:
+        # fallback to cell_to_parent if geo lookup fails
+        return str(h3.cell_to_parent(zone_id, parent_resolution))
+
+
+def _add_group_context_features(enhanced: pd.DataFrame, group_col: str, prefix: str) -> pd.DataFrame:
+    """Add aggregated context features for groups like police_zone or res8."""
+    # initialize columns
+    enhanced[f"{prefix}_event_count_3h"] = 0.0
+    enhanced[f"{prefix}_event_count_24h"] = 0.0
+    enhanced[f"{prefix}_event_count_7d"] = 0.0
+    enhanced[f"{prefix}_same_hour_rate"] = 0.0
+    enhanced[f"{prefix}_active_zones_24h"] = 0
+    enhanced[f"zone_24h_share_of_{prefix}"] = 0.0
+    enhanced[f"zone_7d_rank_in_{prefix}"] = 0.0
+    enhanced[f"zone_same_hour_percentile_in_{prefix}"] = 0.0
+
+    if not {"target_time", group_col}.issubset(enhanced.columns):
+        return enhanced
+
+    # allow overriding group key for res8 to ensure coarse parent uses geographic centroid
+    temp_key = None
+    if group_col == "res8_zone":
+        # compute group keys from coordinates when available to ensure consistency with compute_h3_zone
+        temp_key = f"__{prefix}_group_key"
+        if "zone_lat" in enhanced.columns and "zone_lng" in enhanced.columns:
+            enhanced[temp_key] = enhanced.apply(
+                lambda r: compute_h3_zone(float(r["zone_lat"]), float(r["zone_lng"]), resolution=8),
+                axis=1,
+            )
+        elif "zone_id" in enhanced.columns:
+            enhanced[temp_key] = enhanced["zone_id"].map(lambda z: _coarse_parent_zone_id(str(z), 8))
+        else:
+            return enhanced
+        group_cols = ["target_time", temp_key]
+    else:
+        group_cols = ["target_time", group_col]
+
+    # aggregated event counts
+    enhanced[f"{prefix}_event_count_3h"] = enhanced.groupby(group_cols)["zone_event_count_3h"].transform("sum")
+    enhanced[f"{prefix}_event_count_24h"] = enhanced.groupby(group_cols)["zone_event_count_24h"].transform("sum")
+    enhanced[f"{prefix}_event_count_7d"] = enhanced.groupby(group_cols)["zone_event_count_7d"].transform("sum")
+
+    # same hour rate aggregated (mean of zone_same_hour_rate when available)
+    if "zone_same_hour_rate" in enhanced:
+        enhanced[f"{prefix}_same_hour_rate"] = enhanced.groupby(group_cols)["zone_same_hour_rate"].transform("mean")
+    else:
+        enhanced[f"{prefix}_same_hour_rate"] = 0.0
+
+    # active zones in 24h
+    enhanced[f"{prefix}_active_zones_24h"] = enhanced.groupby(group_cols)["zone_event_count_24h"].transform(lambda s: (s.astype(float) > 0).sum())
+
+    # share of group's 24h events
+    denominator = enhanced[f"{prefix}_event_count_24h"]
+    enhanced[f"zone_24h_share_of_{prefix}"] = [
+        _safe_divide(zone_count, total)
+        for zone_count, total in zip(enhanced["zone_event_count_24h"], denominator)
+    ]
+
+    # 7d rank within group
+    enhanced[f"zone_7d_rank_in_{prefix}"] = enhanced.groupby(group_cols)["zone_event_count_7d"].rank(method="min", ascending=False)
+
+    # same hour percentile within group
+    if "zone_same_hour_rate" in enhanced:
+        enhanced[f"zone_same_hour_percentile_in_{prefix}"] = enhanced.groupby(group_cols)["zone_same_hour_rate"].rank(method="max", pct=True)
+    else:
+        enhanced[f"zone_same_hour_percentile_in_{prefix}"] = 0.0
+
+    # cleanup temp key
+    if temp_key is not None and temp_key in enhanced.columns:
+        enhanced = enhanced.drop(columns=[temp_key])
+
+    return enhanced
 
 
 def _distance_m(lat_a: float, lng_a: float, lat_b: float, lng_b: float) -> float:
@@ -420,6 +512,24 @@ def add_engineered_ranking_features(
         return df.copy()
 
     enhanced = df.copy()
+    # add police_zone alias (uses existing region) and res8 coarse parent zone
+    if "police_zone" not in enhanced:
+        if "region" in enhanced.columns:
+            enhanced["police_zone"] = enhanced["region"].astype(object)
+        else:
+            enhanced["police_zone"] = pd.Series([None] * len(enhanced))
+    if "res8_zone" not in enhanced:
+        # prefer computing coarse parent from coordinates when available for consistency
+        if "zone_lat" in enhanced.columns and "zone_lng" in enhanced.columns:
+            enhanced["res8_zone"] = enhanced.apply(
+                lambda r: compute_h3_zone(float(r["zone_lat"]), float(r["zone_lng"]), resolution=8),
+                axis=1,
+            )
+        elif "zone_id" in enhanced.columns:
+            enhanced["res8_zone"] = enhanced["zone_id"].map(lambda z: _coarse_parent_zone_id(str(z), 8))
+        else:
+            enhanced["res8_zone"] = pd.Series([None] * len(enhanced))
+
     road_path = Path(road_context_path) if road_context_path is not None else DEFAULT_ROAD_CONTEXT_PATH
     for column in [
         "zone_event_count_3h",
@@ -498,6 +608,8 @@ def add_engineered_ranking_features(
 
     enhanced = _ensure_zone_coordinates(enhanced)
     enhanced = _add_ring2_features(enhanced)
+    enhanced = _add_group_context_features(enhanced, "police_zone", "police_zone")
+    enhanced = _add_group_context_features(enhanced, "res8_zone", "res8")
     enhanced = _add_district_relative_features(enhanced)
     enhanced = _add_hotspot_distance_features(enhanced)
     enhanced = _add_road_context_features(enhanced, road_path)
@@ -645,6 +757,8 @@ def build_zone_ranking_training_data(
                 "h3_resolution": resolution,
                 "district": district,
                 "region": region,
+                "police_zone": region,
+                "res8_zone": compute_h3_zone(zone_lat, zone_lng, resolution=8),
                 "zone_lat": zone_lat,
                 "zone_lng": zone_lng,
                 "hour": target_dt.hour,
