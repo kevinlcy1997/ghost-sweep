@@ -8,6 +8,7 @@ from analysis.run_two_stage_experiment import (
     _candidate_models,
     _dispatch_quota_for_target,
     _evaluate_activity_candidates,
+    _ranker_training_target_col,
     activity_target_for_horizon,
     assign_dispatch_rank,
     combine_activity_and_spatial_scores,
@@ -227,10 +228,24 @@ def test_ranker_group_sizes_sort_by_target_time_and_drop_empty_positive_groups()
     assert group_sizes == [2]
 
 
-def test_candidate_models_include_lightgbm_ranker_neighbor():
+def test_candidate_models_include_lightgbm_ranker_nearmiss():
     candidates = {candidate.name: candidate for candidate in _candidate_models()}
 
-    assert candidates["lightgbm_ranker_neighbor"].kind == "ranker"
+    assert candidates["lightgbm_ranker_nearmiss"].kind == "ranker"
+
+
+def test_ranker_training_target_prefers_relevance_column():
+    frame = pd.DataFrame(
+        [
+            {"alert_next_30m": 0, "alert_next_30m_relevance": 1},
+            {"alert_next_30m": 1, "alert_next_30m_relevance": 2},
+        ]
+    )
+    candidate = next(
+        item for item in _candidate_models() if item.name == "lightgbm_ranker_nearmiss"
+    )
+
+    assert _ranker_training_target_col(candidate, "alert_next_30m", frame) == "alert_next_30m_relevance"
 
 
 def test_evaluate_activity_candidates_skips_ranker_candidates():
@@ -259,7 +274,7 @@ def test_evaluate_activity_candidates_skips_ranker_candidates():
 
     folds, _ = _evaluate_activity_candidates(frame, "activity_next_30m", 30)
 
-    assert "lightgbm_ranker_neighbor" not in set(folds["model"])
+    assert "lightgbm_ranker_nearmiss" not in set(folds["model"])
 
 
 def test_operational_hit_metrics_include_group_precision_and_recall():
