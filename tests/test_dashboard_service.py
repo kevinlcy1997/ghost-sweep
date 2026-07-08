@@ -315,6 +315,13 @@ def test_worklog_endpoint_returns_rendered_markdown_html(tmp_path):
                 "",
                 "A paragraph with *focus* and [docs](https://example.com).",
                 "",
+                "```python",
+                "print('hello')",
+                "```",
+                "",
+                "1. first",
+                "2. second",
+                "",
                 "| Metric | Value |",
                 "| --- | --- |",
                 "| Tests | 6 |",
@@ -338,9 +345,31 @@ def test_worklog_endpoint_returns_rendered_markdown_html(tmp_path):
     assert "<h1>Worklog</h1>" in payload["html"]
     assert "<em>focus</em>" in payload["html"]
     assert '<a href="https://example.com">' in payload["html"]
+    assert "<pre><code" in payload["html"]
+    assert "print(&#39;hello&#39;)" in payload["html"] or "print('hello')" in payload["html"]
+    assert "<ol>" in payload["html"]
+    assert "<li>first</li>" in payload["html"]
     assert "<table>" in payload["html"]
     assert "&lt;script&gt;alert" in payload["html"]
     assert "<script>" not in payload["html"]
+
+
+def test_worklog_endpoint_sanitizes_unsafe_links(tmp_path):
+    worklog = tmp_path / "WORKLOG.md"
+    worklog.write_text("[bad](javascript:alert(1))", encoding="utf-8")
+    original = dict(service.PATHS)
+    service.PATHS["worklog"] = worklog
+    try:
+        status, headers, body = service.dispatch("GET", "/api/worklog")
+    finally:
+        service.PATHS.clear()
+        service.PATHS.update(original)
+
+    assert status == 200
+    assert headers["Content-Type"] == "application/json; charset=utf-8"
+    payload = json.loads(body)
+    assert "javascript:alert(1)" not in payload["html"]
+    assert "<a" in payload["html"]
 
 
 def test_worklog_page_polls_live_endpoint():

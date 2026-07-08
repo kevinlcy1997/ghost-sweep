@@ -11,6 +11,7 @@ import sys
 from datetime import datetime
 from functools import lru_cache
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
@@ -440,11 +441,78 @@ def render_worklog_markdown(text: str) -> str:
     if not text:
         return ""
     safe_text = html.escape(text, quote=False)
-    return markdown_lib.markdown(
+    rendered = markdown_lib.markdown(
         safe_text,
         extensions=["tables", "fenced_code", "sane_lists"],
         output_format="html5",
     )
+    return sanitize_rendered_html(rendered)
+
+
+SAFE_URL_SCHEMES = {"http", "https", "mailto"}
+
+
+def is_safe_url(target: str) -> bool:
+    cleaned = target.strip()
+    if not cleaned:
+        return False
+    parsed = urlparse(cleaned)
+    if parsed.scheme:
+        return parsed.scheme.lower() in SAFE_URL_SCHEMES
+    return not parsed.netloc
+
+
+class SanitizingHTMLParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=False)
+        self.parts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.parts.append(self._render_tag(tag, attrs, self_closing=False))
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.parts.append(self._render_tag(tag, attrs, self_closing=True))
+
+    def handle_endtag(self, tag: str) -> None:
+        self.parts.append(f"</{tag}>")
+
+    def handle_data(self, data: str) -> None:
+        self.parts.append(data)
+
+    def handle_entityref(self, name: str) -> None:
+        self.parts.append(f"&{name};")
+
+    def handle_charref(self, name: str) -> None:
+        self.parts.append(f"&#{name};")
+
+    def handle_comment(self, data: str) -> None:
+        self.parts.append(f"<!--{data}-->")
+
+    def _render_tag(
+        self,
+        tag: str,
+        attrs: list[tuple[str, str | None]],
+        *,
+        self_closing: bool,
+    ) -> str:
+        rendered_attrs = []
+        for name, value in attrs:
+            if value is None:
+                rendered_attrs.append(name)
+                continue
+            if name.lower() in {"href", "src"} and not is_safe_url(value):
+                continue
+            rendered_attrs.append(f'{name}="{html.escape(value, quote=True)}"')
+        suffix = " /" if self_closing else ""
+        joined = f" {' '.join(rendered_attrs)}" if rendered_attrs else ""
+        return f"<{tag}{joined}{suffix}>"
+
+
+def sanitize_rendered_html(rendered_html: str) -> str:
+    parser = SanitizingHTMLParser()
+    parser.feed(rendered_html)
+    parser.close()
+    return "".join(parser.parts)
 
 
 def api_worklog() -> dict[str, object]:
