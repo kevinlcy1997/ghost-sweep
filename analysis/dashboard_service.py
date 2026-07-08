@@ -449,6 +449,17 @@ def render_worklog_markdown(text: str) -> str:
     return sanitize_rendered_html(rendered)
 
 
+def render_worklog_detail_markdown(text: str) -> str:
+    entries = split_worklog_entries(text)
+    if not entries:
+        return render_worklog_markdown(text)
+    reversed_markdown = "\n\n".join(
+        f"## {title}\n\n{body}".strip() if body else f"## {title}"
+        for title, body in reversed(entries)
+    )
+    return render_worklog_markdown(reversed_markdown)
+
+
 SAFE_URL_SCHEMES = {"http", "https", "mailto"}
 
 
@@ -543,6 +554,7 @@ def api_worklog() -> dict[str, object]:
         "raw_markdown": raw_markdown,
         "text": text,
         "html": render_worklog_markdown(text) if exists else "",
+        "detail_html": render_worklog_detail_markdown(text) if exists else "",
     }
 
 

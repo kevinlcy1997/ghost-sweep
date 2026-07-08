@@ -306,6 +306,45 @@ def test_worklog_endpoint_returns_latest_progress_sections(tmp_path):
     assert "Old objective" not in payload["raw_markdown"]
 
 
+def test_worklog_endpoint_returns_descending_detail_html(tmp_path):
+    worklog = tmp_path / "WORKLOG.md"
+    worklog.write_text(
+        "\n".join(
+            [
+                "# Worklog",
+                "",
+                "## 2026-07-07 Older entry",
+                "",
+                "Current objective:",
+                "- Finish the first pass.",
+                "",
+                "## 2026-07-08 Newer entry",
+                "",
+                "Current objective:",
+                "- Ship the newest change.",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    original = dict(service.PATHS)
+    service.PATHS["worklog"] = worklog
+    try:
+        status, headers, body = service.dispatch("GET", "/api/worklog")
+    finally:
+        service.PATHS.clear()
+        service.PATHS.update(original)
+
+    assert status == 200
+    assert headers["Content-Type"] == "application/json; charset=utf-8"
+    payload = json.loads(body)
+    assert payload["latest_title"] == "2026-07-08 Newer entry"
+    assert payload["current_objective"] == ["Ship the newest change."]
+    assert payload["html"].index("2026-07-07 Older entry") < payload["html"].index("2026-07-08 Newer entry")
+    assert payload["detail_html"].index("2026-07-08 Newer entry") < payload["detail_html"].index(
+        "2026-07-07 Older entry"
+    )
+
+
 def test_worklog_endpoint_returns_rendered_markdown_html(tmp_path):
     worklog = tmp_path / "WORKLOG.md"
     worklog.write_text(
