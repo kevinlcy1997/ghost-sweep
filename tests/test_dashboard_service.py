@@ -393,4 +393,5 @@ def test_worklog_page_uses_rendered_html_field():
     assert "payload.html" in body
     assert "innerHTML = payload.html" in body
     assert ".markdown-body table" in body
+    assert ".markdown-body ul" in body
     assert ".markdown-body ol" in body
