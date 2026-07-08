@@ -5,7 +5,9 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import re
 import sys
+from datetime import datetime
 from functools import lru_cache
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -41,6 +43,7 @@ PATHS = {
     "predictions_30m": ANALYSIS_DIR / "iterated_zone_predictions_30m_latest.csv",
     "predictions_1h": ANALYSIS_DIR / "iterated_zone_predictions_1h_latest.csv",
     "predictions_2h": ANALYSIS_DIR / "iterated_zone_predictions_2h_latest.csv",
+    "worklog": ROOT / "WORKLOG.md",
 }
 
 
@@ -76,6 +79,13 @@ def read_json_obj(path: Path) -> dict[str, object]:
 def resolve_path(path: str | Path) -> Path:
     resolved = Path(path)
     return resolved if resolved.is_absolute() else ROOT / resolved
+
+
+def display_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
 
 
 def number(value: object, default: float = 0.0) -> float:
@@ -396,6 +406,64 @@ def api_grid_geojson(query: dict[str, list[str]]) -> dict[str, object]:
     }
 
 
+def split_worklog_entries(text: str) -> list[tuple[str, str]]:
+    matches = list(re.finditer(r"(?m)^##\s+(.+)$", text))
+    if not matches:
+        return []
+    entries = []
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        entries.append((match.group(1).strip(), text[match.end() : end].strip()))
+    return entries
+
+
+def worklog_section_items(entry_text: str, heading: str) -> list[str]:
+    items: list[str] = []
+    capturing = False
+    for line in entry_text.splitlines():
+        stripped = line.strip()
+        if not capturing:
+            if stripped == f"{heading}:":
+                capturing = True
+            continue
+        if stripped and stripped.endswith(":") and not stripped.startswith("-"):
+            break
+        if not stripped:
+            continue
+        items.append(stripped[2:].strip() if stripped.startswith("- ") else stripped)
+    return items
+
+
+def api_worklog() -> dict[str, object]:
+    path = PATHS["worklog"]
+    exists = path.exists()
+    text = path.read_text(encoding="utf-8") if exists else ""
+    entries = split_worklog_entries(text)
+    latest_title = ""
+    latest_body = text
+    if entries:
+        latest_title, latest_body = entries[-1]
+    raw_markdown = f"## {latest_title}\n\n{latest_body}".strip() if latest_title else latest_body
+    modified_at = (
+        datetime.fromtimestamp(path.stat().st_mtime).astimezone().isoformat(timespec="seconds")
+        if exists
+        else ""
+    )
+    return {
+        "exists": exists,
+        "path": display_path(path),
+        "entry_count": len(entries),
+        "modified_at": modified_at,
+        "latest_title": latest_title,
+        "current_objective": worklog_section_items(latest_body, "Current objective"),
+        "test_results": worklog_section_items(latest_body, "Test results"),
+        "blockers": worklog_section_items(latest_body, "Blockers"),
+        "next_steps": worklog_section_items(latest_body, "Next steps"),
+        "raw_markdown": raw_markdown,
+        "text": text,
+    }
+
+
 DASHBOARD_HTML = """<!doctype html>
 <html lang="en">
 <head>
@@ -585,6 +653,103 @@ render().catch(err => alert(err.message));
 </html>"""
 
 
+WORKLOG_HTML = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ghost Sweep Worklog</title>
+<style>
+:root { --bg:#0d1117; --panel:#161b22; --ink:#e6edf3; --muted:#8b949e; --line:#30363d; --accent:#f39c12; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 "Segoe UI", Arial, sans-serif; }
+header { padding:18px 20px; border-bottom:1px solid var(--line); background:#11161d; }
+h1 { margin:0; font-size:20px; color:var(--accent); }
+.sub { margin-top:6px; color:var(--muted); }
+main { display:grid; grid-template-columns:minmax(280px, 360px) 1fr; gap:16px; padding:16px; }
+.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+.panel h2 { margin:0; padding:12px 14px; font-size:14px; border-bottom:1px solid var(--line); }
+.body { padding:14px; }
+.meta { color:var(--muted); font-size:12px; margin-bottom:12px; }
+.section { margin-bottom:14px; }
+.section h3 { margin:0 0 8px; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+ul { margin:0; padding-left:18px; }
+li { margin:0 0 6px; }
+pre { margin:0; white-space:pre-wrap; word-break:break-word; font:12px/1.5 Consolas, "Courier New", monospace; }
+#status { color:var(--muted); font-size:12px; margin-top:8px; }
+@media (max-width: 900px) { main { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Ghost Sweep Worklog</h1>
+  <div class="sub">Live view of <span id="path">WORKLOG.md</span></div>
+  <div id="status" class="sub">Loading...</div>
+</header>
+<main>
+  <section class="panel">
+    <h2 id="entryTitle">Latest progress</h2>
+    <div class="body">
+      <div id="updated" class="meta"></div>
+      <div class="section">
+        <h3>Current objective</h3>
+        <ul id="currentObjective"></ul>
+      </div>
+      <div class="section">
+        <h3>Test results</h3>
+        <ul id="testResults"></ul>
+      </div>
+      <div class="section">
+        <h3>Blockers</h3>
+        <ul id="blockers"></ul>
+      </div>
+      <div class="section">
+        <h3>Next steps</h3>
+        <ul id="nextSteps"></ul>
+      </div>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Latest entry</h2>
+    <div class="body"><pre id="rawEntry"></pre></div>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+async function fetchJson(path) {
+  const res = await fetch(path);
+  if (!res.ok) throw new Error(path + ' returned ' + res.status);
+  return await res.json();
+}
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+}
+function renderList(id, items, emptyText) {
+  const values = Array.isArray(items) && items.length ? items : [emptyText];
+  $(id).innerHTML = values.map(item => `<li>${escapeHtml(item)}</li>`).join('');
+}
+async function loadWorklog() {
+  const payload = await fetchJson('/api/worklog');
+  $('path').textContent = payload.path || 'WORKLOG.md';
+  $('entryTitle').textContent = payload.latest_title || 'Latest progress';
+  $('updated').textContent = payload.modified_at ? `Updated ${payload.modified_at}` : 'WORKLOG.md not found';
+  $('status').textContent = payload.exists ? 'Auto-refreshing every 5 seconds.' : 'WORKLOG.md not found.';
+  renderList('currentObjective', payload.current_objective, 'No current objective logged.');
+  renderList('testResults', payload.test_results, 'No test results logged.');
+  renderList('blockers', payload.blockers, 'No blockers logged.');
+  renderList('nextSteps', payload.next_steps, 'No next steps logged.');
+  $('rawEntry').textContent = payload.raw_markdown || 'WORKLOG.md not found.';
+}
+loadWorklog().catch(err => { $('status').textContent = err.message; });
+setInterval(loadWorklog, 5000);
+</script>
+</body>
+</html>"""
+
+
 def json_response(payload: object, status: int = 200) -> tuple[int, dict[str, str], str]:
     return (
         status,
@@ -614,8 +779,12 @@ def dispatch(method: str, target: str) -> tuple[int, dict[str, str], str]:
     path = parsed.path
     if path == "/":
         return html_response(DASHBOARD_HTML)
+    if path == "/worklog":
+        return html_response(WORKLOG_HTML)
     if path == "/api/summary":
         return json_response(api_summary())
+    if path == "/api/worklog":
+        return json_response(api_worklog())
     if path == "/api/coverage":
         return json_response(api_coverage(query))
     if path == "/api/timeseries":

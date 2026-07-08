@@ -332,3 +332,37 @@ Cold-zone district backfill experiment:
 - Dispatch precision@50: `30m=0.12`, `1h=0.18`, `2h=0.00`
 - Artifact top50 precision: `30m=0.10`, `1h=0.18`, `2h=0.00`
 - Next step: move to district-aware candidate-set policy or district-hour priors.
+
+## 2026-07-08 Live WORKLOG page
+
+Current objective:
+- Add a live dashboard page that reads `WORKLOG.md` and auto-refreshes the latest progress.
+
+Files inspected:
+- `analysis/dashboard_service.py`
+- `tests/test_dashboard_service.py`
+- `WORKLOG.md`
+- `AGENTS.md`
+
+Files changed:
+- `analysis/dashboard_service.py`
+- `tests/test_dashboard_service.py`
+- `WORKLOG.md`
+
+Commands run:
+- `git status --short`
+- `C:\Users\kevlam03\OneDrive - Robert Half\Documents\Ghost_Sweep\.venv\Scripts\python.exe -m pytest tests\test_dashboard_service.py -k "worklog_endpoint or worklog_page" -q -p no:cacheprovider --basetemp .pytest_tmp_worklog_red`
+- `C:\Users\kevlam03\OneDrive - Robert Half\Documents\Ghost_Sweep\.venv\Scripts\python.exe -m pytest tests\test_dashboard_service.py -k "worklog_endpoint or worklog_page" -q -p no:cacheprovider --basetemp .pytest_tmp_worklog_green`
+- `C:\Users\kevlam03\OneDrive - Robert Half\Documents\Ghost_Sweep\.venv\Scripts\python.exe -m pytest tests\test_dashboard_service.py -k "dashboard_html_fetches_api or worklog_endpoint or worklog_page" -q -p no:cacheprovider --basetemp .pytest_tmp_worklog_adjacent`
+
+Test results:
+- RED confirmed the missing feature: `/api/worklog` and `/worklog` both returned `404`.
+- Focused live-worklog selectors passed: `2 passed, 12 deselected in 1.30s`.
+- Adjacent dashboard coverage passed: `3 passed, 11 deselected in 0.92s`.
+
+Blockers:
+- Full dashboard-service pytest is still not the acceptance gate in this worktree because unrelated pre-existing failures were already present before this feature work.
+
+Next steps:
+- Start the existing dashboard service and open `/worklog` for a browser smoke check if a manual visual pass is needed.
+- Decide how to finish the `live-worklog-page` branch after review.

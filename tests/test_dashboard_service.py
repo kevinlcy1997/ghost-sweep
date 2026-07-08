@@ -248,3 +248,71 @@ def test_dashboard_html_fetches_api_instead_of_embedding_payload():
     assert "fetchJson('/api/grid.geojson?horizon='" in body
     assert "modelMetrics" in body
     assert "const DATA =" not in body
+
+
+def test_worklog_endpoint_returns_latest_progress_sections(tmp_path):
+    worklog = tmp_path / "WORKLOG.md"
+    worklog.write_text(
+        "\n".join(
+            [
+                "# Worklog",
+                "",
+                "## 2026-07-07 Earlier update",
+                "",
+                "Current objective:",
+                "- Old objective",
+                "",
+                "Blockers:",
+                "- Old blocker",
+                "",
+                "Next steps:",
+                "- Old next step",
+                "",
+                "## 2026-07-08 Live worklog page",
+                "",
+                "Current objective:",
+                "- Ship live worklog progress page",
+                "",
+                "Test results:",
+                "- 2 focused tests passing",
+                "",
+                "Blockers:",
+                "- None.",
+                "",
+                "Next steps:",
+                "- Launch the dashboard and confirm /worklog refreshes.",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    original = dict(service.PATHS)
+    service.PATHS["worklog"] = worklog
+    try:
+        status, headers, body = service.dispatch("GET", "/api/worklog")
+    finally:
+        service.PATHS.clear()
+        service.PATHS.update(original)
+
+    assert status == 200
+    assert headers["Content-Type"] == "application/json; charset=utf-8"
+    payload = json.loads(body)
+    assert payload["entry_count"] == 2
+    assert payload["latest_title"] == "2026-07-08 Live worklog page"
+    assert payload["current_objective"] == ["Ship live worklog progress page"]
+    assert payload["test_results"] == ["2 focused tests passing"]
+    assert payload["blockers"] == ["None."]
+    assert payload["next_steps"] == ["Launch the dashboard and confirm /worklog refreshes."]
+    assert "## 2026-07-08 Live worklog page" in payload["raw_markdown"]
+    assert "Old objective" not in payload["raw_markdown"]
+
+
+def test_worklog_page_polls_live_endpoint():
+    status, headers, body = service.dispatch("GET", "/worklog")
+
+    assert status == 200
+    assert headers["Content-Type"] == "text/html; charset=utf-8"
+    assert "Ghost Sweep Worklog" in body
+    assert "fetchJson('/api/worklog')" in body
+    assert "setInterval(loadWorklog, 5000)" in body
+    assert "currentObjective" in body
+    assert "rawEntry" in body
