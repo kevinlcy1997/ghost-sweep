@@ -366,3 +366,19 @@ Blockers:
 Next steps:
 - Start the existing dashboard service and open `/worklog` for a browser smoke check if a manual visual pass is needed.
 - Decide how to finish the `live-worklog-page` branch after review.
+
+## 2026-07-08 Worklog Markdown Render Verification
+
+Current objective:
+- Verify the worklog markdown render feature and log the milestone.
+
+Files changed:
+- `WORKLOG.md`
+
+Test results:
+- Focused dashboard-service worklog checks passed.
+- Local preview started successfully.
+- `/worklog` returned HTTP 200 in the smoke check.
+
+Next steps:
+- Controller to do the final browser-side visual verification at `/worklog`.
