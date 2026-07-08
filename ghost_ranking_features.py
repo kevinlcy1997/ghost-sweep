@@ -13,7 +13,6 @@ import pandas as pd
 
 from ghost_time import to_hk_feature_time
 from ghost_zones import DEFAULT_H3_RESOLUTION, assign_zone, h3_zone_centroid
-from ghost_districts import get_district
 
 
 ROOT = Path(__file__).resolve().parent
@@ -63,28 +62,6 @@ def _count_between(events: list[dict], start: datetime, end: datetime, zone_col:
         if start <= event["dt"] < end:
             counter[event[zone_col] if zone_col else "_all"] += 1
     return counter
-
-
-def _zone_static_context(
-    zone_id: str,
-    exemplar: dict | None,
-    zone_context_cache: dict[str, tuple[float, float, str, str]],
-) -> tuple[float, float, str, str]:
-    if zone_id not in zone_context_cache:
-        zone_lat, zone_lng = h3_zone_centroid(zone_id)
-        district, region = get_district(zone_lat, zone_lng)
-        zone_context_cache[zone_id] = (zone_lat, zone_lng, district, region)
-
-    if exemplar is None:
-        return zone_context_cache[zone_id]
-
-    fallback_lat, fallback_lng, fallback_district, fallback_region = zone_context_cache[zone_id]
-    return (
-        float(exemplar.get("zone_lat", fallback_lat)),
-        float(exemplar.get("zone_lng", fallback_lng)),
-        str(exemplar.get("district", fallback_district)),
-        str(exemplar.get("region", fallback_region)),
-    )
 
 
 def _same_hour_rate(history: list[dict], key: str, value: str, hour: int) -> float:
@@ -643,15 +620,17 @@ def build_zone_ranking_training_data(
             history_by_zone.setdefault(event[zone_col], []).append(event)
             history_by_district.setdefault(event.get("district", "Unknown"), []).append(event)
 
-        zone_context_cache: dict[str, tuple[float, float, str, str]] = {}
-
         for zone_id in zones:
             exemplar = exemplar_by_zone.get(zone_id)
-            zone_lat, zone_lng, district, region = _zone_static_context(
-                zone_id,
-                exemplar,
-                zone_context_cache,
-            )
+            if exemplar is None:
+                zone_lat, zone_lng = h3_zone_centroid(zone_id)
+                district = "Unknown"
+                region = "Unknown"
+            else:
+                zone_lat = float(exemplar.get("zone_lat", 0.0))
+                zone_lng = float(exemplar.get("zone_lng", 0.0))
+                district = str(exemplar.get("district", "Unknown"))
+                region = str(exemplar.get("region", "Unknown"))
 
             last_seen = latest_by_zone.get(zone_id)
             hours_since_last = (
