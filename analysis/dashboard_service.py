@@ -758,6 +758,35 @@ main { display:grid; grid-template-columns:minmax(280px, 360px) 1fr; gap:16px; p
 ul { margin:0; padding-left:18px; }
 li { margin:0 0 6px; }
 pre { margin:0; white-space:pre-wrap; word-break:break-word; font:12px/1.5 Consolas, "Courier New", monospace; }
+.markdown-body { color:var(--ink); }
+.markdown-body h1, .markdown-body h2, .markdown-body h3 { margin:0 0 12px; line-height:1.25; }
+.markdown-body p, .markdown-body ul, .markdown-body pre, .markdown-body table { margin:0 0 16px; }
+.markdown-body ul { padding-left:20px; }
+.markdown-body a { color:#f7b733; }
+.markdown-body code {
+  padding:2px 6px;
+  border-radius:6px;
+  background:#111827;
+  font:12px/1.4 Consolas, "Courier New", monospace;
+}
+.markdown-body pre {
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#0d1421;
+  overflow:auto;
+}
+.markdown-body pre code { padding:0; background:transparent; }
+.markdown-body table {
+  width:100%;
+  border-collapse:collapse;
+  border:1px solid var(--line);
+}
+.markdown-body th, .markdown-body td {
+  padding:8px 10px;
+  border:1px solid var(--line);
+  text-align:left;
+}
 #status { color:var(--muted); font-size:12px; margin-top:8px; }
 @media (max-width: 900px) { main { grid-template-columns:1fr; } }
 </style>
@@ -793,7 +822,7 @@ pre { margin:0; white-space:pre-wrap; word-break:break-word; font:12px/1.5 Conso
   </section>
   <section class="panel">
     <h2>Latest entry</h2>
-    <div class="body"><pre id="rawEntry"></pre></div>
+    <div class="body"><div id="worklogHtml" class="markdown-body"></div></div>
   </section>
 </main>
 <script>
@@ -823,7 +852,7 @@ async function loadWorklog() {
   renderList('testResults', payload.test_results, 'No test results logged.');
   renderList('blockers', payload.blockers, 'No blockers logged.');
   renderList('nextSteps', payload.next_steps, 'No next steps logged.');
-  $('rawEntry').textContent = payload.raw_markdown || 'WORKLOG.md not found.';
+  $('worklogHtml').innerHTML = payload.html || '<p class="empty">WORKLOG.md not found.</p>';
 }
 loadWorklog().catch(err => { $('status').textContent = err.message; });
 setInterval(loadWorklog, 5000);

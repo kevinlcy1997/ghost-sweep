@@ -381,4 +381,15 @@ def test_worklog_page_polls_live_endpoint():
     assert "fetchJson('/api/worklog')" in body
     assert "setInterval(loadWorklog, 5000)" in body
     assert "currentObjective" in body
-    assert "rawEntry" in body
+    assert "worklogHtml" in body
+
+
+def test_worklog_page_uses_rendered_html_field():
+    status, headers, body = service.dispatch("GET", "/worklog")
+
+    assert status == 200
+    assert headers["Content-Type"] == "text/html; charset=utf-8"
+    assert 'id="worklogHtml"' in body
+    assert "payload.html" in body
+    assert "innerHTML = payload.html" in body
+    assert ".markdown-body table" in body
