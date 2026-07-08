@@ -97,3 +97,31 @@ def test_add_engineered_ranking_features_adds_police_zone_and_res8_relative_feat
     assert row_a["zone_24h_share_of_police_zone"] == 0.75
     assert row_a["zone_7d_rank_in_res8"] == 1.0
     assert row_a["zone_same_hour_percentile_in_police_zone"] == 1.0
+
+
+def test_add_engineered_ranking_features_skips_fake_coarse_groups_when_keys_missing():
+    frame = pd.DataFrame(
+        {
+            "target_time": [pd.Timestamp("2026-06-02 09:00:00")] * 2,
+            "zone_lat": [22.3154, 22.3160],
+            "zone_lng": [114.1698, 114.1703],
+            "hour": [9, 9],
+            "day_of_week": [0, 0],
+            "district": ["Kowloon City", "Kowloon City"],
+            "zone_event_count_3h": [2, 1],
+            "zone_event_count_24h": [3, 1],
+            "zone_event_count_7d": [5, 2],
+            "district_event_count_3h": [3, 3],
+            "district_event_count_24h": [4, 4],
+            "district_active_zones_24h": [2, 2],
+            "zone_same_hour_rate": [0.8, 0.2],
+            "district_same_hour_rate": [0.5, 0.5],
+        }
+    )
+
+    enhanced = add_engineered_ranking_features(frame)
+
+    assert "police_zone" not in enhanced.columns
+    assert "res8_zone" not in enhanced.columns
+    assert "police_zone_event_count_24h" not in enhanced.columns
+    assert "res8_event_count_24h" not in enhanced.columns

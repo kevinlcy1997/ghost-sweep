@@ -101,7 +101,10 @@ def _coarse_parent_zone_id(zone_id: str, parent_resolution: int) -> str:
 
 def _add_group_context_features(enhanced: pd.DataFrame, group_col: str, prefix: str) -> pd.DataFrame:
     """Add aggregated context features for groups like police_zone or res8."""
-    # initialize columns
+    if not {"target_time", group_col}.issubset(enhanced.columns):
+        return enhanced
+
+    # initialize columns only when a valid grouping key exists
     enhanced[f"{prefix}_event_count_3h"] = 0.0
     enhanced[f"{prefix}_event_count_24h"] = 0.0
     enhanced[f"{prefix}_event_count_7d"] = 0.0
@@ -110,9 +113,6 @@ def _add_group_context_features(enhanced: pd.DataFrame, group_col: str, prefix: 
     enhanced[f"zone_24h_share_of_{prefix}"] = 0.0
     enhanced[f"zone_7d_rank_in_{prefix}"] = 0.0
     enhanced[f"zone_same_hour_percentile_in_{prefix}"] = 0.0
-
-    if not {"target_time", group_col}.issubset(enhanced.columns):
-        return enhanced
 
     # allow overriding group key for res8 to ensure coarse parent uses geographic centroid
     temp_key = None
@@ -513,22 +513,11 @@ def add_engineered_ranking_features(
 
     enhanced = df.copy()
     # add police_zone alias (uses existing region) and res8 coarse parent zone
-    if "police_zone" not in enhanced:
+    if "police_zone" not in enhanced and "region" in enhanced.columns and enhanced["region"].notna().any():
         if "region" in enhanced.columns:
             enhanced["police_zone"] = enhanced["region"].astype(object)
-        else:
-            enhanced["police_zone"] = pd.Series([None] * len(enhanced))
-    if "res8_zone" not in enhanced:
-        # prefer computing coarse parent from coordinates when available for consistency
-        if "zone_lat" in enhanced.columns and "zone_lng" in enhanced.columns:
-            enhanced["res8_zone"] = enhanced.apply(
-                lambda r: compute_h3_zone(float(r["zone_lat"]), float(r["zone_lng"]), resolution=8),
-                axis=1,
-            )
-        elif "zone_id" in enhanced.columns:
-            enhanced["res8_zone"] = enhanced["zone_id"].map(lambda z: _coarse_parent_zone_id(str(z), 8))
-        else:
-            enhanced["res8_zone"] = pd.Series([None] * len(enhanced))
+    if "res8_zone" not in enhanced and "zone_id" in enhanced.columns and enhanced["zone_id"].notna().any():
+        enhanced["res8_zone"] = enhanced["zone_id"].map(lambda z: _coarse_parent_zone_id(str(z), 8))
 
     road_path = Path(road_context_path) if road_context_path is not None else DEFAULT_ROAD_CONTEXT_PATH
     for column in [
@@ -737,12 +726,14 @@ def build_zone_ranking_training_data(
             if exemplar is None:
                 zone_lat, zone_lng = h3_zone_centroid(zone_id)
                 district = "Unknown"
-                region = "Unknown"
+                region = None
             else:
                 zone_lat = float(exemplar.get("zone_lat", 0.0))
                 zone_lng = float(exemplar.get("zone_lng", 0.0))
                 district = str(exemplar.get("district", "Unknown"))
-                region = str(exemplar.get("region", "Unknown"))
+                region = exemplar.get("region")
+                if region is not None:
+                    region = str(region)
 
             last_seen = latest_by_zone.get(zone_id)
             hours_since_last = (
@@ -757,7 +748,6 @@ def build_zone_ranking_training_data(
                 "h3_resolution": resolution,
                 "district": district,
                 "region": region,
-                "police_zone": region,
                 "res8_zone": compute_h3_zone(zone_lat, zone_lng, resolution=8),
                 "zone_lat": zone_lat,
                 "zone_lng": zone_lng,
@@ -779,6 +769,8 @@ def build_zone_ranking_training_data(
                 "event_count_next_2h": future_by_zone[zone_id],
                 target_col: int(future_by_zone[zone_id] > 0),
             }
+            if region is not None:
+                row["police_zone"] = region
             rows.append(row)
 
     return add_engineered_ranking_features(pd.DataFrame(rows))
