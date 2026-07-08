@@ -451,3 +451,78 @@ Blockers:
 Next steps:
 - Commit the hierarchy implementation plan artifact.
 - Start implementation in an isolated hierarchy worktree and execute the Phase A parent-resolution sweep before the Phase B variant bake-off.
+
+## 2026-07-08 Hierarchical spatial cascade experiment
+
+Current objective:
+- Compare `res8`/`res7` hierarchy routing and hierarchy variants against the accepted baseline.
+
+Files inspected:
+- `analysis/hierarchy_parent_sweep_latest.csv`
+- `analysis/hierarchy_variant_comparison_latest.csv`
+- `analysis/two_stage_summary_latest.csv`
+- `analysis/spatial_model_error_summary_latest.csv`
+- `AGENTS.md`
+- `WORKLOG_INDEX.md`
+- `WORKLOG_TEMPLATE.md`
+
+Files changed:
+- `WORKLOG.md`
+
+Commands run:
+- `python -m pytest tests\test_ghost_ranking_features.py tests\test_two_stage_experiment.py tests\test_ranking_metrics.py tests\test_spatial_sampling.py tests\test_spatial_model_error_analysis.py tests\test_spatial_ranking_diagnostics.py -q -p no:cacheprovider --basetemp .pytest_tmp_hierarchy_final_verify`
+- `python -c "from analysis.run_two_stage_experiment import run_hierarchy_experiment; print(run_hierarchy_experiment())"`
+- `python analysis\analyze_spatial_model_errors.py --k 50`
+- `python analysis\build_dashboard_manifest.py`
+- `Import-Csv analysis\hierarchy_parent_sweep_latest.csv | Format-Table variant,horizon,dispatch_precision_at_50 -AutoSize`
+- `Import-Csv analysis\hierarchy_variant_comparison_latest.csv | Format-Table variant,horizon,dispatch_precision_at_50 -AutoSize`
+- `Import-Csv analysis\two_stage_summary_latest.csv | Select-Object horizon,spatial_model,spatial_dispatch_precision_at_50,spatial_precision_at_50 | Format-Table -AutoSize`
+
+Test results:
+- Focused hierarchy validation passed: `36 passed, 4 warnings in 15.99s`.
+- Experiment-path regression coverage was added for two runner fixes: `run_hierarchy_horizon()` now routes scored child holdout rows with both `spatial_probability` and `actual`; `run_hierarchy_experiment()` now returns a clean reject result and still writes the parent-sweep and summary CSVs when the gate fails.
+- Parent sweep result: `baseline=30m 0.12 / 1h 0.20 / 2h 0.00`; `soft_res8=30m 0.10 / 1h 0.16 / 2h 0.18`; `soft_res7=30m 0.06 / 1h 0.12 / 2h 0.10`.
+- Decision: reject. Neither `res8` nor `res7` beat baseline on the whole-stack gate, so Phase B was skipped and `analysis/hierarchy_variant_comparison_latest.csv` remained an empty placeholder artifact.
+- Regenerated accepted-baseline summary after the rerun: `30m=lightgbm_conservative, dispatch@50 0.12, spatial@50 0.02`; `1h=lightgbm_conservative, dispatch@50 0.20, spatial@50 0.00`; `2h=lightgbm_conservative, dispatch@50 0.00, spatial@50 0.06`.
+
+Blockers:
+- `ghost_alerts.db` does not appear automatically in linked worktrees because `DB_PATH` resolves from the worktree root. The populated repo-root SQLite file had to be copied into the worktree before rerunning the experiment.
+
+Next steps:
+- Preserve `hierarchy-spatial-cascade` as the rejected-experiment branch/worktree record.
+- Do not merge the hierarchy implementation back to `main`.
+
+## 2026-07-08 Coarse-layer feature screening design
+
+Current objective:
+- Design an analysis-first follow-on experiment to test whether `police_zone`, `district`, and `res8` add useful signal as coarse context features on top of the accepted `res9` baseline.
+
+Files inspected:
+- `AGENTS.md`
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+- `WORKLOG_TEMPLATE.md`
+- `docs/superpowers/specs/2026-07-01-spatial-context-feature-pack-design.md`
+- `docs/superpowers/specs/2026-07-08-hierarchical-spatial-cascade-design.md`
+
+Files changed:
+- `docs/superpowers/specs/2026-07-08-coarse-layer-feature-screening-design.md`
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+
+Commands run:
+- `git status --short -- WORKLOG.md WORKLOG_INDEX.md docs\superpowers\specs`
+- `rg -n "WORKLOG|worklog|continuity|Current objective|Files inspected|Files changed|Commands run|Test results|Blockers|Next steps" AGENTS.md`
+- `rg -n "coarse|hierarchy|feature screening|res8|police_zone|district" docs\superpowers\specs`
+
+Test results:
+- No code-path tests were run in this design milestone.
+- Design approved in chat: use an analysis-first pass, gate on `30m`/`1h` signal, and run minimal coarse-feature ablations only if the screen passes.
+
+Blockers:
+- None.
+
+Next steps:
+- Self-review the written spec for placeholders, contradictions, and ambiguity.
+- Commit the design doc and updated worklog files.
+- Ask the user to review the spec before writing the implementation plan.
