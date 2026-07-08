@@ -13,7 +13,8 @@ For tasks that may span more than one session, maintain `WORKLOG.md`.
 Before reading the full worklog, search `WORKLOG_INDEX.md` first and only open the relevant line span from `WORKLOG.md`.
 
 When writing or updating a worklog entry, use `WORKLOG_TEMPLATE.md`.
-
+Wrap file paths, commands, and other literal references in backticks when writing worklog content.
+When adding a new top-level `##` entry to `WORKLOG.md`, update `WORKLOG_INDEX.md` in the same change.
 Update `WORKLOG.md` after every meaningful milestone. Include:
 
 - Current objective

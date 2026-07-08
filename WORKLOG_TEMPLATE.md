@@ -31,5 +31,6 @@ Rules:
 
 - Keep this section order exactly.
 - Use bullet lists in every required section.
+- Wrap file paths, commands, and other literal references in backticks.
 - If a section has nothing to report, write `- None.`
 - Optional sections such as `Resume instructions` may appear only after `Next steps`.

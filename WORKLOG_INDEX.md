@@ -7,3 +7,5 @@ Use this file as the first search target before opening the full `WORKLOG.md`.
 - `2026-07-08 Worklog Markdown Render Verification` — Logged focused verification for the markdown-render worklog page. `WORKLOG.md` lines 370-385
 - `2026-07-08 Hierarchical spatial cascade design` — Captured the hierarchical spatial cascade design summary. `WORKLOG.md` lines 386-420
 - `2026-07-08 Hierarchical spatial cascade implementation plan` — Logged the implementation-plan handoff for the hierarchical spatial cascade. `WORKLOG.md` lines 421-453
+
+Note: refresh the listed line ranges if earlier entries are inserted into `WORKLOG.md`.
