@@ -821,7 +821,7 @@ pre { margin:0; white-space:pre-wrap; word-break:break-word; font:12px/1.5 Conso
     </div>
   </section>
   <section class="panel">
-    <h2>Latest entry</h2>
+    <h2>Full worklog</h2>
     <div class="body"><div class="logWrap"><div id="worklogHtml" class="markdown-body"></div></div></div>
   </section>
 </main>
