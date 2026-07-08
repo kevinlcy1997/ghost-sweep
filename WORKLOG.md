@@ -417,3 +417,37 @@ Blockers:
 Next steps:
 - Review the written design spec.
 - If approved, write the implementation plan for the two-phase hierarchy experiment.
+
+## 2026-07-08 Hierarchical spatial cascade implementation plan
+
+Current objective:
+- Translate the approved hierarchy design into an execution-ready plan that can be implemented without another approval checkpoint.
+
+Files inspected:
+- `docs/superpowers/specs/2026-07-08-hierarchical-spatial-cascade-design.md`
+- `analysis/run_two_stage_experiment.py`
+- `tests/test_two_stage_experiment.py`
+- `tests/test_ghost_ranking_features.py`
+- `WORKLOG.md`
+
+Files changed:
+- `docs/superpowers/plans/2026-07-08-hierarchical-spatial-cascade-experiment.md`
+- `WORKLOG.md`
+
+Commands run:
+- `rg -n "def combine_activity_and_spatial_scores|def _fit_activity_holdout|def _probabilities_for_time|def assign_dispatch_rank" analysis/run_two_stage_experiment.py`
+- `rg -n "Task [0-9]+:|run_hierarchy_horizon|run_hierarchy_variant_bakeoff|_broadcast_activity_scores|<paste|<note|TBD|TODO" docs/superpowers/plans/2026-07-08-hierarchical-spatial-cascade-experiment.md`
+- `sed -n '1,260p' docs/superpowers/plans/2026-07-08-hierarchical-spatial-cascade-experiment.md`
+- `sed -n '260,520p' docs/superpowers/plans/2026-07-08-hierarchical-spatial-cascade-experiment.md`
+- `sed -n '520,860p' docs/superpowers/plans/2026-07-08-hierarchical-spatial-cascade-experiment.md`
+
+Test results:
+- No runtime tests were executed in this planning milestone.
+- Plan self-review completed: undefined runner references were resolved, the fake activity-score helper was replaced with `_probabilities_for_time`, and remaining placeholder worklog text was converted into concrete logging instructions.
+
+Blockers:
+- No implementation blocker yet, but experiment artifacts on `main` are incomplete, so the implementation phase must regenerate outputs instead of trusting current `latest` files.
+
+Next steps:
+- Commit the hierarchy implementation plan artifact.
+- Start implementation in an isolated hierarchy worktree and execute the Phase A parent-resolution sweep before the Phase B variant bake-off.
