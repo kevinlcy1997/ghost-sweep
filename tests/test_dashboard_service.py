@@ -399,14 +399,28 @@ def test_worklog_page_uses_rendered_html_field():
     assert ".markdown-body ol" in body
 
 
-def test_worklog_page_surfaces_pretty_progress_summary():
+def test_worklog_page_matches_rich_shell_contract():
     status, headers, body = service.dispatch("GET", "/worklog")
 
     assert status == 200
     assert headers["Content-Type"] == "text/html; charset=utf-8"
+    assert "Self-service progress board" in body
     assert "Refresh now" in body
+    assert "Latest entry" in body
     assert "Objectives" in body
+    assert "Blockers" in body
+    assert "Next steps" in body
     assert "Live status" in body
+    assert 'id="worklogHtml"' in body
+    assert "payload.html" in body
+    assert 'rel="icon"' in body
+    assert 'href="data:,"' in body
+    assert 'id="entryChip"' in body
+    assert 'id="liveChip"' in body
+    assert 'id="objectiveCount"' in body
+    assert 'id="blockerCount"' in body
+    assert 'id="nextStepCount"' in body
+    assert 'id="logTimestamp"' in body
 
 
 def test_worklog_page_inlines_a_favicon():

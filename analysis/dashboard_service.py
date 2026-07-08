@@ -747,12 +747,14 @@ WORKLOG_HTML = """<!doctype html>
   --bg:#0b1220;
   --panel:#111827;
   --panel-soft:#172033;
+  --panel-muted:rgba(15,23,42,.62);
   --ink:#e5eefb;
   --muted:#97a6ba;
   --line:#243247;
   --accent:#f59e0b;
   --accent-soft:rgba(245,158,11,.14);
   --good:#22c55e;
+  --good-soft:rgba(34,197,94,.12);
   --bad:#fb7185;
 }
 * { box-sizing:border-box; }
@@ -786,7 +788,7 @@ body {
   letter-spacing:.08em;
   text-transform:uppercase;
 }
-h1 { margin:0; font-size:34px; line-height:1.1; }
+.hero h1 { margin:0; font-size:34px; line-height:1.1; }
 .sub {
   margin:12px 0 0;
   max-width:720px;
@@ -799,11 +801,13 @@ h1 { margin:0; font-size:34px; line-height:1.1; }
   gap:12px;
   margin-top:20px;
 }
+.metaCard, .statCard, .section, .latestEntryCard, .logWrap {
+  border:1px solid var(--line);
+  border-radius:18px;
+}
 .metaCard, .statCard {
   padding:14px 16px;
-  border:1px solid var(--line);
-  border-radius:16px;
-  background:rgba(15,23,42,.62);
+  background:var(--panel-muted);
 }
 .metaCard strong, .statCard .label {
   display:block;
@@ -821,7 +825,7 @@ h1 { margin:0; font-size:34px; line-height:1.1; }
   flex-direction:column;
   align-items:flex-end;
   gap:12px;
-  min-width:200px;
+  min-width:220px;
 }
 button {
   border:0;
@@ -841,7 +845,7 @@ button:hover { filter:brightness(1.04); }
   padding:8px 12px;
   border:1px solid rgba(34,197,94,.28);
   border-radius:999px;
-  background:rgba(34,197,94,.12);
+  background:var(--good-soft);
   color:#bbf7d0;
   font-size:12px;
   font-weight:600;
@@ -853,9 +857,33 @@ button:hover { filter:brightness(1.04); }
   background:var(--good);
   box-shadow:0 0 0 4px rgba(34,197,94,.18);
 }
+.chipRow {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:18px;
+}
+.chip {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:36px;
+  padding:8px 12px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:rgba(9,14,24,.55);
+  color:var(--muted);
+  font-size:12px;
+}
+.chip strong {
+  color:#dbe8fb;
+  font-size:11px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
 .summaryCards {
   display:grid;
-  grid-template-columns:repeat(4, minmax(0, 1fr));
+  grid-template-columns:repeat(5, minmax(0, 1fr));
   gap:16px;
   margin-top:18px;
 }
@@ -876,6 +904,12 @@ button:hover { filter:brightness(1.04); }
   color:#fde68a;
   font-size:13px;
 }
+.statCard.entry .value {
+  margin:10px 0 4px;
+  font-size:18px;
+  line-height:1.3;
+}
+.statCard.entry p { font-size:12px; }
 main {
   display:grid;
   grid-template-columns:minmax(320px, 430px) minmax(0, 1fr);
@@ -902,8 +936,6 @@ main {
 .latestEntryCard {
   margin-bottom:18px;
   padding:16px 18px;
-  border:1px solid var(--line);
-  border-radius:18px;
   background:var(--panel-soft);
 }
 .kicker {
@@ -923,8 +955,6 @@ main {
 .section {
   min-height:170px;
   padding:16px;
-  border:1px solid var(--line);
-  border-radius:18px;
   background:rgba(9,14,24,.64);
 }
 .section h3 { margin:0 0 10px; font-size:15px; }
@@ -962,8 +992,6 @@ li { margin:0 0 7px; }
 .logWrap {
   min-height:420px;
   padding:20px;
-  border:1px solid var(--line);
-  border-radius:18px;
   background:rgba(9,14,24,.72);
 }
 .logMeta {
@@ -975,8 +1003,11 @@ li { margin:0 0 7px; }
   font-size:12px;
 }
 .empty { color:var(--muted); }
+@media (max-width: 1180px) {
+  .summaryCards { grid-template-columns:repeat(3, minmax(0, 1fr)); }
+}
 @media (max-width: 1080px) {
-  .summaryCards, .summaryGrid { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+  .summaryGrid { grid-template-columns:repeat(2, minmax(0, 1fr)); }
   main { grid-template-columns:1fr; }
 }
 @media (max-width: 720px) {
@@ -985,7 +1016,7 @@ li { margin:0 0 7px; }
   .heroTop, .panelHeader, .logMeta { flex-direction:column; }
   .heroMeta, .summaryCards, .summaryGrid { grid-template-columns:1fr; }
   .heroActions { align-items:flex-start; min-width:0; }
-  h1 { font-size:28px; }
+  .hero h1 { font-size:28px; }
 }
 </style>
 </head>
@@ -996,7 +1027,12 @@ li { margin:0 0 7px; }
       <div>
         <p class="eyebrow">Self-service progress board</p>
         <h1>Ghost Sweep Worklog</h1>
-        <p class="sub">Balanced for quick status checks and comfortable full-log reading, with near-real-time refresh from the local worklog file.</p>
+        <p class="sub">Balanced summary + full log + near-real-time refresh from the local worklog file, so the latest objective, blockers, and next steps stay readable without losing the rendered markdown log.</p>
+        <div class="chipRow">
+          <span class="chip"><strong>Source</strong><span id="sourceChip">WORKLOG.md</span></span>
+          <span class="chip"><strong>Latest entry</strong><span id="entryChip">Latest progress</span></span>
+          <span class="chip"><strong>Live status</strong><span id="liveChip">Loading…</span></span>
+        </div>
         <div class="heroMeta">
           <div class="metaCard">
             <strong>Source</strong>
@@ -1019,6 +1055,11 @@ li { margin:0 0 7px; }
       </div>
     </div>
     <section class="summaryCards">
+      <article class="statCard entry">
+        <span class="label">Latest entry</span>
+        <div id="latestEntryCard" class="value">Latest progress</div>
+        <p id="logTimestamp">Updated --</p>
+      </article>
       <article class="statCard">
         <span class="label">Objectives</span>
         <div id="objectiveCount" class="value">0</div>
@@ -1120,13 +1161,20 @@ function meaningfulCount(items) {
 }
 async function loadWorklog() {
   const payload = await fetchJson('/api/worklog');
-  $('path').textContent = payload.path || 'WORKLOG.md';
-  $('entryTitle').textContent = payload.latest_title || 'Latest progress';
-  $('heroLatestEntry').textContent = payload.latest_title || 'Latest progress';
-  $('updated').textContent = payload.modified_at ? `Updated ${payload.modified_at}` : 'WORKLOG.md not found';
+  const latestTitle = payload.latest_title || 'Latest progress';
+  const modifiedLabel = payload.modified_at ? `Updated ${payload.modified_at}` : 'WORKLOG.md not found';
   const liveStatus = payload.exists ? 'Auto-refreshing' : 'Missing';
+  $('path').textContent = payload.path || 'WORKLOG.md';
+  $('sourceChip').textContent = payload.path || 'WORKLOG.md';
+  $('entryTitle').textContent = latestTitle;
+  $('heroLatestEntry').textContent = latestTitle;
+  $('latestEntryCard').textContent = latestTitle;
+  $('entryChip').textContent = latestTitle;
+  $('updated').textContent = modifiedLabel;
+  $('logTimestamp').textContent = modifiedLabel;
   $('heroLiveStatus').textContent = liveStatus;
   $('liveStatusLabel').textContent = payload.exists ? 'Live' : 'Missing';
+  $('liveChip').textContent = liveStatus;
   $('statusChipText').textContent = payload.exists ? 'Auto-refreshing' : 'Worklog missing';
   $('status').textContent = payload.exists ? `Synced with ${payload.path || 'WORKLOG.md'}.` : 'WORKLOG.md not found.';
   $('lastFileUpdate').textContent = payload.modified_at ? `Last file update: ${payload.modified_at}` : 'Last file update: unavailable';
