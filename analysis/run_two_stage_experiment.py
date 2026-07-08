@@ -132,7 +132,7 @@ def _candidate_models() -> list[Candidate]:
             ),
         ),
         Candidate(
-            "lightgbm_ranker_nearmiss",
+            "lightgbm_ranker_neighbor",
             lambda: LGBMRanker(
                 objective="lambdarank",
                 metric="ndcg",
@@ -352,16 +352,9 @@ def _evaluate_activity_candidates(
     return fold_results, summary
 
 
-def _ranker_training_target_col(candidate: Candidate, target_col: str, frame: pd.DataFrame) -> str:
-    relevance_col = f"{target_col}_relevance"
-    if candidate.kind == "ranker" and candidate.name == "lightgbm_ranker_nearmiss" and relevance_col in frame:
-        return relevance_col
-    return target_col
-
-
 def _prepare_ranker_training_frame(
     train_sample: pd.DataFrame,
-    label_col: str,
+    target_col: str,
 ) -> tuple[pd.DataFrame, list[int]]:
     """Sort ranker data by target_time and keep only query groups with positives."""
     if train_sample.empty:
@@ -370,13 +363,13 @@ def _prepare_ranker_training_frame(
     frame = train_sample.copy()
     frame["target_time"] = pd.to_datetime(frame["target_time"])
     positive_groups = (
-        frame.groupby("target_time")[label_col]
+        frame.groupby("target_time")[target_col]
         .sum()
         .loc[lambda values: values > 0]
         .index
     )
     frame = frame[frame["target_time"].isin(set(positive_groups))]
-    sort_columns = ["target_time", label_col]
+    sort_columns = ["target_time", target_col]
     ascending = [True, False]
     if "zone_id" in frame:
         sort_columns.append("zone_id")
@@ -394,13 +387,12 @@ def _fit_spatial_candidate(
 ) -> Pipeline | None:
     pipeline = _make_spatial_pipeline(candidate)
     if candidate.kind == "ranker":
-        label_col = _ranker_training_target_col(candidate, target_col, train_sample)
-        ranker_sample, group_sizes = _prepare_ranker_training_frame(train_sample, label_col)
+        ranker_sample, group_sizes = _prepare_ranker_training_frame(train_sample, target_col)
         if ranker_sample.empty or not group_sizes:
             return None
         pipeline.fit(
             ranker_sample[feature_cols],
-            ranker_sample[label_col],
+            ranker_sample[target_col],
             model__group=group_sizes,
         )
         return pipeline

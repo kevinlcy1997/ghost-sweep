@@ -64,17 +64,6 @@ def _count_between(events: list[dict], start: datetime, end: datetime, zone_col:
     return counter
 
 
-def _future_ring1_relevance(
-    zone_id: str,
-    future_positive_zones: set[str],
-    neighbor_cache: dict[str, set[str]],
-) -> int:
-    if zone_id in future_positive_zones:
-        return 2
-    neighbors = neighbor_cache.setdefault(zone_id, set(h3.grid_disk(zone_id, 1)) - {zone_id})
-    return 1 if neighbors & future_positive_zones else 0
-
-
 def _same_hour_rate(history: list[dict], key: str, value: str, hour: int) -> float:
     matching = [event for event in history if event.get(key) == value]
     if not matching:
@@ -593,7 +582,6 @@ def build_zone_ranking_training_data(
     start = min(event["dt"] for event in enriched).replace(minute=0, second=0, microsecond=0)
     end = max(event["dt"] for event in enriched).replace(minute=0, second=0, microsecond=0)
     target_times = pd.date_range(start + timedelta(hours=lookback_days * 24), end, freq="1h")
-    relevance_col = f"{target_col}_relevance"
 
     rows = []
     for target_time in target_times:
@@ -614,9 +602,6 @@ def build_zone_ranking_training_data(
         counts_7d = _count_between(history, target_dt - timedelta(days=7), target_dt, zone_col)
         district_3h = _count_between(history, target_dt - timedelta(hours=3), target_dt, "district")
         district_24h = _count_between(history, target_dt - timedelta(hours=24), target_dt, "district")
-
-        future_positive_zones = {zone for zone, count in future_by_zone.items() if count > 0}
-        neighbor_cache: dict[str, set[str]] = {}
 
         latest_by_zone: dict[str, datetime] = {}
         exemplar_by_zone: dict[str, dict] = {}
@@ -680,7 +665,6 @@ def build_zone_ranking_training_data(
                 "event_count_next_2h": future_by_zone[zone_id],
                 target_col: int(future_by_zone[zone_id] > 0),
             }
-            row[relevance_col] = _future_ring1_relevance(zone_id, future_positive_zones, neighbor_cache)
             rows.append(row)
 
     return add_engineered_ranking_features(pd.DataFrame(rows))

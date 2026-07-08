@@ -270,3 +270,57 @@ Publish validation:
   - `main` is diverged from `origin/main` (`ahead 8, behind 19`), so publish on a dedicated branch rather than direct push to `main`.
 - Next steps:
   - Commit intended files and push a dedicated branch to GitHub.
+
+Near-miss ranker implementation kickoff:
+- Current objective:
+  - Execute `docs/superpowers/plans/2026-07-08-near-miss-spatial-target-experiment.md` in an isolated worktree, starting with the graded near-miss relevance label.
+- Files inspected:
+  - `docs/superpowers/plans/2026-07-08-near-miss-spatial-target-experiment.md`
+  - `analysis/run_two_stage_experiment.py`
+  - `ghost_ranking_features.py`
+  - `tests/test_two_stage_experiment.py`
+  - `tests/test_ghost_ranking_features.py`
+  - `WORKLOG.md`
+- Files changed:
+  - `docs/superpowers/plans/2026-07-08-near-miss-spatial-target-experiment.md` copied into the worktree for local execution context.
+- Commands run:
+  - `git worktree add C:\Users\kevlam03\OneDrive - Robert Half\Documents\Ghost_Sweep\.worktrees\spatial-nearmiss-ranker -b spatial-nearmiss-ranker`
+  - `.venv\Scripts\python.exe -m pip install --disable-pip-version-check --quiet -r requirements.txt`
+  - `.venv\Scripts\python.exe -m pytest tests\test_ghost_ranking_features.py tests\test_two_stage_experiment.py tests\test_ranking_metrics.py tests\test_spatial_sampling.py tests\test_spatial_model_error_analysis.py tests\test_spatial_ranking_diagnostics.py -q -p no:cacheprovider --basetemp .pytest_tmp_nearmiss_baseline`
+  - `codex-cli-usage statusline` (failed: command not installed in this environment)
+- Test results:
+  - Baseline worktree validation passed: `25 passed, 4 warnings in 32.34s`.
+- Blockers:
+  - `codex-cli-usage` is unavailable here, so session-budget checks need to rely on the Copilot CLI context instead.
+  - Worktree has one untracked plan file: `docs/superpowers/plans/2026-07-08-near-miss-spatial-target-experiment.md`.
+- Next steps:
+  - Implement Task 1 with TDD in `ghost_ranking_features.py` and `tests/test_ghost_ranking_features.py`.
+  - Keep plan file out of feature commits unless intentionally deciding to track it.
+
+Task 1 acceptance:
+- Reviewed commit `12334c1afa7d77320e47804b5dccf3338eaf0e94` against the Task 1 spec.
+- Accepted the label change: exact future hits map to relevance `2`, ring-1 near misses map to `1`, and misses remain `0`, while the binary exact target stays unchanged.
+- The only spec-review warning was a duplicate helper already present in the base revision; Task 1 itself changed only `ghost_ranking_features.py` and `tests/test_ghost_ranking_features.py`.
+- Code-quality review found no issues in the Task 1 diff.
+- Next step: implement Task 2 by routing the spatial ranker to the new `{target}_relevance` label and renaming the candidate to `lightgbm_ranker_nearmiss`.
+
+Task 2 completion:
+- Replaced `lightgbm_ranker_neighbor` with `lightgbm_ranker_nearmiss` and routed ranker training to `{target}_relevance` when present.
+- Kept classifier training, probability output, score output, dispatch ranking, and summary column names unchanged.
+- Focused validation passed: `23 passed, 4 warnings`.
+- Committed Task 2 as `0a8690e` (`exp: swap in near-miss spatial ranker target`).
+
+Near-miss ranker experiment:
+- Environment note: the worktree initially resolved `ghost_alerts.db` to an empty local SQLite file, so the populated repo-root database was copied into the worktree before running the experiment.
+- Candidate: `lightgbm_ranker_nearmiss`
+- Decision: reject
+- Selected model stayed `lightgbm_conservative` for `30m`, `1h`, and `2h`.
+- Gate failure:
+  - Median CV neighbor-hit@50 for `lightgbm_ranker_nearmiss` was worse than `lightgbm_conservative` in every horizon (`30m 0.326923 < 0.673077`, `1h 0.557692 < 0.769231`, `2h 0.673077 < 0.807692`).
+  - `30m` holdout exact precision@50 was `0.02`, below the `0.06` floor.
+- Holdout summary from the evaluation run:
+  - `30m`: exact precision@50 `0.02`, neighbor hit@50 `0.50`, dispatch precision@50 `0.12`
+  - `1h`: exact precision@50 `0.00`, neighbor hit@50 `0.60`, dispatch precision@50 `0.20`
+  - `2h`: exact precision@50 `0.06`, neighbor hit@50 `0.40`, dispatch precision@50 `0.00`
+- Rejected code was reverted to preserve the accepted baseline, and post-revert focused validation passed: `25 passed, 4 warnings`.
+- Next step: move to district-conditioned features rather than trying another ranker variant in this session.
