@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import html
 import json
 import re
 import sys
@@ -14,6 +15,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 import h3
+import markdown as markdown_lib
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -434,6 +436,17 @@ def worklog_section_items(entry_text: str, heading: str) -> list[str]:
     return items
 
 
+def render_worklog_markdown(text: str) -> str:
+    if not text:
+        return ""
+    safe_text = html.escape(text, quote=False)
+    return markdown_lib.markdown(
+        safe_text,
+        extensions=["tables", "fenced_code", "sane_lists"],
+        output_format="html5",
+    )
+
+
 def api_worklog() -> dict[str, object]:
     path = PATHS["worklog"]
     exists = path.exists()
@@ -461,6 +474,7 @@ def api_worklog() -> dict[str, object]:
         "next_steps": worklog_section_items(latest_body, "Next steps"),
         "raw_markdown": raw_markdown,
         "text": text,
+        "html": render_worklog_markdown(text) if exists else "",
     }
 
 

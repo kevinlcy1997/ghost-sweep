@@ -7,3 +7,4 @@ shapely
 pytest
 mlflow
 h3
+markdown

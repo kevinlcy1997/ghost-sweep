@@ -306,6 +306,43 @@ def test_worklog_endpoint_returns_latest_progress_sections(tmp_path):
     assert "Old objective" not in payload["raw_markdown"]
 
 
+def test_worklog_endpoint_returns_rendered_markdown_html(tmp_path):
+    worklog = tmp_path / "WORKLOG.md"
+    worklog.write_text(
+        "\n".join(
+            [
+                "# Worklog",
+                "",
+                "A paragraph with *focus* and [docs](https://example.com).",
+                "",
+                "| Metric | Value |",
+                "| --- | --- |",
+                "| Tests | 6 |",
+                "",
+                "<script>alert('x')</script>",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    original = dict(service.PATHS)
+    service.PATHS["worklog"] = worklog
+    try:
+        status, headers, body = service.dispatch("GET", "/api/worklog")
+    finally:
+        service.PATHS.clear()
+        service.PATHS.update(original)
+
+    assert status == 200
+    assert headers["Content-Type"] == "application/json; charset=utf-8"
+    payload = json.loads(body)
+    assert "<h1>Worklog</h1>" in payload["html"]
+    assert "<em>focus</em>" in payload["html"]
+    assert '<a href="https://example.com">' in payload["html"]
+    assert "<table>" in payload["html"]
+    assert "&lt;script&gt;alert" in payload["html"]
+    assert "<script>" not in payload["html"]
+
+
 def test_worklog_page_polls_live_endpoint():
     status, headers, body = service.dispatch("GET", "/worklog")
 
