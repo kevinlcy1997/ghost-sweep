@@ -1,3 +1,4 @@
+import h3
 import pandas as pd
 
 from ghost_ranking_features import build_zone_ranking_training_data
@@ -42,3 +43,29 @@ def test_build_zone_ranking_training_data_accepts_resolution():
     rows = build_zone_ranking_training_data(events, resolution=9)
 
     assert set(rows["h3_resolution"]) == {9}
+
+
+def test_build_zone_ranking_training_data_adds_ring1_relevance():
+    lat, lng = 22.3154, 114.1698
+    zone = compute_h3_zone(lat, lng)
+    neighbor = next(iter(h3.grid_ring(zone, 1)))
+    neighbor_lat, neighbor_lng = h3.cell_to_latlng(neighbor)
+
+    events = [
+        _event(lat, lng, "2026-06-01 09:00:00"),
+        _event(neighbor_lat, neighbor_lng, "2026-06-01 09:00:00"),
+        _event(neighbor_lat, neighbor_lng, "2026-06-02 10:00:00"),
+    ]
+
+    df = build_zone_ranking_training_data(events, lookback_days=1, forecast_hours=2)
+    base_row = df[
+        (df["target_time"] == pd.Timestamp("2026-06-02 09:00:00")) & (df["zone_id"] == zone)
+    ].iloc[0]
+    neighbor_row = df[
+        (df["target_time"] == pd.Timestamp("2026-06-02 09:00:00")) & (df["zone_id"] == neighbor)
+    ].iloc[0]
+
+    assert base_row["alert_next_2h"] == 0
+    assert base_row["alert_next_2h_relevance"] == 1
+    assert neighbor_row["alert_next_2h"] == 1
+    assert neighbor_row["alert_next_2h_relevance"] == 2
