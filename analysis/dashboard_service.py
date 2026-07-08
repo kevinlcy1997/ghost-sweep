@@ -741,23 +741,195 @@ WORKLOG_HTML = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ghost Sweep Worklog</title>
+<link rel="icon" href="data:,">
 <style>
-:root { --bg:#0d1117; --panel:#161b22; --ink:#e6edf3; --muted:#8b949e; --line:#30363d; --accent:#f39c12; }
+:root {
+  --bg:#0b1220;
+  --panel:#111827;
+  --panel-soft:#172033;
+  --ink:#e5eefb;
+  --muted:#97a6ba;
+  --line:#243247;
+  --accent:#f59e0b;
+  --accent-soft:rgba(245,158,11,.14);
+  --good:#22c55e;
+  --bad:#fb7185;
+}
 * { box-sizing:border-box; }
-body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 "Segoe UI", Arial, sans-serif; }
-header { padding:18px 20px; border-bottom:1px solid var(--line); background:#11161d; }
-h1 { margin:0; font-size:20px; color:var(--accent); }
-.sub { margin-top:6px; color:var(--muted); }
-main { display:grid; grid-template-columns:minmax(280px, 360px) 1fr; gap:16px; padding:16px; }
-.panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
-.panel h2 { margin:0; padding:12px 14px; font-size:14px; border-bottom:1px solid var(--line); }
-.body { padding:14px; }
-.meta { color:var(--muted); font-size:12px; margin-bottom:12px; }
-.section { margin-bottom:14px; }
-.section h3 { margin:0 0 8px; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+body {
+  margin:0;
+  background:
+    radial-gradient(circle at top, rgba(37,99,235,.14), transparent 32%),
+    linear-gradient(180deg, #0a101b, var(--bg) 28%);
+  color:var(--ink);
+  font:14px/1.55 "Segoe UI", Arial, sans-serif;
+}
+.page { max-width:1280px; margin:0 auto; padding:24px; }
+.hero {
+  padding:24px;
+  border:1px solid var(--line);
+  border-radius:24px;
+  background:linear-gradient(180deg, rgba(17,24,39,.96), rgba(10,15,26,.98));
+  box-shadow:0 24px 64px rgba(0,0,0,.28);
+}
+.heroTop {
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  align-items:flex-start;
+}
+.eyebrow {
+  margin:0 0 8px;
+  color:#f8c35c;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+h1 { margin:0; font-size:34px; line-height:1.1; }
+.sub {
+  margin:12px 0 0;
+  max-width:720px;
+  color:var(--muted);
+  font-size:15px;
+}
+.heroMeta {
+  display:grid;
+  grid-template-columns:repeat(3, minmax(150px, 1fr));
+  gap:12px;
+  margin-top:20px;
+}
+.metaCard, .statCard {
+  padding:14px 16px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(15,23,42,.62);
+}
+.metaCard strong, .statCard .label {
+  display:block;
+  color:#dbe8fb;
+  font-size:12px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.metaCard span, .metaCard div, .statCard p {
+  margin-top:6px;
+  color:var(--muted);
+}
+.heroActions {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:12px;
+  min-width:200px;
+}
+button {
+  border:0;
+  border-radius:999px;
+  padding:11px 18px;
+  background:linear-gradient(135deg, #f59e0b, #f97316);
+  color:#1f2937;
+  font:600 14px/1 "Segoe UI", Arial, sans-serif;
+  cursor:pointer;
+}
+button:hover { filter:brightness(1.04); }
+#status { color:var(--muted); font-size:12px; }
+.statusChip {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border:1px solid rgba(34,197,94,.28);
+  border-radius:999px;
+  background:rgba(34,197,94,.12);
+  color:#bbf7d0;
+  font-size:12px;
+  font-weight:600;
+}
+.statusDot {
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--good);
+  box-shadow:0 0 0 4px rgba(34,197,94,.18);
+}
+.summaryCards {
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  gap:16px;
+  margin-top:18px;
+}
+.statCard .value {
+  margin:10px 0 4px;
+  color:#fff;
+  font-size:30px;
+  font-weight:700;
+}
+.statCard.live .value {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:12px;
+  padding:7px 12px;
+  border-radius:999px;
+  background:var(--accent-soft);
+  color:#fde68a;
+  font-size:13px;
+}
+main {
+  display:grid;
+  grid-template-columns:minmax(320px, 430px) minmax(0, 1fr);
+  gap:18px;
+  margin-top:18px;
+}
+.panel {
+  background:rgba(17,24,39,.94);
+  border:1px solid var(--line);
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 18px 48px rgba(0,0,0,.2);
+}
+.panelHeader {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding:20px 22px 0;
+}
+.panelHeader h2 { margin:0; font-size:20px; }
+.panelHeader p { margin:6px 0 0; color:var(--muted); font-size:13px; }
+.body { padding:18px 22px 22px; }
+.latestEntryCard {
+  margin-bottom:18px;
+  padding:16px 18px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:var(--panel-soft);
+}
+.kicker {
+  color:#f8c35c;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.latestEntryCard h3 { margin:8px 0 4px; font-size:22px; line-height:1.2; }
+.meta { color:var(--muted); font-size:12px; }
+.summaryGrid {
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:14px;
+}
+.section {
+  min-height:170px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:rgba(9,14,24,.64);
+}
+.section h3 { margin:0 0 10px; font-size:15px; }
 ul { margin:0; padding-left:18px; }
-li { margin:0 0 6px; }
-pre { margin:0; white-space:pre-wrap; word-break:break-word; font:12px/1.5 Consolas, "Courier New", monospace; }
+li { margin:0 0 7px; }
 .markdown-body { color:var(--ink); }
 .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin:0 0 12px; line-height:1.25; }
 .markdown-body p, .markdown-body ul, .markdown-body ol, .markdown-body pre, .markdown-body table { margin:0 0 16px; }
@@ -787,44 +959,141 @@ pre { margin:0; white-space:pre-wrap; word-break:break-word; font:12px/1.5 Conso
   border:1px solid var(--line);
   text-align:left;
 }
-#status { color:var(--muted); font-size:12px; margin-top:8px; }
-@media (max-width: 900px) { main { grid-template-columns:1fr; } }
+.logWrap {
+  min-height:420px;
+  padding:20px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:rgba(9,14,24,.72);
+}
+.logMeta {
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:16px;
+  color:var(--muted);
+  font-size:12px;
+}
+.empty { color:var(--muted); }
+@media (max-width: 1080px) {
+  .summaryCards, .summaryGrid { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+  main { grid-template-columns:1fr; }
+}
+@media (max-width: 720px) {
+  .page { padding:14px; }
+  .hero { padding:18px; border-radius:20px; }
+  .heroTop, .panelHeader, .logMeta { flex-direction:column; }
+  .heroMeta, .summaryCards, .summaryGrid { grid-template-columns:1fr; }
+  .heroActions { align-items:flex-start; min-width:0; }
+  h1 { font-size:28px; }
+}
 </style>
 </head>
 <body>
-<header>
-  <h1>Ghost Sweep Worklog</h1>
-  <div class="sub">Live view of <span id="path">WORKLOG.md</span></div>
-  <div id="status" class="sub">Loading...</div>
-</header>
-<main>
-  <section class="panel">
-    <h2 id="entryTitle">Latest progress</h2>
-    <div class="body">
-      <div id="updated" class="meta"></div>
-      <div class="section">
-        <h3>Current objective</h3>
-        <ul id="currentObjective"></ul>
+<div class="page">
+  <header class="hero">
+    <div class="heroTop">
+      <div>
+        <p class="eyebrow">Self-service progress board</p>
+        <h1>Ghost Sweep Worklog</h1>
+        <p class="sub">Balanced for quick status checks and comfortable full-log reading, with near-real-time refresh from the local worklog file.</p>
+        <div class="heroMeta">
+          <div class="metaCard">
+            <strong>Source</strong>
+            <div id="path">WORKLOG.md</div>
+          </div>
+          <div class="metaCard">
+            <strong>Latest entry</strong>
+            <div id="heroLatestEntry">Latest progress</div>
+          </div>
+          <div class="metaCard">
+            <strong>Live status</strong>
+            <div id="heroLiveStatus">Loading…</div>
+          </div>
+        </div>
       </div>
-      <div class="section">
-        <h3>Test results</h3>
-        <ul id="testResults"></ul>
-      </div>
-      <div class="section">
-        <h3>Blockers</h3>
-        <ul id="blockers"></ul>
-      </div>
-      <div class="section">
-        <h3>Next steps</h3>
-        <ul id="nextSteps"></ul>
+      <div class="heroActions">
+        <button id="refreshNow" type="button">Refresh now</button>
+        <div class="statusChip"><span class="statusDot"></span><span id="statusChipText">Loading…</span></div>
+        <div id="status">Loading...</div>
       </div>
     </div>
-  </section>
-  <section class="panel">
-    <h2>Full worklog</h2>
-    <div class="body"><div class="logWrap"><div id="worklogHtml" class="markdown-body"></div></div></div>
-  </section>
-</main>
+    <section class="summaryCards">
+      <article class="statCard">
+        <span class="label">Objectives</span>
+        <div id="objectiveCount" class="value">0</div>
+        <p>Current items actively being worked.</p>
+      </article>
+      <article class="statCard">
+        <span class="label">Blockers</span>
+        <div id="blockerCount" class="value">0</div>
+        <p>Only counts real blockers, not “None.”</p>
+      </article>
+      <article class="statCard">
+        <span class="label">Next steps</span>
+        <div id="nextStepCount" class="value">0</div>
+        <p>Queued follow-ups from the latest entry.</p>
+      </article>
+      <article class="statCard live">
+        <span class="label">Live status</span>
+        <div id="liveStatusLabel" class="value">Loading…</div>
+        <p>Auto-refresh every 5 seconds.</p>
+      </article>
+    </section>
+  </header>
+  <main>
+    <section class="panel">
+      <div class="panelHeader">
+        <div>
+          <h2>Progress summary</h2>
+          <p>Structured highlights from the latest worklog entry.</p>
+        </div>
+      </div>
+      <div class="body">
+        <article class="latestEntryCard">
+          <div class="kicker">Latest entry</div>
+          <h3 id="entryTitle">Latest progress</h3>
+          <div id="updated" class="meta"></div>
+        </article>
+        <div class="summaryGrid">
+          <div class="section">
+            <h3>Current objective</h3>
+            <ul id="currentObjective"></ul>
+          </div>
+          <div class="section">
+            <h3>Blockers</h3>
+            <ul id="blockers"></ul>
+          </div>
+          <div class="section">
+            <h3>Test results</h3>
+            <ul id="testResults"></ul>
+          </div>
+          <div class="section">
+            <h3>Next steps</h3>
+            <ul id="nextSteps"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panelHeader">
+        <div>
+          <h2>Full worklog</h2>
+          <p>Rendered markdown from the live worklog file.</p>
+        </div>
+      </div>
+      <div class="body">
+        <div class="logWrap">
+          <div class="logMeta">
+            <span>Readable markdown, auto-updated in place.</span>
+            <span id="lastFileUpdate">Last file update: --</span>
+          </div>
+          <div id="worklogHtml" class="markdown-body"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
 <script>
 const $ = id => document.getElementById(id);
 async function fetchJson(path) {
@@ -842,18 +1111,37 @@ function renderList(id, items, emptyText) {
   const values = Array.isArray(items) && items.length ? items : [emptyText];
   $(id).innerHTML = values.map(item => `<li>${escapeHtml(item)}</li>`).join('');
 }
+function meaningfulCount(items) {
+  if (!Array.isArray(items)) return 0;
+  return items.filter(item => {
+    const value = String(item ?? '').trim().toLowerCase();
+    return value && value !== 'none.' && value !== 'none';
+  }).length;
+}
 async function loadWorklog() {
   const payload = await fetchJson('/api/worklog');
   $('path').textContent = payload.path || 'WORKLOG.md';
   $('entryTitle').textContent = payload.latest_title || 'Latest progress';
+  $('heroLatestEntry').textContent = payload.latest_title || 'Latest progress';
   $('updated').textContent = payload.modified_at ? `Updated ${payload.modified_at}` : 'WORKLOG.md not found';
-  $('status').textContent = payload.exists ? 'Auto-refreshing every 5 seconds.' : 'WORKLOG.md not found.';
+  const liveStatus = payload.exists ? 'Auto-refreshing' : 'Missing';
+  $('heroLiveStatus').textContent = liveStatus;
+  $('liveStatusLabel').textContent = payload.exists ? 'Live' : 'Missing';
+  $('statusChipText').textContent = payload.exists ? 'Auto-refreshing' : 'Worklog missing';
+  $('status').textContent = payload.exists ? `Synced with ${payload.path || 'WORKLOG.md'}.` : 'WORKLOG.md not found.';
+  $('lastFileUpdate').textContent = payload.modified_at ? `Last file update: ${payload.modified_at}` : 'Last file update: unavailable';
   renderList('currentObjective', payload.current_objective, 'No current objective logged.');
   renderList('testResults', payload.test_results, 'No test results logged.');
   renderList('blockers', payload.blockers, 'No blockers logged.');
   renderList('nextSteps', payload.next_steps, 'No next steps logged.');
+  $('objectiveCount').textContent = String(Array.isArray(payload.current_objective) ? payload.current_objective.length : 0);
+  $('blockerCount').textContent = String(meaningfulCount(payload.blockers));
+  $('nextStepCount').textContent = String(Array.isArray(payload.next_steps) ? payload.next_steps.length : 0);
   $('worklogHtml').innerHTML = payload.html || '<p class="empty">WORKLOG.md not found.</p>';
 }
+$('refreshNow').addEventListener('click', () => {
+  loadWorklog().catch(err => { $('status').textContent = err.message; });
+});
 loadWorklog().catch(err => { $('status').textContent = err.message; });
 setInterval(loadWorklog, 5000);
 </script>
