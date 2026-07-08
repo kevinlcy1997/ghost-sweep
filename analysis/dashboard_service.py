@@ -760,8 +760,8 @@ li { margin:0 0 6px; }
 pre { margin:0; white-space:pre-wrap; word-break:break-word; font:12px/1.5 Consolas, "Courier New", monospace; }
 .markdown-body { color:var(--ink); }
 .markdown-body h1, .markdown-body h2, .markdown-body h3 { margin:0 0 12px; line-height:1.25; }
-.markdown-body p, .markdown-body ul, .markdown-body pre, .markdown-body table { margin:0 0 16px; }
-.markdown-body ul { padding-left:20px; }
+.markdown-body p, .markdown-body ul, .markdown-body ol, .markdown-body pre, .markdown-body table { margin:0 0 16px; }
+.markdown-body ul, .markdown-body ol { padding-left:20px; }
 .markdown-body a { color:#f7b733; }
 .markdown-body code {
   padding:2px 6px;
