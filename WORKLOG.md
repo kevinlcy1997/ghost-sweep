@@ -324,3 +324,11 @@ Near-miss ranker experiment:
   - `2h`: exact precision@50 `0.06`, neighbor hit@50 `0.40`, dispatch precision@50 `0.00`
 - Rejected code was reverted to preserve the accepted baseline, and post-revert focused validation passed: `25 passed, 4 warnings`.
 - Next step: move to district-conditioned features rather than trying another ranker variant in this session.
+
+Cold-zone district backfill experiment:
+- Baseline note: synced holdout Unknown share was `30m=0.1770`, `1h=0.1767`, `2h=0.1767`.
+- Decision: reject
+- Unknown share after rerun: `30m=0.0000`, `1h=0.0000`, `2h=0.0000`
+- Dispatch precision@50: `30m=0.12`, `1h=0.18`, `2h=0.00`
+- Artifact top50 precision: `30m=0.10`, `1h=0.18`, `2h=0.00`
+- Next step: move to district-aware candidate-set policy or district-hour priors.
