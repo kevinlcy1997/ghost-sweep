@@ -423,7 +423,7 @@ def test_worklog_page_polls_live_endpoint():
     assert "worklogHtml" in body
 
 
-def test_worklog_page_uses_rendered_html_field():
+def test_worklog_page_uses_descending_detail_html_field():
     status, headers, body = service.dispatch("GET", "/worklog")
 
     assert status == 200
@@ -431,8 +431,8 @@ def test_worklog_page_uses_rendered_html_field():
     assert "<h2>Full worklog</h2>" in body
     assert 'class="logWrap"' in body
     assert 'id="worklogHtml"' in body
-    assert "payload.html" in body
-    assert "innerHTML = payload.html" in body
+    assert "payload.detail_html" in body
+    assert "innerHTML = payload.detail_html" in body or "payload.detail_html || payload.html" in body
     assert ".markdown-body table" in body
     assert ".markdown-body ul" in body
     assert ".markdown-body ol" in body
@@ -451,7 +451,7 @@ def test_worklog_page_matches_rich_shell_contract():
     assert "Next steps" in body
     assert "Live status" in body
     assert 'id="worklogHtml"' in body
-    assert "payload.html" in body
+    assert "payload.detail_html" in body
     assert 'rel="icon"' in body
     assert 'href="data:,"' in body
     assert 'id="entryChip"' in body

@@ -1197,7 +1197,8 @@ async function loadWorklog() {
   $('objectiveCount').textContent = String(Array.isArray(payload.current_objective) ? payload.current_objective.length : 0);
   $('blockerCount').textContent = String(meaningfulCount(payload.blockers));
   $('nextStepCount').textContent = String(Array.isArray(payload.next_steps) ? payload.next_steps.length : 0);
-  $('worklogHtml').innerHTML = payload.html || '<p class="empty">WORKLOG.md not found.</p>';
+  $('worklogHtml').innerHTML =
+    payload.detail_html || payload.html || '<p class="empty">WORKLOG.md not found.</p>';
 }
 $('refreshNow').addEventListener('click', () => {
   loadWorklog().catch(err => { $('status').textContent = err.message; });
