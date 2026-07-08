@@ -1,7 +1,9 @@
+import h3
 import pandas as pd
 
+from ghost_districts import get_district
 from ghost_ranking_features import build_zone_ranking_training_data
-from ghost_zones import compute_h3_zone
+from ghost_zones import compute_h3_zone, h3_zone_centroid
 
 
 def _event(lat, lng, create_dt):
@@ -42,3 +44,31 @@ def test_build_zone_ranking_training_data_accepts_resolution():
     rows = build_zone_ranking_training_data(events, resolution=9)
 
     assert set(rows["h3_resolution"]) == {9}
+
+
+def test_build_zone_ranking_training_data_backfills_cold_zone_district_from_centroid():
+    cold_zone = compute_h3_zone(22.3154, 114.1698)
+    cold_district, cold_region = get_district(*h3_zone_centroid(cold_zone))
+    history_zone = next(
+        zone_id
+        for zone_id in h3.grid_ring(cold_zone, 1)
+        if get_district(*h3_zone_centroid(zone_id))[0] == cold_district
+    )
+    history_lat, history_lng = h3.cell_to_latlng(history_zone)
+    cold_lat, cold_lng = h3.cell_to_latlng(cold_zone)
+
+    events = [
+        _event(history_lat, history_lng, "2026-06-01 09:00:00"),
+        _event(cold_lat, cold_lng, "2026-06-02 10:00:00"),
+    ]
+
+    df = build_zone_ranking_training_data(events, lookback_days=1, forecast_hours=2)
+    row = df[
+        (df["target_time"] == pd.Timestamp("2026-06-02 09:00:00")) & (df["zone_id"] == cold_zone)
+    ].iloc[0]
+
+    assert row["zone_event_count_24h"] == 0
+    assert row["district"] == cold_district
+    assert row["region"] == cold_region
+    assert row["district_event_count_24h"] == 1
+    assert row["alert_next_2h"] == 1
