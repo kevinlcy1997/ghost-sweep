@@ -389,7 +389,7 @@ def test_worklog_page_uses_rendered_html_field():
 
     assert status == 200
     assert headers["Content-Type"] == "text/html; charset=utf-8"
-    assert 'id="worklogHtml"' in body
+    assert '<div class="logWrap"><div id="worklogHtml" class="markdown-body"></div></div>' in body
     assert "payload.html" in body
     assert "innerHTML = payload.html" in body
     assert ".markdown-body table" in body
