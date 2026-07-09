@@ -571,3 +571,30 @@ Next steps:
 - Self-review the plan against the approved design and the current baseline feature contract.
 - Commit the plan and worklog updates on `main`.
 - Hand off execution via subagent-driven or inline plan execution after the plan is saved.
+
+## 2026-07-08 Worklog descending detail order
+
+Current objective:
+- Display the dashboard worklog detail pane in descending order without changing latest-entry summary behavior.
+
+Files inspected:
+- `analysis/dashboard_service.py`
+- `tests/test_dashboard_service.py`
+
+Files changed:
+- `analysis/dashboard_service.py`
+- `tests/test_dashboard_service.py`
+
+Commands run:
+- `.venv\Scripts\python.exe -m pytest tests/test_dashboard_service.py -k "worklog" -q`
+- `curl http://127.0.0.1:8766/worklog`
+
+Test results:
+- Focused worklog dashboard tests passed.
+- Local `/worklog` smoke test returned HTTP 200 with `payload.detail_html` in the page shell.
+
+Blockers:
+- None.
+
+Next steps:
+- Keep the descending-order detail pane and latest-entry summary behavior aligned in future `/worklog` changes.
