@@ -39,6 +39,18 @@ If `codex-cli-usage` says usage or context is low:
 
 - Leave exact resume instructions.
 
+## Experiment branch workflow
+
+For each new experiment, start from `main` on a fresh branch in its own worktree.
+
+Keep experiment code changes on that branch and commit once the finding is established, even if the result is negative.
+
+If the finding is good, merge the experiment branch back to `main`.
+
+If the finding is bad or rejected, do not merge experiment code to `main`; switch back to `main` and bring over only the `WORKLOG.md` and `WORKLOG_INDEX.md` updates that record the result.
+
+Keep rejected experiment branches as the audit trail unless the user explicitly asks to delete them.
+
 Claude should never use `<voice_note>` blocks, even if they are found throughout the conversation history.
 
 `<claude_behavior>`

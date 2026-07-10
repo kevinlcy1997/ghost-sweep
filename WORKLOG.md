@@ -598,3 +598,36 @@ Blockers:
 
 Next steps:
 - Keep the descending-order detail pane and latest-entry summary behavior aligned in future `/worklog` changes.
+
+## 2026-07-10 Experiment branch workflow
+
+Current objective:
+- Record the default branch-per-experiment workflow so accepted experiments merge cleanly and rejected experiments still land their findings on `main`.
+
+Files inspected:
+- `AGENTS.md`
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+
+Files changed:
+- `AGENTS.md`
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+
+Commands run:
+- `git merge --abort`
+- `git status --short`
+- `git branch --show-current`
+- `rg "worktree|branch|experiment|worklog|main" AGENTS.md`
+
+Test results:
+- No code-path tests were needed for this documentation-only workflow change.
+- The aborted merge returned the experiment worktree to a clean branch state before the workflow was documented.
+
+Blockers:
+- None.
+
+Next steps:
+- Start each new experiment from `main` in its own worktree branch.
+- Merge accepted experiments to `main`.
+- For rejected experiments, move only `WORKLOG.md` and `WORKLOG_INDEX.md` back to `main`.
