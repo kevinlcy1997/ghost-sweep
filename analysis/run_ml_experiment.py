@@ -43,7 +43,7 @@ from ghost_model import CATEGORICAL_COLS, FEATURE_COLS
 
 
 DB_PATH = ROOT / "ghost_alerts.db"
-REPORT_PATH = ROOT / "analysis" / f"ml_experiment_report_{datetime.now():%Y%m%d_%H%M%S}.html"
+REPORT_PATH = ROOT / "analysis" / "html" / f"ml_experiment_report_{datetime.now():%Y%m%d_%H%M%S}.html"
 BEST_MODEL_PATH = ROOT / "analysis" / "best_experiment_model.joblib"
 MLFLOW_TRACKING_DB = ROOT / "analysis" / "mlflow_tracking.db"
 MLFLOW_TRACKING_URI = f"sqlite:///{MLFLOW_TRACKING_DB.as_posix()}"

@@ -36,7 +36,8 @@ from ghost_zones import DEFAULT_H3_RESOLUTION, h3_zone_polygon
 
 DB_PATH = ROOT / "ghost_alerts.db"
 OUTPUT_DIR = ROOT / "analysis"
-REPORT_PATH = OUTPUT_DIR / f"zone_ranking_report_{datetime.now():%Y%m%d_%H%M%S}.html"
+HTML_DIR = OUTPUT_DIR / "html"
+REPORT_PATH = HTML_DIR / f"zone_ranking_report_{datetime.now():%Y%m%d_%H%M%S}.html"
 PREDICTIONS_PATH = OUTPUT_DIR / "zone_predictions_latest.csv"
 FEATURE_RANK_PATH = OUTPUT_DIR / "zone_feature_ranking_latest.csv"
 MODEL_PATH = OUTPUT_DIR / "best_zone_model.joblib"

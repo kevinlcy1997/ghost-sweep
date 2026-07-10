@@ -14,7 +14,7 @@ if str(ROOT) not in sys.path:
 
 from ghost_zones import DEFAULT_H3_RESOLUTION
 
-OUTPUT_PATH = ROOT / "analysis" / "spotfire_dashboard.html"
+OUTPUT_PATH = ROOT / "analysis" / "html" / "spotfire_dashboard.html"
 RESOLUTION = DEFAULT_H3_RESOLUTION
 
 

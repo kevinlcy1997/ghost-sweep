@@ -50,9 +50,10 @@ except ModuleNotFoundError:
 
 
 OUTPUT_DIR = ROOT / "analysis"
+HTML_DIR = OUTPUT_DIR / "html"
 FOLD_RESULTS_PATH = OUTPUT_DIR / "model_iteration_folds_latest.csv"
 SUMMARY_PATH = OUTPUT_DIR / "model_iteration_summary_latest.csv"
-REPORT_PATH = OUTPUT_DIR / "model_iteration_report.html"
+REPORT_PATH = HTML_DIR / "model_iteration_report.html"
 MODEL_PATH = OUTPUT_DIR / "best_iterated_zone_model.joblib"
 METADATA_PATH = OUTPUT_DIR / "best_iterated_model_metadata.json"
 PREDICTIONS_PATH = OUTPUT_DIR / "iterated_zone_predictions_latest.csv"
@@ -72,7 +73,7 @@ def _artifact_paths(slug: str) -> dict[str, Path]:
     return {
         "fold_results": OUTPUT_DIR / f"model_iteration_folds_{slug}_latest.csv",
         "summary": OUTPUT_DIR / f"model_iteration_summary_{slug}_latest.csv",
-        "report": OUTPUT_DIR / f"model_iteration_report_{slug}.html",
+        "report": HTML_DIR / f"model_iteration_report_{slug}.html",
         "model": OUTPUT_DIR / f"best_iterated_zone_model_{slug}.joblib",
         "metadata": OUTPUT_DIR / f"best_iterated_model_metadata_{slug}.json",
         "predictions": OUTPUT_DIR / f"iterated_zone_predictions_{slug}_latest.csv",

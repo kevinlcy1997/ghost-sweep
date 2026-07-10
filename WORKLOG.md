@@ -808,3 +808,67 @@ Blockers:
 
 Next steps:
 - Commit the overlay page and merge the good branch back to `main`.
+
+## 2026-07-10 Analysis HTML parent folder
+
+Current objective:
+- Reduce top-level clutter in `analysis\` by moving loose HTML outputs under a dedicated `analysis\html\` parent folder and updating generators/manifests to keep future HTML there.
+
+Files inspected:
+- `analysis\build_dashboard_manifest.py`
+- `analysis\build_spotfire_dashboard.py`
+- `analysis\make_h3_scale_overlay.py`
+- `analysis\make_zone_map.py`
+- `analysis\make_zone_model_visuals.py`
+- `analysis\run_ml_experiment.py`
+- `analysis\run_model_iteration.py`
+- `analysis\run_multi_horizon_experiment.py`
+- `analysis\run_resolution_comparison.py`
+- `analysis\run_two_stage_experiment.py`
+- `analysis\run_zone_ranking_experiment.py`
+- `analysis\simulate_real_location_risk.py`
+- `tests\test_ci.py`
+- `tests\test_h3_scale_overlay.py`
+- `tests\test_spotfire_dashboard.py`
+- `WORKLOG_TEMPLATE.md`
+- `WORKLOG_INDEX.md`
+
+Files changed:
+- `analysis\build_dashboard_manifest.py`
+- `analysis\build_spotfire_dashboard.py`
+- `analysis\make_h3_scale_overlay.py`
+- `analysis\make_zone_map.py`
+- `analysis\make_zone_model_visuals.py`
+- `analysis\run_ml_experiment.py`
+- `analysis\run_model_iteration.py`
+- `analysis\run_multi_horizon_experiment.py`
+- `analysis\run_resolution_comparison.py`
+- `analysis\run_two_stage_experiment.py`
+- `analysis\run_zone_ranking_experiment.py`
+- `analysis\simulate_real_location_risk.py`
+- `analysis\dashboard_manifest_latest.json`
+- `analysis\html\h3_scale_overlay.html`
+- `tests\test_ci.py`
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+
+Commands run:
+- `Get-ChildItem analysis -Filter '*.html' -Recurse | Select-Object FullName`
+- `rtk python analysis\build_dashboard_manifest.py`
+- `rtk python analysis\make_h3_scale_overlay.py`
+- `rtk pytest tests\test_ci.py tests\test_h3_scale_overlay.py tests\test_spotfire_dashboard.py -q -p no:cacheprovider --basetemp .pytest_tmp_analysis_html`
+- `Get-ChildItem analysis -File -Filter '*.html'`
+- `Get-ChildItem analysis\html -File -Filter '*.html'`
+- `rtk pytest tests\test_ci.py -q -k dashboard_manifest_tracks_model_artifacts -p no:cacheprovider --basetemp .pytest_tmp_manifest_html`
+- `rtk pytest tests\test_h3_scale_overlay.py tests\test_spotfire_dashboard.py -q -p no:cacheprovider --basetemp .pytest_tmp_html_reports`
+
+Test results:
+- Relevant selectors passed: `tests\test_ci.py -k dashboard_manifest_tracks_model_artifacts` -> `1 passed`.
+- HTML generator smoke tests passed: `tests\test_h3_scale_overlay.py tests\test_spotfire_dashboard.py` -> `2 passed`.
+- A broader `tests\test_ci.py` run surfaced an unrelated existing failure in `test_dev_start_script_supports_retraining_and_mlflow`.
+
+Blockers:
+- None.
+
+Next steps:
+- Commit the folder reorganization branch, merge it back to `main`, and clean up the worktree.

@@ -17,7 +17,7 @@ ITERATED_PREDICTIONS_PATH = ROOT / "analysis" / "iterated_zone_predictions_lates
 DEFAULT_PREDICTIONS_PATH = ROOT / "analysis" / "zone_predictions_res8_latest.csv"
 DEFAULT_OUTPUT_PATH = ROOT / "analysis" / "real_location_simulation_latest.json"
 DEFAULT_CSV_PATH = ROOT / "analysis" / "real_location_simulation_latest.csv"
-DEFAULT_HTML_PATH = ROOT / "analysis" / "real_location_simulation_report.html"
+DEFAULT_HTML_PATH = ROOT / "analysis" / "html" / "real_location_simulation_report.html"
 HORIZON_PREDICTION_PATHS = {
     "30m": ROOT / "analysis" / "iterated_zone_predictions_30m_latest.csv",
     "1h": ROOT / "analysis" / "iterated_zone_predictions_1h_latest.csv",

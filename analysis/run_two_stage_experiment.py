@@ -53,9 +53,10 @@ warnings.filterwarnings(
 )
 
 OUTPUT_DIR = ROOT / "analysis"
+HTML_DIR = OUTPUT_DIR / "html"
 HORIZONS = [30, 60, 120]
 SUMMARY_PATH = OUTPUT_DIR / "two_stage_summary_latest.csv"
-REPORT_PATH = OUTPUT_DIR / "two_stage_report.html"
+REPORT_PATH = HTML_DIR / "two_stage_report.html"
 
 ACTIVITY_NUMERIC_FEATURES = [
     "hour",
