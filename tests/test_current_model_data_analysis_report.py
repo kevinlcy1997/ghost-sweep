@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 
 from analysis.build_current_model_data_analysis_report import (
     build_report_payload,
@@ -83,3 +84,40 @@ def test_render_report_writes_static_dated_html(tmp_path: Path):
     assert "Stage 2 30m positive rate" in html_text
     assert "What / So What / Now What" in html_text
     assert "Yau Tsim Mong" in html_text
+
+
+def test_collect_report_data_uses_project_inputs(tmp_path: Path):
+    from analysis.build_current_model_data_analysis_report import collect_report_data
+
+    source = tmp_path / "ghost_alerts.json"
+    source.write_text(
+        json.dumps(
+            {
+                "alerts": {
+                    "1": {
+                        "lat": 22.3154,
+                        "lng": 114.1698,
+                        "create_dt": "2026-07-09 10:00:00",
+                        "address": "Central",
+                        "name": "A",
+                    },
+                    "2": {
+                        "lat": 22.3160,
+                        "lng": 114.1703,
+                        "create_dt": "2026-07-10 11:00:00",
+                        "address": "Wan Chai",
+                        "name": "B",
+                    },
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    payload = collect_report_data(alerts_path=source)
+
+    assert payload["raw"]["total_alerts"] == 2
+    assert payload["reconstructed_geo"]["usable_events"] == 2
+    assert "30m" in payload["stage1"]
+    assert "30m" in payload["stage2"]
+    assert payload["current_model_design"]["stage2_numeric_feature_count"] > 0
