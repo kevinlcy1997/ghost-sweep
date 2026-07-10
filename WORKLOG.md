@@ -631,3 +631,79 @@ Next steps:
 - Start each new experiment from `main` in its own worktree branch.
 - Merge accepted experiments to `main`.
 - For rejected experiments, move only `WORKLOG.md` and `WORKLOG_INDEX.md` back to `main`.
+
+## 2026-07-10 Current model data analysis
+
+Current objective:
+- Produce a full data-side analysis for the current accepted model design using both the latest raw feed and the reconstructed model training tables.
+
+Files inspected:
+- `ghost_alerts.json`
+- `ghost_ranking_features.py`
+- `ghost_activity_features.py`
+- `analysis/run_zone_ranking_experiment.py`
+- `analysis/run_model_iteration.py`
+- `analysis/run_two_stage_experiment.py`
+- `analysis/two_stage_splits.py`
+- `analysis/dashboard_manifest_latest.json`
+
+Files changed:
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+
+Commands run:
+- `git fetch --all --prune`
+- `git pull --ff-only origin main`
+- `git merge --no-edit origin/main`
+- Inline `python` profiling of `ghost_alerts.json`
+- Inline `python` analysis of reconstructed geo coverage, Stage 1 activity labels, Stage 2 spatial labels, sampling mix, and feature separation
+
+Test results:
+- No code-path tests were run because this was a data analysis milestone, not a code change.
+- The latest pulled raw feed contains `10,236` alerts from `2026-06-13` to `2026-07-10`.
+- Raw payload admin text fields are empty (`region`, `district`, `sub_district`, `title` all missing), but coordinate backfill still reconstructs `5` regions, `18` districts, and `880` active H3 zones for model use.
+- Stage 1 hourly activity rows: `486`; positive rates rise from `0.5000` (`30m`) to `0.6358` (`2h`).
+- Stage 2 spatial rows: `279,840`; positive rates remain sparse (`0.0037`, `0.0073`, `0.0136` for `30m`, `1h`, `2h`), while the sampled Stage 2 training set holds near the intended `~5.1:1` negative-to-positive ratio.
+- Strongest Stage 2 separation comes from local density and proximity features (`zone_event_count_24h`, district/neighbor/ring2 counts, and distance-to-recent-event features), while short-window self-count features stay mostly zero even on positives.
+
+Blockers:
+- No fresh model artifact outputs are present in `analysis/`, so this write-up is data-side and design-side, not a new performance rerun.
+- The local database refresh is still a separate open task, so this analysis uses the latest pulled `ghost_alerts.json` rather than a freshly rebuilt SQLite training source.
+
+Next steps:
+- Refresh the local database from the current raw feed before any new model rerun.
+- Rerun the accepted baseline on the refreshed source to measure whether the hotter recent regime changes precision by horizon.
+- Keep coordinate-based district/region backfill as a hard dependency because the upstream raw payload no longer provides those fields directly.
+
+## 2026-07-10 Current model data analysis HTML design
+
+Current objective:
+- Write and checkpoint the approved design for a static HTML report that packages the current-model data analysis into a dated snapshot under `analysis\reports`.
+
+Files inspected:
+- `docs/superpowers/specs/2026-07-08-worklog-descending-order-design.md`
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+- existing `docs/superpowers/specs/*.md` naming patterns
+
+Files changed:
+- `docs/superpowers/specs/2026-07-10-current-model-data-analysis-html-design.md`
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+
+Commands run:
+- `glob docs/superpowers/specs/*.md`
+- `rg "^## " WORKLOG.md`
+- `view WORKLOG_INDEX.md`
+
+Test results:
+- No code-path tests were run because this was a design-only checkpoint.
+- Design approved in chat: single self-contained static HTML file, dashboard summary first, full write-up below, stored at `analysis\reports\YYYY-MM-DD\current-model-data-analysis.html`.
+
+Blockers:
+- None.
+
+Next steps:
+- Self-review the written spec for ambiguity and placeholders.
+- Commit the spec and worklog update.
+- Ask the user to review the written spec before moving to implementation planning.
