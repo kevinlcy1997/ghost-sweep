@@ -772,3 +772,39 @@ Blockers:
 
 Next steps:
 - Share the generated report path with the user.
+
+## 2026-07-10 H3 scale overlay
+
+Current objective:
+- Create a static Hong Kong map overlay that lets the user compare H3 grid sizes 7, 8, and 9 on one canvas.
+
+Files inspected:
+- `analysis/build_hk_coverage_grid.py`
+- `analysis/make_zone_map.py`
+- `WORKLOG_TEMPLATE.md`
+- `WORKLOG_INDEX.md`
+
+Files changed:
+- `analysis/make_h3_scale_overlay.py`
+- `tests/test_h3_scale_overlay.py`
+- `analysis/h3_scale_overlay.html`
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+
+Commands run:
+- `git worktree add '.worktrees\h3-scale-overlay' -b h3-scale-overlay`
+- `.venv\Scripts\python.exe -m pytest tests\test_ghost_zones.py -q -p no:cacheprovider --basetemp .pytest_tmp_h3_overlay_base`
+- `.venv\Scripts\python.exe -m pytest tests\test_h3_scale_overlay.py -q -p no:cacheprovider --basetemp .pytest_tmp_h3_scale_overlay`
+- `.venv\Scripts\python.exe analysis\make_h3_scale_overlay.py`
+- `Select-String -Path analysis\h3_scale_overlay.html -Pattern 'H3 res 7','H3 res 8','H3 res 9','setResolution'`
+
+Test results:
+- `tests\test_ghost_zones.py`: `5 passed`.
+- `tests\test_h3_scale_overlay.py`: `1 passed`.
+- The generated HTML file contained the expected resolution toggle controls and toggle script.
+
+Blockers:
+- None.
+
+Next steps:
+- Commit the overlay page and merge the good branch back to `main`.
