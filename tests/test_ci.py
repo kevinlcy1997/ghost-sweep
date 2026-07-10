@@ -79,7 +79,7 @@ def test_dashboard_manifest_tracks_model_artifacts():
     """The manifest builder should list the model outputs produced by the pipeline."""
     assert "analysis/multi_horizon_summary_latest.csv" in ARTIFACT_GROUPS["multi_horizon_models"]
     assert "analysis/model_iteration_summary_30m_latest.csv" in ARTIFACT_GROUPS["multi_horizon_models"]
-    assert "analysis/model_iteration_report_30m.html" in ARTIFACT_GROUPS["multi_horizon_models"]
+    assert "analysis/html/model_iteration_report_30m.html" in ARTIFACT_GROUPS["multi_horizon_models"]
 
     assert "analysis/best_iterated_model_metadata.json" in ARTIFACT_GROUPS["model_metadata"]
     assert "analysis/best_iterated_model_metadata_30m.json" in ARTIFACT_GROUPS["model_metadata"]

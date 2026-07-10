@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 GEOJSON_PATH = ROOT / "ghost_zone_forecast.geojson"
-OUT_PATH = ROOT / "analysis" / "zone_forecast_map.html"
+OUT_PATH = ROOT / "analysis" / "html" / "zone_forecast_map.html"
 CHOICE_PATH = ROOT / "analysis" / "resolution_choice_latest.json"
 
 WIDTH = 980

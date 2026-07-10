@@ -16,7 +16,7 @@ from analysis.build_hk_coverage_grid import build_hk_coverage_grid, write_covera
 
 
 GEO_DIR = ROOT / "analysis" / "geo"
-OUT_PATH = ROOT / "analysis" / "h3_scale_overlay.html"
+OUT_PATH = ROOT / "analysis" / "html" / "h3_scale_overlay.html"
 RESOLUTIONS = (7, 8, 9)
 DEFAULT_RESOLUTION = 8
 WIDTH = 980

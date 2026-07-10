@@ -17,5 +17,6 @@ Use this file as the first search target before opening the full `WORKLOG.md`.
 - `2026-07-10 Current model data analysis HTML implementation plan` — Recorded the implementation plan for the static dated current-model analysis HTML report and its focused test/generator split. `WORKLOG.md` lines 709-737
 - `2026-07-10 Current model data analysis HTML implementation` — Logged the completed generator, focused tests, dated static artifact output, and verification results for the current-model analysis HTML report. `WORKLOG.md` lines 744-774
 - `2026-07-10 H3 scale overlay` — Logged the static Hong Kong H3 grid-scale overlay generator, focused toggle test, generated HTML artifact, and merge-ready closeout for comparing resolutions 7, 8, and 9. `WORKLOG.md` lines 776-810
+- `2026-07-10 Analysis HTML parent folder` — Moved loose analysis HTML outputs under `analysis\html\` and updated generators, manifest paths, and focused tests so future HTML stays grouped. `WORKLOG.md` lines 812-874
 
 Note: refresh the listed line ranges if earlier entries are inserted into `WORKLOG.md`.

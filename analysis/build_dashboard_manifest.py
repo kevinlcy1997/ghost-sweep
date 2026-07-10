@@ -19,6 +19,7 @@ from ghost_zones import DEFAULT_H3_RESOLUTION
 MANIFEST_PATH = ROOT / "analysis" / "dashboard_manifest_latest.json"
 RESOLUTION = DEFAULT_H3_RESOLUTION
 COVERAGE_MODE = "road_access"
+HTML_DIR = "analysis/html"
 
 ARTIFACT_GROUPS = {
     "coverage_grid": [
@@ -45,19 +46,19 @@ ARTIFACT_GROUPS = {
     ],
     "multi_horizon_models": [
         "analysis/multi_horizon_summary_latest.csv",
-        "analysis/multi_horizon_report.html",
+        f"{HTML_DIR}/multi_horizon_report.html",
         "analysis/model_iteration_summary_latest.csv",
         "analysis/model_iteration_summary_30m_latest.csv",
         "analysis/model_iteration_summary_1h_latest.csv",
         "analysis/model_iteration_summary_2h_latest.csv",
-        "analysis/model_iteration_report.html",
-        "analysis/model_iteration_report_30m.html",
-        "analysis/model_iteration_report_1h.html",
-        "analysis/model_iteration_report_2h.html",
+        f"{HTML_DIR}/model_iteration_report.html",
+        f"{HTML_DIR}/model_iteration_report_30m.html",
+        f"{HTML_DIR}/model_iteration_report_1h.html",
+        f"{HTML_DIR}/model_iteration_report_2h.html",
     ],
     "two_stage_models": [
         "analysis/two_stage_summary_latest.csv",
-        "analysis/two_stage_report.html",
+        f"{HTML_DIR}/two_stage_report.html",
         "analysis/activity_model_folds_30m_latest.csv",
         "analysis/activity_model_folds_1h_latest.csv",
         "analysis/activity_model_folds_2h_latest.csv",
@@ -107,15 +108,15 @@ ARTIFACT_GROUPS = {
         "analysis/iterated_zone_predictions_2h_latest.csv",
     ],
     "simulation": [
-        "analysis/real_location_simulation_report.html",
+        f"{HTML_DIR}/real_location_simulation_report.html",
     ],
     "mlflow_tracking": [
         "analysis/mlruns",
     ],
     "reports": [
-        "analysis/zone_model_visual_explainer.html",
-        "analysis/zone_forecast_map.html",
-        "analysis/spotfire_dashboard.html",
+        f"{HTML_DIR}/zone_model_visual_explainer.html",
+        f"{HTML_DIR}/zone_forecast_map.html",
+        f"{HTML_DIR}/spotfire_dashboard.html",
     ],
 }
 

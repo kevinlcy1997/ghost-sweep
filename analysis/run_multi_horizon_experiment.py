@@ -15,7 +15,7 @@ from analysis.run_model_iteration import run_model_iteration
 
 HORIZONS = [30, 60, 120]
 SUMMARY_PATH = ROOT / "analysis" / "multi_horizon_summary_latest.csv"
-REPORT_PATH = ROOT / "analysis" / "multi_horizon_report.html"
+REPORT_PATH = ROOT / "analysis" / "html" / "multi_horizon_report.html"
 
 
 def run_multi_horizon_experiment() -> list[dict]:

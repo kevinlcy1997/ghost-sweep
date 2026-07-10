@@ -15,7 +15,7 @@ from matplotlib.patches import FancyBboxPatch, Polygon
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "analysis" / "zone_model_visual_explainer.png"
-REPORT = ROOT / "analysis" / "zone_ranking_report_20260627_222855.html"
+REPORT = ROOT / "analysis" / "html" / "zone_ranking_report_20260627_222855.html"
 SURVEY = ROOT / "analysis" / "geo" / "hk_zone_summary.csv"
 GEOJSON = ROOT / "ghost_zone_forecast.geojson"
 

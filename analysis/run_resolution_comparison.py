@@ -13,8 +13,9 @@ except ModuleNotFoundError:
 
 
 OUTPUT_DIR = ROOT / "analysis"
+HTML_DIR = OUTPUT_DIR / "html"
 CSV_PATH = OUTPUT_DIR / "resolution_comparison_latest.csv"
-HTML_PATH = OUTPUT_DIR / "resolution_comparison_report.html"
+HTML_PATH = HTML_DIR / "resolution_comparison_report.html"
 CHOICE_PATH = OUTPUT_DIR / "resolution_choice_latest.json"
 RESOLUTIONS = [8, 9, 10]
 
