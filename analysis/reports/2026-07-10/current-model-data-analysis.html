@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Current Model Data Analysis</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f6f8fb; color: #172033; }
+    main { max-width: 1180px; margin: 0 auto; padding: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .card, .panel { background: #fff; border: 1px solid #dbe4ef; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+    .metric { font-size: 28px; font-weight: 700; margin-top: 8px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e6edf5; vertical-align: top; }
+    th { background: #f2f6fb; }
+    h1, h2, h3 { margin-top: 0; }
+    .muted { color: #5f6f85; }
+  </style>
+</head>
+<body>
+<main>
+  <section class="panel">
+    <h1>Current Model Data Analysis</h1>
+    <p>Static snapshot of the current accepted model design: Stage 1 city-activity gating plus Stage 2 spatial ranking.</p>
+    <p class="muted">Stage 2 feature contract: 41 numeric features and 3 categorical features.</p>
+  </section>
+  <section class="grid">
+    <div class="card"><div>Raw alert count</div><div class="metric">10236</div></div>
+    <div class="card"><div>Usable enriched events</div><div class="metric">10236</div></div>
+    <div class="card"><div>Active H3 zones</div><div class="metric">880</div></div>
+    <div class="card"><div>Stage 1 30m positive rate</div><div class="metric">50.00%</div></div>
+    <div class="card"><div>Stage 2 30m positive rate</div><div class="metric">0.37%</div></div>
+    <div class="card"><div>Stage 2 sampled neg:pos</div><div class="metric">5.1:1</div></div>
+  </section>
+  <section class="panel">
+    <h2>Raw feed completeness</h2>
+    <table>
+      <thead><tr><th>Field</th><th>Present rows</th></tr></thead>
+      <tbody><tr><td>lat</td><td>10236</td></tr><tr><td>lng</td><td>10236</td></tr><tr><td>create_dt</td><td>10236</td></tr><tr><td>region</td><td>0</td></tr><tr><td>district</td><td>0</td></tr><tr><td>sub_district</td><td>0</td></tr><tr><td>title</td><td>0</td></tr><tr><td>name</td><td>5066</td></tr><tr><td>address</td><td>10221</td></tr></tbody>
+    </table>
+  </section>
+  <section class="panel">
+    <h2>Reconstructed geography</h2>
+    <table>
+      <thead><tr><th>District</th><th>Alerts</th></tr></thead>
+      <tbody><tr><td>Yau Tsim Mong</td><td>2180</td></tr><tr><td>Yuen Long</td><td>1329</td></tr><tr><td>Sha Tin</td><td>1041</td></tr><tr><td>Sham Shui Po</td><td>1034</td></tr><tr><td>Wan Chai</td><td>606</td></tr><tr><td>Tuen Mun</td><td>571</td></tr><tr><td>North</td><td>505</td></tr><tr><td>Kowloon City</td><td>474</td></tr></tbody>
+    </table>
+  </section>
+  <section class="panel">
+    <h2>Stage 1 label balance</h2>
+    <table>
+      <thead><tr><th>Horizon</th><th>Positive rate</th><th>Holdout base rate</th></tr></thead>
+      <tbody>
+        <tr><td>30m</td><td>50.00%</td><td>74.63%</td></tr>
+        <tr><td>1h</td><td>55.56%</td><td>78.12%</td></tr>
+        <tr><td>2h</td><td>63.58%</td><td>92.59%</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="panel">
+    <h2>Stage 2 label balance</h2>
+    <table>
+      <thead><tr><th>Horizon</th><th>Positive rate</th><th>Sampled neg:pos</th></tr></thead>
+      <tbody>
+        <tr><td>30m</td><td>0.37%</td><td>5.1:1</td></tr>
+        <tr><td>1h</td><td>0.73%</td><td>5.1:1</td></tr>
+        <tr><td>2h</td><td>1.36%</td><td>5.1:1</td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="panel">
+    <h2>Full write-up</h2>
+    <h3>Executive read</h3>
+    <p>The current model still fits the data, but Stage 1 is less selective in the hotter regime.</p>
+    <h3>What / So What / Now What</h3>
+    <p><strong>What:</strong> The raw feed lost admin text fields, but coordinates still support enrichment.</p>
+    <p><strong>So What:</strong> The accepted design still works, but DB refresh and geo backfill are now hard dependencies.</p>
+    <p><strong>Now What:</strong> Refresh the DB, rerun the baseline, and keep the coordinate backfill path intact.</p>
+  </section>
+</main>
+</body>
+</html>

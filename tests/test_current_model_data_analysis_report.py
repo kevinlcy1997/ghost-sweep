@@ -121,3 +121,19 @@ def test_collect_report_data_uses_project_inputs(tmp_path: Path):
     assert "30m" in payload["stage1"]
     assert "30m" in payload["stage2"]
     assert payload["current_model_design"]["stage2_numeric_feature_count"] > 0
+
+
+def test_main_writes_default_dated_report(tmp_path: Path, monkeypatch):
+    from analysis.build_current_model_data_analysis_report import main
+
+    monkeypatch.setattr("analysis.build_current_model_data_analysis_report.ROOT", tmp_path)
+    source = tmp_path / "ghost_alerts.json"
+    source.write_text(
+        '{"alerts":{"1":{"lat":22.3154,"lng":114.1698,"create_dt":"2026-07-09 10:00:00","address":"Central","name":"A"}}}',
+        encoding="utf-8",
+    )
+
+    output = main(["--report-date", "2026-07-10", "--alerts-path", str(source)])
+
+    assert output == tmp_path / "analysis" / "reports" / "2026-07-10" / "current-model-data-analysis.html"
+    assert output.exists()

@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+import argparse
 import json
+import sys
 from collections import Counter
 from datetime import datetime
 from html import escape
 from pathlib import Path
 
 import pandas as pd
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from analysis.run_model_iteration import target_for_horizon
 from analysis.run_zone_ranking_experiment import CATEGORICAL_FEATURES, NUMERIC_FEATURES
@@ -18,8 +24,6 @@ from ghost_ranking_features import (
     sample_spatial_training_rows,
 )
 
-
-ROOT = Path(__file__).resolve().parents[1]
 REPORTS_DIR = ROOT / "analysis" / "reports"
 REPORT_FILENAME = "current-model-data-analysis.html"
 
@@ -228,7 +232,13 @@ def collect_report_data(alerts_path: Path | None = None) -> dict:
 def render_report_html(payload: dict) -> str:
     raw = payload["raw"]
     reconstructed = payload["reconstructed_geo"]
-    model_design = payload["current_model_design"]
+    model_design = payload.get(
+        "current_model_design",
+        {
+            "stage2_numeric_feature_count": 0,
+            "stage2_categorical_feature_count": 0,
+        },
+    )
     stage1_30m = payload["stage1"]["30m"]
     stage2_30m = payload["stage2"]["30m"]
     writeup = payload["writeup"]
@@ -322,3 +332,19 @@ def write_report(payload: dict, root_dir: Path | None = None, report_date: str =
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(render_report_html(payload), encoding="utf-8")
     return out_path
+
+
+def main(argv: list[str] | None = None) -> Path:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--report-date", default="2026-07-10")
+    parser.add_argument("--alerts-path", default=str(ROOT / "ghost_alerts.json"))
+    args = parser.parse_args(argv)
+
+    payload = collect_report_data(alerts_path=Path(args.alerts_path))
+    output = write_report(payload, root_dir=ROOT, report_date=args.report_date)
+    print(output)
+    return output
+
+
+if __name__ == "__main__":
+    main()
