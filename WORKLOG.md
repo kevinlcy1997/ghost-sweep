@@ -872,3 +872,49 @@ Blockers:
 
 Next steps:
 - Commit the folder reorganization branch, merge it back to `main`, and clean up the worktree.
+
+## 2026-07-11 Session handoff workflow and H3 overlay diagnosis
+
+Current objective:
+- Push the latest accepted `main` branch state, add a durable session-handoff workflow to `AGENTS.md`, and write a detailed transfer note for the next coding agent.
+
+Files inspected:
+- `AGENTS.md`
+- `.gitignore`
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+- `docs\transfer\RECEIVING_CODEX_HANDOFF.md`
+- `analysis\make_h3_scale_overlay.py`
+- `analysis\build_hk_coverage_grid.py`
+- `analysis\make_zone_map.py`
+- `ghost_districts.py`
+- `tests\test_hk_coverage_grid.py`
+
+Files changed:
+- `AGENTS.md`
+- `docs\transfer\2026-07-11-h3-overlay-and-session-handoff.md`
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+
+Commands run:
+- `rtk git status --short`
+- `rtk git branch --show-current`
+- `rtk git remote -v`
+- `git check-ignore -v docs\transfer\RECEIVING_CODEX_HANDOFF.md`
+- `rtk python -m http.server 8766 --bind 127.0.0.1`
+- `Test-Path analysis\geo\hksar_18_district_boundary.json`
+- `Get-Item analysis\geo\hk_h3_coverage_res8.geojson`
+- `Get-ChildItem docs\transfer -Force`
+- `git check-ignore -v docs\transfer\2026-07-11-h3-overlay-and-session-handoff.md`
+
+Test results:
+- Transfer docs are not gitignored.
+- Browser-based visual QA confirmed the overlay page renders only grid polygons plus text labels, with no Hong Kong reference layer.
+- Root-cause investigation confirmed `analysis\geo\hksar_18_district_boundary.json` is missing, so `analysis\build_hk_coverage_grid.py` falls back to a rectangular `HK_BOUNDS` coverage surface.
+
+Blockers:
+- The H3 overlay visual issue is diagnosed but not fixed in this session.
+
+Next steps:
+- Commit and push the `AGENTS.md` workflow plus the dated transfer note.
+- Resume by restoring the missing Hong Kong boundary source, regenerating the coverage GeoJSONs, and then adding a simple HK outline/reference layer to `analysis\make_h3_scale_overlay.py`.

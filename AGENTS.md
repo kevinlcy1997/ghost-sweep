@@ -39,6 +39,16 @@ If `codex-cli-usage` says usage or context is low:
 
 - Leave exact resume instructions.
 
+## Session transfer workflow
+
+When a user asks for a handoff to another coding agent:
+
+1. Update `WORKLOG.md` and `WORKLOG_INDEX.md` with the latest meaningful milestone before ending the session.
+2. Commit the current `main` branch work and push it unless the user explicitly says not to push.
+3. Write a dated handoff note in `docs/transfer/` named like `YYYY-MM-DD-<topic>-handoff.md`.
+4. The handoff note must include: current objective, completed work, open issues, exact files to read first, commands already run, verification status, known blockers, and the next concrete steps.
+5. Commit the handoff note to git. Do not rely on local-only notes or gitignored transfer files for agent handoff.
+
 ## Experiment branch workflow
 
 For each new experiment, start from `main` on a fresh branch in its own worktree.
