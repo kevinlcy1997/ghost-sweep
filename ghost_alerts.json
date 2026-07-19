@@ -373767,7 +373767,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.3000,114.1800)",
-      "_first_seen": "2026-07-19T21:41:55.053048+00:00"
+      "_first_seen": "2026-07-19T22:41:27.814632+00:00"
     },
     "5255149": {
       "alert_record_id": 5255149,
@@ -375422,7 +375422,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.3000,114.1800)",
-      "_first_seen": "2026-07-19T21:41:55.053419+00:00"
+      "_first_seen": "2026-07-19T22:41:27.814952+00:00"
     },
     "5255244": {
       "alert_record_id": 5255244,
@@ -375445,7 +375445,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-07-19T21:42:14.377648+00:00"
+      "_first_seen": "2026-07-19T22:41:52.843512+00:00"
     },
     "5255219": {
       "alert_record_id": 5255219,
@@ -377364,7 +377364,7 @@
       "user_down": 2,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-07-19T21:42:08.691814+00:00"
+      "_first_seen": "2026-07-19T22:41:45.289517+00:00"
     },
     "5255304": {
       "alert_record_id": 5255304,
@@ -377387,7 +377387,7 @@
       "user_down": 2,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-07-19T21:42:08.691829+00:00"
+      "_first_seen": "2026-07-19T22:41:45.289530+00:00"
     },
     "5255311": {
       "alert_record_id": 5255311,
@@ -377410,7 +377410,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-07-19T21:42:08.691833+00:00"
+      "_first_seen": "2026-07-19T22:41:45.289534+00:00"
     },
     "5255322": {
       "alert_record_id": 5255322,
@@ -377433,7 +377433,7 @@
       "user_down": 10,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-07-19T21:42:08.691837+00:00"
+      "_first_seen": "2026-07-19T22:41:45.289538+00:00"
     },
     "5255303": {
       "alert_record_id": 5255303,
@@ -379376,7 +379376,7 @@
       "user_down": 39,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-07-19T21:42:08.691840+00:00"
+      "_first_seen": "2026-07-19T22:41:45.289540+00:00"
     },
     "5255387": {
       "alert_record_id": 5255387,
@@ -381463,7 +381463,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-07-19T21:42:14.377662+00:00"
+      "_first_seen": "2026-07-19T22:41:52.843524+00:00"
     },
     "5255500": {
       "alert_record_id": 5255500,
@@ -381486,7 +381486,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-07-19T21:42:14.377666+00:00"
+      "_first_seen": "2026-07-19T22:41:52.843527+00:00"
     },
     "5255474": {
       "alert_record_id": 5255474,
@@ -382229,7 +382229,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.3000,114.1800)",
-      "_first_seen": "2026-07-19T21:41:55.053424+00:00"
+      "_first_seen": "2026-07-19T22:41:27.814957+00:00"
     },
     "5255509": {
       "alert_record_id": 5255509,
@@ -382252,7 +382252,7 @@
       "user_down": 5,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-07-19T21:42:03.219379+00:00"
+      "_first_seen": "2026-07-19T22:41:38.121639+00:00"
     },
     "5255510": {
       "alert_record_id": 5255510,
@@ -382275,7 +382275,7 @@
       "user_down": 5,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-07-19T21:42:03.219393+00:00"
+      "_first_seen": "2026-07-19T22:41:38.121649+00:00"
     },
     "5255511": {
       "alert_record_id": 5255511,
@@ -382298,7 +382298,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-07-19T21:42:03.219396+00:00"
+      "_first_seen": "2026-07-19T22:41:38.121652+00:00"
     },
     "5255512": {
       "alert_record_id": 5255512,
@@ -382321,7 +382321,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-07-19T21:42:03.219399+00:00"
+      "_first_seen": "2026-07-19T22:41:38.121654+00:00"
     },
     "5255506": {
       "alert_record_id": 5255506,
@@ -383183,7 +383183,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-07-19T21:42:03.219402+00:00"
+      "_first_seen": "2026-07-19T22:41:38.121656+00:00"
     },
     "5255577": {
       "alert_record_id": 5255577,
@@ -383206,7 +383206,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-07-19T21:42:03.219404+00:00"
+      "_first_seen": "2026-07-19T22:41:38.121658+00:00"
     },
     "5255546": {
       "alert_record_id": 5255546,
@@ -384429,8 +384429,8 @@
       "user_down": null,
       "image": null,
       "_source": "nearbyActive(22.1500,113.8300)",
-      "_first_seen": "2026-07-19T21:42:21.681379+00:00",
-      "_last_seen": "2026-07-19T21:43:05.119716+00:00"
+      "_first_seen": "2026-07-19T22:42:02.295856+00:00",
+      "_last_seen": "2026-07-19T22:42:56.537033+00:00"
     },
     "5255176": {
       "alert_record_id": 5255176,
@@ -384453,7 +384453,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.3000,114.1800)",
-      "_first_seen": "2026-07-19T22:41:27.814632+00:00"
+      "_first_seen": "2026-07-19T23:47:32.625328+00:00"
     },
     "5255299": {
       "alert_record_id": 5255299,
@@ -384476,7 +384476,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.3000,114.1800)",
-      "_first_seen": "2026-07-19T22:41:27.814952+00:00"
+      "_first_seen": "2026-07-19T23:47:32.625677+00:00"
     },
     "5255517": {
       "alert_record_id": 5255517,
@@ -384499,7 +384499,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.3000,114.1800)",
-      "_first_seen": "2026-07-19T22:41:27.814957+00:00"
+      "_first_seen": "2026-07-19T23:47:32.625683+00:00"
     },
     "5255509": {
       "alert_record_id": 5255509,
@@ -384522,7 +384522,7 @@
       "user_down": 5,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-07-19T22:41:38.121639+00:00"
+      "_first_seen": "2026-07-19T23:47:42.136386+00:00"
     },
     "5255510": {
       "alert_record_id": 5255510,
@@ -384545,7 +384545,7 @@
       "user_down": 5,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-07-19T22:41:38.121649+00:00"
+      "_first_seen": "2026-07-19T23:47:42.136400+00:00"
     },
     "5255511": {
       "alert_record_id": 5255511,
@@ -384568,7 +384568,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-07-19T22:41:38.121652+00:00"
+      "_first_seen": "2026-07-19T23:47:42.136404+00:00"
     },
     "5255512": {
       "alert_record_id": 5255512,
@@ -384591,7 +384591,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-07-19T22:41:38.121654+00:00"
+      "_first_seen": "2026-07-19T23:47:42.136406+00:00"
     },
     "5255575": {
       "alert_record_id": 5255575,
@@ -384614,7 +384614,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-07-19T22:41:38.121656+00:00"
+      "_first_seen": "2026-07-19T23:47:42.136409+00:00"
     },
     "5255577": {
       "alert_record_id": 5255577,
@@ -384637,7 +384637,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4000,113.9800)",
-      "_first_seen": "2026-07-19T22:41:38.121658+00:00"
+      "_first_seen": "2026-07-19T23:47:42.136411+00:00"
     },
     "5255302": {
       "alert_record_id": 5255302,
@@ -384660,7 +384660,7 @@
       "user_down": 2,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-07-19T22:41:45.289517+00:00"
+      "_first_seen": "2026-07-19T23:47:48.311364+00:00"
     },
     "5255304": {
       "alert_record_id": 5255304,
@@ -384683,7 +384683,7 @@
       "user_down": 2,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-07-19T22:41:45.289530+00:00"
+      "_first_seen": "2026-07-19T23:47:48.311378+00:00"
     },
     "5255311": {
       "alert_record_id": 5255311,
@@ -384706,7 +384706,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-07-19T22:41:45.289534+00:00"
+      "_first_seen": "2026-07-19T23:47:48.311382+00:00"
     },
     "5255322": {
       "alert_record_id": 5255322,
@@ -384729,7 +384729,7 @@
       "user_down": 10,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-07-19T22:41:45.289538+00:00"
+      "_first_seen": "2026-07-19T23:47:48.311385+00:00"
     },
     "5255393": {
       "alert_record_id": 5255393,
@@ -384752,7 +384752,7 @@
       "user_down": 39,
       "image": null,
       "_source": "nearby24h(22.4500,114.0300)",
-      "_first_seen": "2026-07-19T22:41:45.289540+00:00"
+      "_first_seen": "2026-07-19T23:47:48.311388+00:00"
     },
     "5255244": {
       "alert_record_id": 5255244,
@@ -384775,7 +384775,7 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-07-19T22:41:52.843512+00:00"
+      "_first_seen": "2026-07-19T23:47:55.314912+00:00"
     },
     "5255499": {
       "alert_record_id": 5255499,
@@ -384798,7 +384798,7 @@
       "user_down": 0,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-07-19T22:41:52.843524+00:00"
+      "_first_seen": "2026-07-19T23:47:55.314926+00:00"
     },
     "5255500": {
       "alert_record_id": 5255500,
@@ -384821,21 +384821,93 @@
       "user_down": null,
       "image": null,
       "_source": "nearby24h(22.5000,114.1300)",
-      "_first_seen": "2026-07-19T22:41:52.843527+00:00"
+      "_first_seen": "2026-07-19T23:47:55.314929+00:00"
     },
-    "5255598": {
-      "alert_record_id": 5255598,
-      "name": "",
-      "lat": 22.327323,
-      "lng": 114.235351,
-      "address": "新界將軍澳安愉道",
+    "5255599": {
+      "alert_record_id": 5255599,
+      "name": "186678",
+      "lat": 22.430786,
+      "lng": 114.204937,
+      "address": "Lowrise 6, Mayfair By The Sea II Tower, 21 Fo Chun Rd, Hong Kong Science Park, Sha Tin, New Territories, ",
       "alert_type": "alert",
       "beef_time": null,
-      "create_dt": "2026-07-20 05:41:17",
-      "lastupdate_dt": "2026-07-20 05:41:17",
+      "create_dt": "2026-07-20 07:19:48",
+      "lastupdate_dt": "2026-07-20 07:19:48",
       "is_coffee": "no",
       "is_26": "no",
-      "distance": 9133.3417498837,
+      "distance": 10611.13039247,
+      "upvote": "0",
+      "downvote": "0",
+      "is_voted": "no",
+      "vote": "down",
+      "user_up": 3,
+      "user_down": 0,
+      "image": null,
+      "_source": "nearbyActive(22.1500,113.8300)",
+      "_first_seen": "2026-07-19T23:48:03.877253+00:00",
+      "_last_seen": "2026-07-19T23:48:59.190503+00:00"
+    },
+    "5255600": {
+      "alert_record_id": 5255600,
+      "name": "報流料中三張",
+      "lat": 22.396991,
+      "lng": 114.194713,
+      "address": "新界火炭火炭路",
+      "alert_type": "alert",
+      "beef_time": null,
+      "create_dt": "2026-07-20 07:37:30",
+      "lastupdate_dt": "2026-07-20 07:37:30",
+      "is_coffee": "no",
+      "is_26": "no",
+      "distance": 6959.8937502439,
+      "upvote": "0",
+      "downvote": "0",
+      "is_voted": "no",
+      "vote": "down",
+      "user_up": 15,
+      "user_down": 2,
+      "image": null,
+      "_source": "nearbyActive(22.1500,113.8300)",
+      "_first_seen": "2026-07-19T23:48:03.877268+00:00",
+      "_last_seen": "2026-07-19T23:48:59.190520+00:00"
+    },
+    "5255601": {
+      "alert_record_id": 5255601,
+      "name": "Chunyuen Ma207544",
+      "lat": 22.398655552291,
+      "lng": 114.18686706573,
+      "address": "20Wong Chuk Yeung Street",
+      "alert_type": "alert",
+      "beef_time": null,
+      "create_dt": "2026-07-20 07:46:57",
+      "lastupdate_dt": "2026-07-20 07:46:57",
+      "is_coffee": "no",
+      "is_26": "no",
+      "distance": 6606.1384319746,
+      "upvote": "0",
+      "downvote": "0",
+      "is_voted": "no",
+      "vote": "down",
+      "user_up": 6,
+      "user_down": 1,
+      "image": null,
+      "_source": "nearbyActive(22.1500,113.8300)",
+      "_first_seen": "2026-07-19T23:48:03.877271+00:00",
+      "_last_seen": "2026-07-19T23:48:59.190524+00:00"
+    },
+    "5255602": {
+      "alert_record_id": 5255602,
+      "name": "",
+      "lat": 22.39869,
+      "lng": 114.187774,
+      "address": "新界火炭黃竹洋街",
+      "alert_type": "alert",
+      "beef_time": null,
+      "create_dt": "2026-07-20 07:48:17",
+      "lastupdate_dt": "2026-07-20 07:48:17",
+      "is_coffee": "no",
+      "is_26": "no",
+      "distance": 6663.2003738079,
       "upvote": "0",
       "downvote": "0",
       "is_voted": "no",
@@ -384843,9 +384915,9 @@
       "user_up": null,
       "user_down": null,
       "image": null,
-      "_source": "nearbyActive(22.1500,113.8300)",
-      "_first_seen": "2026-07-19T22:42:02.295856+00:00",
-      "_last_seen": "2026-07-19T22:42:56.537033+00:00"
+      "_source": "nearbyActive(22.2500,114.0800)",
+      "_first_seen": "2026-07-19T23:48:17.760000+00:00",
+      "_last_seen": "2026-07-19T23:48:59.190529+00:00"
     }
   },
   "news": [
@@ -386703,15 +386775,60 @@
   ],
   "sponsors": [
     {
-      "sponsor_list_id": 73,
+      "sponsor_list_id": 61,
       "invitation_code": null,
-      "name": "PhoSaigon ",
-      "address": "鰂魚涌海灣街27號地鋪",
+      "name": "貫納地產",
+      "address": "元朗同樂街10-16號金華樓地下A鋪",
+      "phone": "",
+      "description": "",
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 4,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 69,
+      "invitation_code": null,
+      "name": "The Car Spa",
+      "address": "北角渣華道196-202號嘉富大廈一號店",
+      "phone": "",
+      "description": "",
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 66,
+      "invitation_code": null,
+      "name": "Tuen Mun Moto Center ",
+      "address": "屯門建發街",
       "phone": "",
       "description": "",
       "lat": 0,
       "lng": 0,
       "up_vote": 7,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 49,
+      "invitation_code": null,
+      "name": "旺角越男仔",
+      "address": "旺角廣華街12號",
+      "phone": "",
+      "description": "",
+      "lat": 22.316505365193,
+      "lng": 114.17329766817,
+      "up_vote": 1,
       "down_vote": 0,
       "alert_type": "sponsor",
       "image": null,
@@ -386733,83 +386850,6 @@
       "images": []
     },
     {
-      "sponsor_list_id": 56,
-      "invitation_code": null,
-      "name": "TEABUDDY 茶伴",
-      "address": "尖沙咀柯士甸道95號正記大樓地舖",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 64,
-      "invitation_code": null,
-      "name": "Clement",
-      "address": "元朗西菁街好信泰商場7號舖",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 67,
-      "invitation_code": null,
-      "name": "彩虹美妝",
-      "address": "上水新勤街1號地舖",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 63,
-      "invitation_code": null,
-      "name": "Banh mi pate  (vietnam genuine)",
-      "address": "Shop a,65sing woo road, happy valley ",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 0,
-      "down_vote": 1,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 75,
-      "invitation_code": null,
-      "name": "千歲食品有限公司",
-      "address": "",
-      "phone": "39130929",
-      "description": "門市地址\n大圍隆亨街市60號鋪\n屯門美樂花園87號舖\n慈雲山街市10號鋪\n恆安街市32號鋪\n寶林街市64號鋪",
-      "lat": 22.374994,
-      "lng": 113.960971,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": "/sponsor/helper1700117341_0_75_b7b98b2490a33b7616188b279279e95e.jpeg",
-      "images": [
-        "/sponsor/helper1700117341_0_75_b7b98b2490a33b7616188b279279e95e.jpeg"
-      ]
-    },
-    {
       "sponsor_list_id": 60,
       "invitation_code": null,
       "name": "come 2  me cafe craft ",
@@ -386825,60 +386865,45 @@
       "images": []
     },
     {
-      "sponsor_list_id": 65,
+      "sponsor_list_id": 54,
       "invitation_code": null,
-      "name": "上水貨舖（大圍）",
-      "address": "大圍積壽里1-3號",
-      "phone": "",
-      "description": "",
-      "lat": 22.3486339,
-      "lng": 114.1298367,
-      "up_vote": 5,
-      "down_vote": 2,
+      "name": "Cafe Cabin ",
+      "address": " Cafe Cabin (筲箕灣) 筲箕灣筲箕灣東大街4-10號東寶大廈地下3A號舖",
+      "phone": "64180635",
+      "description": "Café Cabin 店舖位於筲箕灣東大街東寶大廈地下3A鋪",
+      "lat": 22.280665,
+      "lng": 114.230436,
+      "up_vote": 1,
+      "down_vote": 8,
       "alert_type": "sponsor",
       "image": null,
       "images": []
     },
     {
-      "sponsor_list_id": 61,
+      "sponsor_list_id": 73,
       "invitation_code": null,
-      "name": "貫納地產",
-      "address": "元朗同樂街10-16號金華樓地下A鋪",
+      "name": "PhoSaigon ",
+      "address": "鰂魚涌海灣街27號地鋪",
       "phone": "",
       "description": "",
       "lat": 0,
       "lng": 0,
-      "up_vote": 4,
+      "up_vote": 7,
       "down_vote": 0,
       "alert_type": "sponsor",
       "image": null,
       "images": []
     },
     {
-      "sponsor_list_id": 55,
+      "sponsor_list_id": 64,
       "invitation_code": null,
-      "name": "香港馬會",
-      "address": "順寧道297",
-      "phone": "54090247",
-      "description": "香港賽馬會出邊電單車骨位",
-      "lat": 22.338794,
-      "lng": 114.156934,
-      "up_vote": 36,
-      "down_vote": 3,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 49,
-      "invitation_code": null,
-      "name": "旺角越男仔",
-      "address": "旺角廣華街12號",
+      "name": "Clement",
+      "address": "元朗西菁街好信泰商場7號舖",
       "phone": "",
       "description": "",
-      "lat": 22.316505365193,
-      "lng": 114.17329766817,
-      "up_vote": 1,
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 0,
       "down_vote": 0,
       "alert_type": "sponsor",
       "image": null,
@@ -386902,6 +386927,21 @@
       ]
     },
     {
+      "sponsor_list_id": 62,
+      "invitation_code": null,
+      "name": "Uncle 3 優質食材專賣店",
+      "address": "大埔安富道 3 號",
+      "phone": "",
+      "description": "",
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 1,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
       "sponsor_list_id": 58,
       "invitation_code": null,
       "name": "WD Auto Fashion Co",
@@ -386911,6 +386951,96 @@
       "lat": 0,
       "lng": 0,
       "up_vote": 3,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 57,
+      "invitation_code": null,
+      "name": "山旮旯車神",
+      "address": "西灣河",
+      "phone": "",
+      "description": "",
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 52,
+      "invitation_code": null,
+      "name": "登一設計廊",
+      "address": "銓通工業大廈3樓D室",
+      "phone": "",
+      "description": "",
+      "lat": 22.3730346,
+      "lng": 114.1065537,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 46,
+      "invitation_code": null,
+      "name": "瀅潔乾濕洗衣店",
+      "address": "筲箕灣工廠街八號地下",
+      "phone": "29227131",
+      "description": "洗衣店",
+      "lat": 22.277038,
+      "lng": 114.229996,
+      "up_vote": 253,
+      "down_vote": 6,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 50,
+      "invitation_code": null,
+      "name": "九鬼居酒屋",
+      "address": "銅鑼灣耀華街21 號地下7號舖",
+      "phone": "",
+      "description": "",
+      "lat": 22.277640892846,
+      "lng": 114.18195243851,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 56,
+      "invitation_code": null,
+      "name": "TEABUDDY 茶伴",
+      "address": "尖沙咀柯士甸道95號正記大樓地舖",
+      "phone": "",
+      "description": "",
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 71,
+      "invitation_code": null,
+      "name": "BBpro Motor",
+      "address": "茶果嶺道177號",
+      "phone": "",
+      "description": "",
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 0,
       "down_vote": 0,
       "alert_type": "sponsor",
       "image": null,
@@ -386932,15 +387062,158 @@
       "images": []
     },
     {
-      "sponsor_list_id": 57,
+      "sponsor_list_id": 59,
       "invitation_code": null,
-      "name": "山旮旯車神",
-      "address": "西灣河",
+      "name": "LLB Bistro",
+      "address": "上環荷李活道186-190A荷李活大樓地下C舖",
+      "phone": "35946790",
+      "description": "Restaurant and Bar",
+      "lat": 22.285396,
+      "lng": 114.148415,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": "/sponsor/helper1667038318_0_59_1fae1c88529f7f33a761d497fc1aa9ca.jpeg",
+      "images": [
+        "/sponsor/helper1667038318_0_59_1fae1c88529f7f33a761d497fc1aa9ca.jpeg"
+      ]
+    },
+    {
+      "sponsor_list_id": 75,
+      "invitation_code": null,
+      "name": "千歲食品有限公司",
+      "address": "",
+      "phone": "39130929",
+      "description": "門市地址\n大圍隆亨街市60號鋪\n屯門美樂花園87號舖\n慈雲山街市10號鋪\n恆安街市32號鋪\n寶林街市64號鋪",
+      "lat": 22.374994,
+      "lng": 113.960971,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": "/sponsor/helper1700117341_0_75_b7b98b2490a33b7616188b279279e95e.jpeg",
+      "images": [
+        "/sponsor/helper1700117341_0_75_b7b98b2490a33b7616188b279279e95e.jpeg"
+      ]
+    },
+    {
+      "sponsor_list_id": 5,
+      "invitation_code": null,
+      "name": "紅心麵包西餅",
+      "address": "佐敦白加士街98號金威廣場地下2及3號舖",
+      "phone": "",
+      "description": "",
+      "lat": 22.30643,
+      "lng": 114.17093,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": "/sponsor/06J2CG8F2A53E20B232F2Cpx.jpg",
+      "images": [
+        "/sponsor/06J2CG8F2A53E20B232F2Cpx.jpg"
+      ]
+    },
+    {
+      "sponsor_list_id": 65,
+      "invitation_code": null,
+      "name": "上水貨舖（大圍）",
+      "address": "大圍積壽里1-3號",
+      "phone": "",
+      "description": "",
+      "lat": 22.3486339,
+      "lng": 114.1298367,
+      "up_vote": 5,
+      "down_vote": 2,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 53,
+      "invitation_code": null,
+      "name": "Foda Motorsports ",
+      "address": "荃灣柴灣角街35-45號裕豐工業大廈地下3號鋪",
+      "phone": "",
+      "description": "",
+      "lat": 22.373968229784,
+      "lng": 114.10747249701,
+      "up_vote": 3,
+      "down_vote": 2,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 72,
+      "invitation_code": null,
+      "name": "Ocean Three",
+      "address": "",
+      "phone": "34210103",
+      "description": "九龍觀塘開源道60號駱駝漆大廈3座1樓A室\r\n九龍 旺角 煙廠街 4號 東匯地下\r\n九龍 聯合道198號，樂富邨 樂富街市地下108~109及115號舖\r\n香港 九龍 深水埗 西邨路19號 南昌薈街市地下103號舖(富昌邨旁)\r\n荃灣 河背街48號，A舖\r\n新界 屯門鄉事會路131號，巴黎倫敦紐約戲院購物中心 29A 舖 地下\r\n香港 灣仔道2號 尚翹峰地下 A3舖 (灣仔街市旁)\r\n新界 沙田禾輋邨，禾輋街市地下M68號舖\r\n將軍澳尚德邨TKO Spot 街市109號舖",
+      "lat": -1,
+      "lng": -1,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": "/sponsor/347836095_978238143358346_7884408071089802342_n.png",
+      "images": [
+        "/sponsor/347836095_978238143358346_7884408071089802342_n.png"
+      ]
+    },
+    {
+      "sponsor_list_id": 55,
+      "invitation_code": null,
+      "name": "香港馬會",
+      "address": "順寧道297",
+      "phone": "54090247",
+      "description": "香港賽馬會出邊電單車骨位",
+      "lat": 22.338794,
+      "lng": 114.156934,
+      "up_vote": 36,
+      "down_vote": 3,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 63,
+      "invitation_code": null,
+      "name": "Banh mi pate  (vietnam genuine)",
+      "address": "Shop a,65sing woo road, happy valley ",
       "phone": "",
       "description": "",
       "lat": 0,
       "lng": 0,
       "up_vote": 0,
+      "down_vote": 1,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 67,
+      "invitation_code": null,
+      "name": "彩虹美妝",
+      "address": "上水新勤街1號地舖",
+      "phone": "",
+      "description": "",
+      "lat": 0,
+      "lng": 0,
+      "up_vote": 0,
+      "down_vote": 0,
+      "alert_type": "sponsor",
+      "image": null,
+      "images": []
+    },
+    {
+      "sponsor_list_id": 47,
+      "invitation_code": null,
+      "name": "富啟泰",
+      "address": "康樂街",
+      "phone": "",
+      "description": "",
+      "lat": 22.3196801,
+      "lng": 114.1680809,
+      "up_vote": 2,
       "down_vote": 0,
       "alert_type": "sponsor",
       "image": null,
@@ -386968,173 +387241,6 @@
       ]
     },
     {
-      "sponsor_list_id": 50,
-      "invitation_code": null,
-      "name": "九鬼居酒屋",
-      "address": "銅鑼灣耀華街21 號地下7號舖",
-      "phone": "",
-      "description": "",
-      "lat": 22.277640892846,
-      "lng": 114.18195243851,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 62,
-      "invitation_code": null,
-      "name": "Uncle 3 優質食材專賣店",
-      "address": "大埔安富道 3 號",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 1,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 71,
-      "invitation_code": null,
-      "name": "BBpro Motor",
-      "address": "茶果嶺道177號",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 5,
-      "invitation_code": null,
-      "name": "紅心麵包西餅",
-      "address": "佐敦白加士街98號金威廣場地下2及3號舖",
-      "phone": "",
-      "description": "",
-      "lat": 22.30643,
-      "lng": 114.17093,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": "/sponsor/06J2CG8F2A53E20B232F2Cpx.jpg",
-      "images": [
-        "/sponsor/06J2CG8F2A53E20B232F2Cpx.jpg"
-      ]
-    },
-    {
-      "sponsor_list_id": 47,
-      "invitation_code": null,
-      "name": "富啟泰",
-      "address": "康樂街",
-      "phone": "",
-      "description": "",
-      "lat": 22.3196801,
-      "lng": 114.1680809,
-      "up_vote": 2,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 66,
-      "invitation_code": null,
-      "name": "Tuen Mun Moto Center ",
-      "address": "屯門建發街",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 7,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 54,
-      "invitation_code": null,
-      "name": "Cafe Cabin ",
-      "address": " Cafe Cabin (筲箕灣) 筲箕灣筲箕灣東大街4-10號東寶大廈地下3A號舖",
-      "phone": "64180635",
-      "description": "Café Cabin 店舖位於筲箕灣東大街東寶大廈地下3A鋪",
-      "lat": 22.280665,
-      "lng": 114.230436,
-      "up_vote": 1,
-      "down_vote": 8,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 46,
-      "invitation_code": null,
-      "name": "瀅潔乾濕洗衣店",
-      "address": "筲箕灣工廠街八號地下",
-      "phone": "29227131",
-      "description": "洗衣店",
-      "lat": 22.277038,
-      "lng": 114.229996,
-      "up_vote": 253,
-      "down_vote": 6,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 53,
-      "invitation_code": null,
-      "name": "Foda Motorsports ",
-      "address": "荃灣柴灣角街35-45號裕豐工業大廈地下3號鋪",
-      "phone": "",
-      "description": "",
-      "lat": 22.373968229784,
-      "lng": 114.10747249701,
-      "up_vote": 3,
-      "down_vote": 2,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 52,
-      "invitation_code": null,
-      "name": "登一設計廊",
-      "address": "銓通工業大廈3樓D室",
-      "phone": "",
-      "description": "",
-      "lat": 22.3730346,
-      "lng": 114.1065537,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
-      "sponsor_list_id": 69,
-      "invitation_code": null,
-      "name": "The Car Spa",
-      "address": "北角渣華道196-202號嘉富大廈一號店",
-      "phone": "",
-      "description": "",
-      "lat": 0,
-      "lng": 0,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": null,
-      "images": []
-    },
-    {
       "sponsor_list_id": 48,
       "invitation_code": null,
       "name": "創基一站式汽車服務有限公司",
@@ -387148,46 +387254,12 @@
       "alert_type": "sponsor",
       "image": null,
       "images": []
-    },
-    {
-      "sponsor_list_id": 59,
-      "invitation_code": null,
-      "name": "LLB Bistro",
-      "address": "上環荷李活道186-190A荷李活大樓地下C舖",
-      "phone": "35946790",
-      "description": "Restaurant and Bar",
-      "lat": 22.285396,
-      "lng": 114.148415,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": "/sponsor/helper1667038318_0_59_1fae1c88529f7f33a761d497fc1aa9ca.jpeg",
-      "images": [
-        "/sponsor/helper1667038318_0_59_1fae1c88529f7f33a761d497fc1aa9ca.jpeg"
-      ]
-    },
-    {
-      "sponsor_list_id": 72,
-      "invitation_code": null,
-      "name": "Ocean Three",
-      "address": "",
-      "phone": "34210103",
-      "description": "九龍觀塘開源道60號駱駝漆大廈3座1樓A室\r\n九龍 旺角 煙廠街 4號 東匯地下\r\n九龍 聯合道198號，樂富邨 樂富街市地下108~109及115號舖\r\n香港 九龍 深水埗 西邨路19號 南昌薈街市地下103號舖(富昌邨旁)\r\n荃灣 河背街48號，A舖\r\n新界 屯門鄉事會路131號，巴黎倫敦紐約戲院購物中心 29A 舖 地下\r\n香港 灣仔道2號 尚翹峰地下 A3舖 (灣仔街市旁)\r\n新界 沙田禾輋邨，禾輋街市地下M68號舖\r\n將軍澳尚德邨TKO Spot 街市109號舖",
-      "lat": -1,
-      "lng": -1,
-      "up_vote": 0,
-      "down_vote": 0,
-      "alert_type": "sponsor",
-      "image": "/sponsor/347836095_978238143358346_7884408071089802342_n.png",
-      "images": [
-        "/sponsor/347836095_978238143358346_7884408071089802342_n.png"
-      ]
     }
   ],
   "meta": {
     "first_run": "2026-06-13T16:05:22.387838+00:00",
-    "last_poll": "2026-07-19T22:42:56.537148+00:00",
-    "total_alerts": 16067
+    "last_poll": "2026-07-19T23:48:59.190643+00:00",
+    "total_alerts": 16070
   },
   "config": {
     "gang_title": "走鬼驚gang",
