@@ -918,3 +918,41 @@ Blockers:
 Next steps:
 - Commit and push the `AGENTS.md` workflow plus the dated transfer note.
 - Resume by restoring the missing Hong Kong boundary source, regenerating the coverage GeoJSONs, and then adding a simple HK outline/reference layer to `analysis\make_h3_scale_overlay.py`.
+
+## 2026-07-21 GitHub scrape publish-race repair
+
+Current objective:
+- Prevent completed GitHub data-fetch runs from failing when another commit reaches `main` before the bot publishes its generated snapshot.
+
+Files inspected:
+- `.github/workflows/ghost-scrape.yml`
+- `tests/test_ci.py`
+- GitHub Actions runs `29724824789`, `29735290761`, `29778452274`, and `29829590496`
+
+Files changed:
+- `.github/workflows/ghost-scrape.yml`
+- `tests/test_ci.py`
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+
+Commands run:
+- `rtk gh run list --workflow ghost-scrape.yml --limit 30 --json databaseId,conclusion,createdAt`
+- `rtk gh run view 29829590496 --log`
+- `rtk gh run view 29778452274 --log`
+- `rtk proxy ../../.venv-ghost/bin/python -m pytest tests/test_ci.py -k 'workflow' -q -p no:cacheprovider --basetemp .pytest_tmp_scrape_push_race`
+- `rtk proxy ../../.venv-ghost/bin/python -c "import yaml; yaml.safe_load(open('.github/workflows/ghost-scrape.yml')); print('workflow YAML OK')"`
+- `rtk proxy ../../.venv-ghost/bin/python -m pytest tests/test_ci.py -q -p no:cacheprovider --basetemp .pytest_tmp_ci_full`
+
+Test results:
+- The latest scheduled scrape run `29829590496` succeeded and saved `17,065` alerts.
+- The three observed failed runs completed collection and dashboard generation, then failed only because `git push` was rejected as non-fast-forward.
+- Focused workflow tests passed: `2 passed, 4 deselected in 0.32s`.
+- YAML parsing and extracted commit-step shell syntax passed.
+- The full `tests/test_ci.py` run has one unrelated pre-existing failure in `test_dev_start_script_supports_retraining_and_mlflow`, which expects `analysis/run_multi_horizon_experiment.py` in `start-dev.ps1`.
+
+Blockers:
+- None for the scrape publication fix.
+
+Next steps:
+- Commit the workflow retry repair on `fix/ghost-scrape-push-race`.
+- Push and open a pull request, then observe subsequent scheduled runs for successful publication under contention.

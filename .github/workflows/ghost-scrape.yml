@@ -34,6 +34,18 @@ jobs:
         run: |
           git config user.name "ghost-bot"
           git config user.email "ghost-bot@users.noreply.github.com"
-          git add ghost_alerts.json docs/index.html
-          git diff --staged --quiet || git commit -m "data: poll $(date -u +%Y-%m-%dT%H:%M:%SZ) — $(python -c "import json; d=json.load(open('ghost_alerts.json')); print(d['meta']['total_alerts'])" 2>/dev/null || echo '?') alerts"
-          git push
+          for attempt in 1 2 3; do
+            git add ghost_alerts.json docs/index.html
+            git diff --staged --quiet || git commit -m "data: poll $(date -u +%Y-%m-%dT%H:%M:%SZ) — $(python -c "import json; d=json.load(open('ghost_alerts.json')); print(d['meta']['total_alerts'])" 2>/dev/null || echo '?') alerts"
+            git push && exit 0
+
+            if [ "$attempt" -eq 3 ]; then
+              echo "Failed to publish data after ${attempt} attempts."
+              exit 1
+            fi
+
+            git fetch origin main
+            git reset --hard origin/main
+            python ghost_listener.py --once -o ghost_alerts.json --request-timeout 8
+            python generate_dashboard.py ghost_alerts.json docs
+          done
