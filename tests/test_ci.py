@@ -45,6 +45,9 @@ def test_workflow_valid_yaml():
     assert "--max-grid-cells" not in content
     assert "--skip-active" not in content
     assert "git push" in content
+    assert "for attempt in 1 2 3" in content
+    assert "git fetch origin main" in content
+    assert "git reset --hard origin/main" in content
 
 
 def test_committed_alert_store_is_valid_json():
