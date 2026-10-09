@@ -21,4 +21,6 @@ Use this file as the first search target before opening the full `WORKLOG.md`.
 - `2026-07-11 Session handoff workflow and H3 overlay diagnosis` — Added a durable `AGENTS.md` handoff workflow, wrote a dated transfer note in `docs\transfer\`, and documented that the H3 overlay currently falls back to a rectangular grid because the Hong Kong boundary source file is missing. `WORKLOG.md` lines 876-920
 - `2026-07-21 GitHub scrape publish-race repair` — Added a reset-and-recollect retry path after non-fast-forward bot pushes, with focused workflow regression coverage. `WORKLOG.md` lines 922-964
 
+- `2026-10-07 Dashboard map day filtering` — Added Hong Kong day controls and a today-only default map with executable JavaScript regression coverage. See the final milestone in `WORKLOG.md`.
+
 Note: refresh the listed line ranges if earlier entries are inserted into `WORKLOG.md`.
