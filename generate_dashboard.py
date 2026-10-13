@@ -142,6 +142,8 @@ def generate_html(alerts, stats, meta):
         for a in alerts
     ])
 
+    marker_data = marker_data.replace("<", "\\u003c")
+
     district_labels = json.dumps(sorted(stats["districts"].keys(), key=lambda d: stats["districts"][d], reverse=True))
     district_values = json.dumps([stats["districts"][d] for d in sorted(stats["districts"].keys(), key=lambda d: stats["districts"][d], reverse=True)])
     district_colors = json.dumps([REGION_COLORS.get(DISTRICT_STATIONS.get(d, {}).get("region", ""), "#999") for d in sorted(stats["districts"].keys(), key=lambda d: stats["districts"][d], reverse=True)])
@@ -205,6 +207,11 @@ body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans
 .card {{ background: #161b22; border-radius: 8px; padding: 1.5rem; border: 1px solid #30363d; }}
 .card h2 {{ font-size: 1.1rem; color: #f0f6fc; margin-bottom: 1rem; border-bottom: 1px solid #30363d; padding-bottom: 0.5rem; }}
 #heatmap {{ height: 500px; border-radius: 8px; }}
+.map-filters {{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }}
+.map-filters input, .map-filters button {{ background: #21262d; color: #f0f6fc; border: 1px solid #484f58; border-radius: 6px; padding: 8px 12px; font: inherit; color-scheme: dark; }}
+.map-filters button {{ cursor: pointer; }}
+.map-filters button[aria-pressed="true"] {{ border-color: #f39c12; color: #f39c12; }}
+#mapStatus {{ margin-bottom: 12px; color: #8b949e; font-size: 0.9rem; }}
 canvas {{ max-height: 350px; }}
 table {{ width: 100%; border-collapse: collapse; font-size: 0.85rem; }}
 th, td {{ padding: 8px 12px; text-align: left; border-bottom: 1px solid #21262d; }}
@@ -225,7 +232,7 @@ td.num {{ text-align: right; font-weight: bold; color: #f39c12; }}
 </div>
 
 <div class="stats-bar">
-  <div class="stat-card"><div class="num">{stats["total"]}</div><div class="label">Total Sightings</div></div>
+  <div class="stat-card"><div class="num">{stats["total"]}</div><div class="label">All-time Sightings</div></div>
   <div class="stat-card"><div class="num">{len(stats["districts"])}</div><div class="label">Active Districts</div></div>
   <div class="stat-card"><div class="num">{len(stats["regions"])}</div><div class="label">Police Regions</div></div>
   <div class="stat-card"><div class="num">{stats["days_span"]}</div><div class="label">Days Tracked</div></div>
@@ -234,7 +241,7 @@ td.num {{ text-align: right; font-weight: bold; color: #f39c12; }}
 <div class="grid">
 
   <div class="card full">
-    <h2>Heatmap — Alert Density Across Hong Kong</h2>
+    <h2>Sightings Map — Filter by Day</h2>
     <div class="legend">
       <span><span class="dot" style="background:#e74c3c"></span> HK Island</span>
       <span><span class="dot" style="background:#3498db"></span> Kowloon West</span>
@@ -242,31 +249,40 @@ td.num {{ text-align: right; font-weight: bold; color: #f39c12; }}
       <span><span class="dot" style="background:#f39c12"></span> NT North</span>
       <span><span class="dot" style="background:#9b59b6"></span> NT South</span>
     </div>
+    <div class="map-filters" role="group" aria-label="Map date filter">
+      <label for="mapDate">Event day (Hong Kong)</label>
+      <input id="mapDate" type="date">
+      <button type="button" id="todayBtn">Today</button>
+      <button type="button" id="yesterdayBtn">Yesterday</button>
+      <button type="button" id="latestDayBtn">Latest recorded day</button>
+      <button type="button" id="allDatesBtn">All history</button>
+    </div>
+    <p id="mapStatus" role="status" aria-live="polite"></p>
     <div id="heatmap"></div>
   </div>
 
   <div class="card">
-    <h2>Sightings by Police District</h2>
+    <h2>Sightings by Police District — All History</h2>
     <canvas id="districtChart"></canvas>
   </div>
 
   <div class="card">
-    <h2>Share by Police Region</h2>
+    <h2>Share by Police Region — All History</h2>
     <canvas id="regionChart"></canvas>
   </div>
 
   <div class="card">
-    <h2>Activity by Hour of Day</h2>
+    <h2>Activity by Hour of Day — All History</h2>
     <canvas id="hourlyChart"></canvas>
   </div>
 
   <div class="card">
-    <h2>Activity by Day of Week</h2>
+    <h2>Activity by Day of Week — All History</h2>
     <canvas id="dowChart"></canvas>
   </div>
 
   <div class="card">
-    <h2>Top Hotspot Addresses</h2>
+    <h2>Top Hotspot Addresses — All History</h2>
     <table>
       <thead><tr><th>Address</th><th style="text-align:right">Count</th></tr></thead>
       <tbody>{addr_rows}</tbody>
@@ -321,16 +337,80 @@ locateBtn.addEventListener('click', function() {{
 
 const regionColor = {json.dumps(REGION_COLORS)};
 const markers = {marker_data};
-markers.forEach(m => {{
-  const color = regionColor[m.region] || '#999';
-  L.circleMarker([m.lat, m.lng], {{
-    radius: 6, color: color, fillColor: color, fillOpacity: 0.7, weight: 1
-  }}).bindPopup(
-    '<b>' + (m.address || 'Unknown') + '</b><br>' +
-    '<span style=\"color:#8b949e\">' + (m.create_dt || '') + '</span><br>' +
-    '<span style=\"font-size:0.85em\">' + (m.district || '') + '</span>'
-  ).addTo(map);
+// Feed create_dt values are local Hong Kong timestamps, not browser-local dates.
+function eventDay(marker) {{
+  const value = marker.create_dt;
+  if (typeof value !== 'string' || !/^\\d{{4}}-\\d{{2}}-\\d{{2}} \\d{{2}}:\\d{{2}}:\\d{{2}}$/.test(value)) return null;
+  const day = value.slice(0, 10);
+  const parsed = new Date(value.replace(' ', 'T') + '+08:00');
+  return Number.isNaN(parsed.getTime()) || hongKongDay(parsed) !== day ? null : day;
+}}
+function hongKongDay(date = new Date()) {{
+  const parts = new Intl.DateTimeFormat('en-US', {{
+    timeZone: 'Asia/Hong_Kong', year: 'numeric', month: '2-digit', day: '2-digit'
+  }}).formatToParts(date);
+  const part = type => parts.find(p => p.type === type).value;
+  return part('year') + '-' + part('month') + '-' + part('day');
+}}
+function filterByDay(records, day) {{
+  return day === null ? records : records.filter(m => eventDay(m) === day);
+}}
+function escapeHtml(value) {{
+  return String(value || '').replace(/[&<>"']/g, ch => ({{
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }}[ch]));
+}}
+const alertLayer = L.layerGroup().addTo(map);
+const dateInput = document.getElementById('mapDate');
+const datedDays = markers.map(eventDay).filter(Boolean).sort();
+const latestDay = datedDays.length ? datedDays[datedDays.length - 1] : null;
+document.getElementById('latestDayBtn').disabled = latestDay === null;
+let selectedDay = hongKongDay();
+let selectedPreset = 'todayBtn';
+function renderDay(day, preset = '') {{
+  selectedDay = day;
+  selectedPreset = preset;
+  dateInput.value = day || '';
+  alertLayer.clearLayers();
+  const visible = filterByDay(markers, day).slice().sort((a, b) =>
+    String(a.create_dt || '').localeCompare(String(b.create_dt || '')));
+  visible.forEach(m => {{
+    const color = regionColor[m.region] || '#999';
+    L.circleMarker([m.lat, m.lng], {{
+      radius: 6, color: color, fillColor: color, fillOpacity: 0.7, weight: 1
+    }}).bindPopup(
+      '<b>' + escapeHtml(m.address || 'Unknown') + '</b><br>' +
+      '<span style="color:#8b949e">' + escapeHtml(m.create_dt) + ' HKT</span><br>' +
+      '<span style="font-size:0.85em">' + escapeHtml(m.district) + '</span>'
+    ).addTo(alertLayer);
+  }});
+  const scope = day === null ? 'all history' : day + ' (Hong Kong time)';
+  document.getElementById('mapStatus').textContent = visible.length
+    ? visible.length.toLocaleString() + ' sightings · ' + scope
+    : 'No sightings for ' + scope + '. Choose another day or Latest recorded day.';
+  ['todayBtn', 'yesterdayBtn', 'latestDayBtn', 'allDatesBtn'].forEach(id => {{
+    document.getElementById(id).setAttribute('aria-pressed', String(id === preset));
+  }});
+}}
+dateInput.addEventListener('change', () => {{
+  if (dateInput.value) renderDay(dateInput.value);
 }});
+document.getElementById('todayBtn').addEventListener('click', () => renderDay(hongKongDay(), 'todayBtn'));
+document.getElementById('yesterdayBtn').addEventListener('click', () => {{
+  const midnight = new Date(hongKongDay() + 'T00:00:00+08:00');
+  renderDay(hongKongDay(new Date(midnight.getTime() - 86400000)), 'yesterdayBtn');
+}});
+document.getElementById('latestDayBtn').addEventListener('click', () => renderDay(latestDay, 'latestDayBtn'));
+document.getElementById('allDatesBtn').addEventListener('click', () => renderDay(null, 'allDatesBtn'));
+renderDay(selectedDay, selectedPreset);
+// Keep Today and Yesterday aligned with the Hong Kong calendar across midnight.
+setInterval(() => {{
+  if (selectedPreset === 'todayBtn') renderDay(hongKongDay(), 'todayBtn');
+  if (selectedPreset === 'yesterdayBtn') {{
+    const midnight = new Date(hongKongDay() + 'T00:00:00+08:00');
+    renderDay(hongKongDay(new Date(midnight.getTime() - 86400000)), 'yesterdayBtn');
+  }}
+}}, 60000);
 
 // District bar chart
 new Chart(document.getElementById('districtChart'), {{
@@ -397,3 +477,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
