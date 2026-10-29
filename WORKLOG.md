@@ -956,3 +956,38 @@ Blockers:
 Next steps:
 - Commit the workflow retry repair on `fix/ghost-scrape-push-race`.
 - Push and open a pull request, then observe subsequent scheduled runs for successful publication under contention.
+
+
+## 2026-10-07 Dashboard map day filtering
+
+Current objective:
+- Keep old sightings from crowding the map when viewing recent events.
+
+Files inspected:
+- `AGENTS.md`, `generate_dashboard.py`, `tests/test_dashboard.py`, `.github/workflows/ghost-scrape.yml`, `WORKLOG_TEMPLATE.md`, `WORKLOG_INDEX.md`, and the latest `WORKLOG.md` milestone.
+
+Files changed:
+- `generate_dashboard.py`
+- `tests/test_dashboard_day_filter.py`
+- `WORKLOG.md`
+- `WORKLOG_INDEX.md`
+
+Commands run:
+- `python -m unittest tests/test_dashboard_day_filter.py -v`
+- `node --check /tmp/dashboard.js`
+- `python -m pytest tests/test_dashboard.py -q`
+
+Test results:
+- Two regression tests passed, including execution of generated JavaScript with map and DOM doubles.
+- Verified Hong Kong midnight boundaries, today/yesterday/manual/latest/all-history selection, layer replacement, empty days, malformed dates, and script-safe marker JSON.
+- Generated JavaScript syntax check passed.
+- Existing pytest tests could not run because pytest is not installed in the execution environment.
+
+Blockers:
+- Direct git clone is unavailable because the configured proxy is unreachable; repository reads and branch publication use the GitHub connector.
+- The full alerts snapshot exceeds connector transport limits, so the generated `docs/index.html` will be rebuilt by the existing collection workflow after merge.
+
+Next steps:
+- Review and merge the dashboard filter pull request.
+- Allow the next data collection run to regenerate `docs/index.html` and verify the published day controls.
+
